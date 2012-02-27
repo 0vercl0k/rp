@@ -1,0 +1,21 @@
+TODO:
+
+* Improve global design:
+	* Factorize load_pe/elf_information in ExecutableFormat
+	* Normalize fill_structures in ExecutableFormat
+
+* Better exceptions handling
+
+* Reorganize the whole directories + CMake usage
+
+* Elf_Phdr => factorize type_to_str, flag_to_str
+
+* Improve the display of the executable format => '0' filling crap ; I f*ucking hate std::cout #@!
+
+* Add some color on some field
+
+* PE+ELF testing & crashing test
+
+* x86 warning when using seekg with an unsigned long long
+
+* Add x86/x64 build to the CMakeList.txt

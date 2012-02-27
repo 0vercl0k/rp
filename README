@@ -1,5 +1,9 @@
+=== CMAKE ===
+Pour build sous unix:
+	cd build/
+	cmake .. && make
 
-
+=== GIT ===
 Pour recuperer les files
 
 $ git pull
