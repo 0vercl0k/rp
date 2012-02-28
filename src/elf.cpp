@@ -11,9 +11,11 @@ Elf::Elf(void)
 
 Elf::~Elf(void)
 {	
+    if(m_ELFLayout != NULL)
+        delete m_ELFLayout;
 }
 
-std::string Elf::get_class(void)
+std::string Elf::get_class_name(void) const
 {
     return std::string("Elf");
 }
@@ -25,7 +27,7 @@ void Elf::display_information(VerbosityLevel lvl)
     m_ELFLayout->display(lvl);
 }
 
-CPU::E_CPU Elf::load_elf_information(std::ifstream &file)
+CPU::E_CPU Elf::extract_information_from_binary(std::ifstream &file)
 {
     unsigned char buf[EI_NIDENT] = {0};
     CPU::E_CPU cpu = CPU::CPU_UNKNOWN;
@@ -58,7 +60,6 @@ CPU::E_CPU Elf::load_elf_information(std::ifstream &file)
     }
 
     /* Filling the structure now !*/
-    //TODO: todo bro.
     m_ELFLayout->fill_structures(file);
 
     /* Set correctly the pointer */
@@ -75,7 +76,7 @@ CPU* Elf::get_cpu(std::ifstream &file)
     std::cout << "Phdr: " << sizeof(Elf32_Phdr) << " " << sizeof(Elf64_Phdr) << std::endl;
     std::cout << "Shdr: " << sizeof(Elf32_Shdr) << " " << sizeof(Elf64_Shdr) << std::endl;
 
-    cpu_type = load_elf_information(file);
+    cpu_type = extract_information_from_binary(file);
 
     switch(cpu_type)
     {

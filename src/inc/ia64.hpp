@@ -9,7 +9,7 @@ class Ia64 : public CPU
         explicit Ia64(void);
         ~Ia64(void);
 
-        std::string get_class(void);
+        std::string get_class_name(void) const;
 };
 
 #endif

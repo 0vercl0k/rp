@@ -9,7 +9,7 @@ class CPU
         explicit CPU(void);
         ~CPU(void);
 
-        virtual std::string get_class(void) = 0;
+        virtual std::string get_class_name(void) const = 0;
 
         enum E_CPU
         {

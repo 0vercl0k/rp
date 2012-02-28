@@ -7,19 +7,16 @@
 #include <cstring>
 
 PE::PE(void)
-//: m_pPELayout(NULL)
 {
 }
 
 PE::~PE(void)
 {
-    /*
     if(m_pPELayout != NULL)
         delete m_pPELayout;
-    */
 }
 
-std::string PE::get_class(void)
+std::string PE::get_class_name(void) const
 {
     return std::string("PE");
 }
@@ -31,7 +28,7 @@ void PE::display_information(VerbosityLevel lvl)
     m_pPELayout->display(lvl);
 }
 
-CPU::E_CPU PE::load_pe_information(std::ifstream &file)
+CPU::E_CPU PE::extract_information_from_binary(std::ifstream &file)
 {
     RP_IMAGE_DOS_HEADER imgDosHeader = {0};
     RP_IMAGE_NT_HEADERS32 imgNtHeaders32 = {0};
@@ -91,7 +88,7 @@ CPU* PE::get_cpu(std::ifstream &file)
     CPU* cpu(NULL);
     CPU::E_CPU cpu_type = CPU::CPU_UNKNOWN;
 
-    cpu_type = load_pe_information(file);
+    cpu_type = extract_information_from_binary(file);
 
     switch(cpu_type)
     {

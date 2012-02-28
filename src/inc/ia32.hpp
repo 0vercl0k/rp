@@ -9,7 +9,7 @@ class Ia32 : public CPU
         explicit Ia32(void);
         ~Ia32(void);
 
-        std::string get_class(void);
+        std::string get_class_name(void) const;
 };
 
 #endif

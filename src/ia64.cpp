@@ -8,7 +8,7 @@ Ia64::~Ia64(void)
 {
 }
 
-std::string Ia64::get_class(void)
+std::string Ia64::get_class_name(void) const
 {
     return std::string("Ia64");
 }

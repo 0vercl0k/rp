@@ -38,7 +38,7 @@ Program::Program(const std::string & program_path)
 
     m_cpu = m_exformat->get_cpu(m_file);
 
-    std::cout << "FileFormat: " << m_exformat->get_class() << ", Arch: " << m_cpu->get_class() << std::endl;
+    std::cout << "FileFormat: " << m_exformat->get_class_name() << ", Arch: " << m_cpu->get_class_name() << std::endl;
 }
 
 Program::~Program(void)

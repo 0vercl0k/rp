@@ -10,12 +10,15 @@ class Elf : public ExecutableFormat
         explicit Elf(void);
         ~Elf(void);
 
-        std::string get_class(void);
         CPU* get_cpu(std::ifstream &file);
+
         void display_information(VerbosityLevel lvl);
 
+        std::string get_class_name(void) const;
+
     private:
-        CPU::E_CPU load_elf_information(std::ifstream &file);
+
+        CPU::E_CPU extract_information_from_binary(std::ifstream &file);
 
         template<class T>
         void init_properly_ELFLayout(void)

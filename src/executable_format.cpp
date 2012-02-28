@@ -12,6 +12,7 @@ ExecutableFormat::E_ExecutableFormat ExecutableFormat::FindExecutableFormat(unsi
 {
     ExecutableFormat::E_ExecutableFormat format = FORMAT_UNKNOWN;
 
+    /* Yeah, I told you this was basic. */
     switch(magic_dword)
     {
         case 0x00905A4D:

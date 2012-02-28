@@ -10,12 +10,14 @@ class PE : public ExecutableFormat
         explicit PE(void);
         ~PE(void);
 
-        std::string get_class(void);
         CPU* get_cpu(std::ifstream &file);
+
         void display_information(VerbosityLevel lvl);
 
+        std::string get_class_name(void) const;
+
     private:
-        CPU::E_CPU load_pe_information(std::ifstream &file);
+        CPU::E_CPU extract_information_from_binary(std::ifstream &file);
         
         template<class T>
         void init_properly_PELayout()
