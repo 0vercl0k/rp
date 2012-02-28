@@ -478,7 +478,7 @@ struct ELFLayout : public ExecutableLinkingFormatLayout
         Elf_Shdr<T> elf_shdr;
         std::streampos off = file.tellg();
 
-        file.seekg(elfHeader.e_shoff, std::ios::beg);
+        file.seekg((std::streamoff)elfHeader.e_shoff, std::ios::beg);
 
         for(unsigned int i = 0; i < elfHeader.e_shnum; ++i)
         {
@@ -505,7 +505,7 @@ struct ELFLayout : public ExecutableLinkingFormatLayout
         file.read((char*)&elfHeader, sizeof(Elf_Ehdr<T>));
 
         /* 2] Goto the first Program Header, and dump them */
-        file.seekg(elfHeader.e_phoff, std::ios::beg);
+        file.seekg((std::streamoff)elfHeader.e_phoff, std::ios::beg);
         for(unsigned int i = 0; i < elfHeader.e_phnum; ++i)
         {
             Elf_Phdr<T>* pElfProgramHeader = new Elf_Phdr<T>;
@@ -522,15 +522,15 @@ struct ELFLayout : public ExecutableLinkingFormatLayout
         find_string_table(file);
 
         /* 3.2] Keep the string table in memory */
-        file.seekg(offset_string_table, std::ios::beg);
-        char* string_table_section = new (std::nothrow) char[size_string_table];
+        file.seekg((std::streamoff)offset_string_table, std::ios::beg);
+        char* string_table_section = new (std::nothrow) char[(unsigned int)size_string_table];
         if(string_table_section == NULL)
             throw std::string("Cannot allocate string_table_section");
 
-        file.read(string_table_section, size_string_table);
+        file.read(string_table_section, (std::streamsize)size_string_table);
 
         /* 3.3] Goto the first Section Header, and dump them !*/
-        file.seekg(elfHeader.e_shoff, std::ios::beg);
+        file.seekg((std::streamoff)elfHeader.e_shoff, std::ios::beg);
         for(unsigned int i = 0; i < elfHeader.e_shnum; ++i)
         {
             Elf_Shdr_Abstraction<T>* pElfSectionHeader = new Elf_Shdr_Abstraction<T>;

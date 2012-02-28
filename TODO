@@ -1,7 +1,6 @@
 TODO:
 
 * Improve global design:
-	* Factorize load_pe/elf_information in ExecutableFormat
 	* Normalize fill_structures in ExecutableFormat
 
 * Better exceptions handling

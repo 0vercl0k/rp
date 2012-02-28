@@ -7,10 +7,11 @@ class CPU
 {
     public:
         explicit CPU(void);
-        ~CPU(void);
+        virtual ~CPU(void);
 
         virtual std::string get_class_name(void) const = 0;
-
+        
+        /* The different architectures RP++ handles */
         enum E_CPU
         {
             CPU_IA32,
