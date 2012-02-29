@@ -106,8 +106,8 @@ static void coloshell(const T t, const Colors colo)
 }
 
 /* Utility for displaying easily the structure fields */
-#define display_hex_field(field) {                                                            \
-    std::cout << std::setw(25) << std::left << std::setfill(' ') << "    "#field << ": ";     \
+#define display_hex_field(field, n) {                                                         \
+    std::cout << std::setw(n) << std::left << std::setfill(' ') << " "#field << ": ";         \
     enable_color(COLO_RED);                                                                   \
     std::cout << "0x" << std::setw(sizeof(field) * 2) << std::right << std::setfill('0');     \
     std::cout << std::hex << field;                                                           \
@@ -115,16 +115,30 @@ static void coloshell(const T t, const Colors colo)
 }
 
 #define display_hex_field_lf(field) { \
-    display_hex_field(field);         \
+    display_hex_field(field, 25);     \
     std::cout << std::endl;           \
 }
 
 #define display_hex_2fields_lf(field1, field2) { \
-    display_hex_field(field1);                   \
-    display_hex_field(field2);                   \
+    display_hex_field(field1, 25);               \
+    display_hex_field(field2, 25);               \
     std::cout << std::endl;                      \
 }
 
+#define display_short_hex_field(field) {    \
+    display_hex_field(field, 14);           \
+}
+
+#define display_short_hex_field_lf(field) { \
+    display_short_hex_field(field);         \
+    std::cout << std::endl;                 \
+}
+
+#define display_short_hex_2fields_lf(field1, field2) { \
+    display_short_hex_field(field1);                   \
+    display_short_hex_field(field2);                   \
+    std::cout << std::endl;                            \
+}
 
 #define display_string(field_name, field) {                                      \
     std::cout << std::setw(15) << std::right << std::setfill(' ') << field_name; \
@@ -132,7 +146,7 @@ static void coloshell(const T t, const Colors colo)
 }
 
 #define display_string_lf(field_name, field) { \
-    display_string_(field_name, field);        \
+    display_string(field_name, field);         \
     std::cout << std::endl;                    \
 }
 

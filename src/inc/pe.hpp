@@ -2,7 +2,7 @@
 #define PE_H
 
 #include "executable_format.hpp"
-#include "pe_struct.h"
+#include "pe_struct.hpp"
 
 class PE : public ExecutableFormat
 {

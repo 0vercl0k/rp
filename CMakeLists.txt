@@ -11,7 +11,7 @@ include_directories("./src/inc/")
 file(
  GLOB_RECURSE
  ropgadget_pp_files
- ./src/*pp
+ ./src/*
 )
 
 add_executable(

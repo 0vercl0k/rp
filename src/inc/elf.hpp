@@ -2,7 +2,7 @@
 #define ELF_H
 
 #include "executable_format.hpp"
-#include "elf_struct.h"
+#include "elf_struct.hpp"
 
 class Elf : public ExecutableFormat
 {

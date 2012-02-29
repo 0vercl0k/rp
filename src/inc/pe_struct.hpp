@@ -253,7 +253,8 @@ struct RP_IMAGE_OPTIONAL_HEADER<x64Version> {
         }
 
         display_hex_2fields_lf(SizeOfCode, AddressOfEntryPoint);
-        display_hex_2fields_lf(BaseOfCode, ImageBase);
+        display_hex_field_lf(BaseOfCode);
+        display_hex_field_lf(ImageBase);
     }
 }
 #ifdef LINUX
