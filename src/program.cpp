@@ -4,6 +4,7 @@
 
 #include "pe.hpp"
 #include "elf.hpp"
+#include "section.hpp"
 
 Program::Program(const std::string & program_path)
 : m_cpu(NULL), m_exformat(NULL)
@@ -61,5 +62,19 @@ void Program::display_information(VerbosityLevel lvl)
 void Program::find_and_display_gadgets(void)
 {
     std::cout << "Wait a few seconds, rp++ is researching gadgets.." << std::endl;
+    std::vector<Section*> executable_sections = m_exformat->get_executables_section();
 
+    for(std::vector<Section*>::iterator it = executable_sections.begin(); it != executable_sections.end(); ++it)
+    {
+        std::cout << "in " << (*it)->get_name() << ".." << std::endl;
+        std::vector<Gadget*> gadgets_found = m_cpu->find_gadget_in_memory(
+            (*it)->get_section_buffer(),
+            (*it)->get_size()
+        );
+
+        for(std::vector<Gadget*>::iterator it2 = gadgets_found.begin(); it2 != gadgets_found.end(); ++it2)
+        {
+            std::cout << "gadget @ " << (*it2)->get_disassembly() << std::endl;
+        }
+    }
 }
