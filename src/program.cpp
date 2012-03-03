@@ -75,7 +75,8 @@ void Program::find_and_display_gadgets(void)
 
         for(std::vector<Gadget*>::iterator it2 = gadgets_found.begin(); it2 != gadgets_found.end(); ++it2)
         {
-            std::cout << "gadget @ " << (*it2)->get_disassembly() << std::endl;
+            unsigned int offset = (*it)->get_offset() + (*it2)->get_offset();
+            std::cout << "gadget @ " <<  offset << " dissas: " << (*it2)->get_disassembly() << std::endl;
         }
     }
 }

@@ -18,3 +18,13 @@ unsigned int Gadget::get_offset(void) const
 {
     return m_offset;
 }
+
+unsigned int Gadget::get_size(void) const
+{
+    return m_size;
+}
+
+const char* Gadget::get_opcodes(void) const
+{
+    return m_opcodes;
+}

@@ -2,7 +2,7 @@
 #include "toolbox.hpp"
 
 Section::Section(std::ifstream &file, const char *name, const unsigned int offset, const unsigned int size, const Properties props)
-: m_name(name), m_size(size), m_props(props), m_section(NULL)
+: m_name(name), m_offset(offset), m_size(size), m_props(props), m_section(NULL)
 {
     /* I don't want ANY of this int overflow crap. */
     if((offset + size) < offset)
@@ -40,4 +40,9 @@ unsigned int Section::get_size(void) const
 unsigned char* Section::get_section_buffer(void) const
 {
     return m_section;
+}
+
+const unsigned int Section::get_offset(void) const
+{
+    return m_offset;
 }

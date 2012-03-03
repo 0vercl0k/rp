@@ -477,5 +477,30 @@ std::string Ia32::get_class_name(void) const
 std::vector<Gadget*> Ia32::find_gadget_in_memory(unsigned char *p_memory, unsigned int size)
 {
     std::vector<Gadget*> gadgets_found;
+
+    for(unsigned int i = 0; i < size; ++i)
+    {
+        for(std::vector<Gadget>::iterator it = m_gadgets.begin(); it != m_gadgets.end(); ++it)
+        {
+            if(i + it->get_size() < i)
+                throw std::string("Integer overflow spotted!");
+
+            if(i + it->get_size() <= size)
+            {
+                if(std::memcmp(it->get_opcodes(), p_memory + i, it->get_size()) == 0)
+                {
+                    Gadget* gadget = new Gadget(
+                        it->get_disassembly(),
+                        it->get_opcodes(),
+                        it->get_size(),
+                        (unsigned int)(p_memory + i)
+                    );
+
+                    gadgets_found.push_back(gadget);
+                }
+            }
+        }
+    }
+
     return gadgets_found;
 }

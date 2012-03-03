@@ -10,6 +10,8 @@ class Gadget
         const char* get_disassembly(void) const;
 
         unsigned int get_offset(void) const;
+        unsigned int get_size(void) const;
+        const char* get_opcodes(void) const;
 
     private:
         const char *m_disassembly;
