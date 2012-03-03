@@ -104,7 +104,7 @@ def get_opcodes():
     f.close()
 
     ret = []
-    for ins, ops, size in re.findall('Instruction\("(.+)", "(.+)", ([0-9]+)\)', data):
+    for ins, ops, size in re.findall('Gadget\("(.+)", "(.+)", ([0-9]+)\)', data):
         ret.append({
             'disass' : ins,
             'opcodes' : ops,

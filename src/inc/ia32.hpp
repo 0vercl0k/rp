@@ -2,9 +2,6 @@
 #define IA32_H
 
 #include "cpu.hpp"
-#include "instruction.hpp"
-
-#include <vector>
 
 class Ia32 : public CPU
 {
@@ -13,9 +10,11 @@ class Ia32 : public CPU
         ~Ia32(void);
 
         std::string get_class_name(void) const;
-    
+        
+        std::vector<Gadget*> find_gadget_in_memory(unsigned char *p_memory, unsigned int size);
+
     private:
-        std::vector<Instruction> m_instructions;
+        std::vector<Gadget> m_gadgets;
 };
 
 #endif

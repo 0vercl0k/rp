@@ -10,6 +10,8 @@ class Ia64 : public CPU
         ~Ia64(void);
 
         std::string get_class_name(void) const;
+
+        std::vector<Gadget*> find_gadget_in_memory(unsigned char *p_memory, unsigned int size);
 };
 
 #endif
