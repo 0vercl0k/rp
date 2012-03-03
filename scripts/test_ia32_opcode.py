@@ -116,8 +116,8 @@ def main(argc, argv):
     f = open('./out', 'w')
     for instr in get_opcodes():
         print instr['disass']
-        #disass = di(instr['opcodes'])
-        #f.write('opcodes: %s -> %s (in src: %s)\n' % (instr['opcodes'], disass, instr['disass']))
+        disass = di(instr['opcodes'])
+        f.write('opcodes: %s -> %s (in src: %s)\n' % (instr['opcodes'], disass, instr['disass']))
     f.close()
     return 1
 
