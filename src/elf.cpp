@@ -99,7 +99,7 @@ CPU* Elf::get_cpu(std::ifstream &file)
     return cpu;
 }
 
-std::vector<Section*> Elf::get_executables_section(void)
+std::vector<Section*> Elf::get_executables_section(std::ifstream & file)
 {
     std::vector<Section*> exec_sections;
     return exec_sections;

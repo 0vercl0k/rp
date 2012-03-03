@@ -16,7 +16,7 @@ class PE : public ExecutableFormat
 
         std::string get_class_name(void) const;
 
-        std::vector<Section*> get_executables_section(void);
+        std::vector<Section*> get_executables_section(std::ifstream & file);
 
     private:
         CPU::E_CPU extract_information_from_binary(std::ifstream &file);

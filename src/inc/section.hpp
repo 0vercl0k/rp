@@ -2,6 +2,7 @@
 #define SECTION_HPP
 
 #include <string>
+#include <fstream>
 
 class Section
 {
@@ -13,7 +14,7 @@ class Section
             Executable
         };
 
-        explicit Section(const char *name, const unsigned int offset, const unsigned int size, const Properties props);
+        explicit Section(std::ifstream &file, const char *name, const unsigned int offset, const unsigned int size, const Properties props);
         ~Section(void);
 
         std::string get_name(void) const;

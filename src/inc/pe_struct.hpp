@@ -8,7 +8,7 @@
 #include <fstream>
 #include <iostream>
 #include <iomanip>
-#include <list>
+#include <vector>
 
 /* Information extracted from winnt.h ; a bit of template-kung-fu and here it goes ! */
 
@@ -270,6 +270,7 @@ typedef RP_IMAGE_OPTIONAL_HEADER<x64Version> RP_IMAGE_OPTIONAL_HEADER64;
 //
 
 #define RP_IMAGE_SIZEOF_SHORT_NAME              8
+#define RP_IMAGE_SCN_MEM_EXECUTE 0x00000020
 
 struct RP_IMAGE_SECTION_HEADER {
     unsigned char    Name[RP_IMAGE_SIZEOF_SHORT_NAME];
@@ -355,7 +356,7 @@ typedef RP_IMAGE_NT_HEADERS<x64Version> RP_IMAGE_NT_HEADERS64;
 struct PortableExecutableLayout
 {
     RP_IMAGE_DOS_HEADER imgDosHeader;
-    std::list<RP_IMAGE_SECTION_HEADER*> imgSectionHeaders;
+    std::vector<RP_IMAGE_SECTION_HEADER*> imgSectionHeaders;
 
     static const unsigned int image_dos_header_size = sizeof(RP_IMAGE_DOS_HEADER);
     static const unsigned int image_section_header_size = sizeof(RP_IMAGE_SECTION_HEADER);
@@ -387,7 +388,7 @@ struct PELayout : public PortableExecutableLayout
 {
     RP_IMAGE_NT_HEADERS<T> imgNtHeaders;
        
-    virtual unsigned int get_nt_headers_size(void) const
+    unsigned int get_nt_headers_size(void) const
     {
         return sizeof(RP_IMAGE_NT_HEADERS<T>);
     }
@@ -398,14 +399,14 @@ struct PELayout : public PortableExecutableLayout
         imgNtHeaders.display(lvl);
         if(lvl > VERBOSE_LEVEL_1)
         {
-            for(std::list<RP_IMAGE_SECTION_HEADER*>::const_iterator it = imgSectionHeaders.begin();
+            for(std::vector<RP_IMAGE_SECTION_HEADER*>::const_iterator it = imgSectionHeaders.begin();
                 it != imgSectionHeaders.end();
                 ++it)
                 (*it)->display();
         }
     }
 
-    virtual void fill_nt_structures(std::ifstream &file)
+    void fill_nt_structures(std::ifstream &file)
     {
         /* Remember where the caller was in the file */
         std::streampos off = file.tellg();

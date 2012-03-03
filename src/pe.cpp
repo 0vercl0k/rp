@@ -12,6 +12,13 @@ PE::PE(void)
 
 PE::~PE(void)
 {
+    for(std::vector<RP_IMAGE_SECTION_HEADER*>::iterator it = m_pPELayout->imgSectionHeaders.begin();
+        it != m_pPELayout->imgSectionHeaders.end();
+        ++it)
+        delete *it;
+
+    m_pPELayout->imgSectionHeaders.clear();
+
     if(m_pPELayout != NULL)
         delete m_pPELayout;
 }
@@ -111,8 +118,28 @@ CPU* PE::get_cpu(std::ifstream &file)
     return cpu;
 }
 
-std::vector<Section*> PE::get_executables_section(void)
+std::vector<Section*> PE::get_executables_section(std::ifstream & file)
 {
     std::vector<Section*> exec_sections;
+    Section *tmp(NULL);
+
+    for(std::vector<RP_IMAGE_SECTION_HEADER*>::iterator it = m_pPELayout->imgSectionHeaders.begin();
+        it != m_pPELayout->imgSectionHeaders.end();
+        ++it)
+    {
+        if((*it)->Characteristics & RP_IMAGE_SCN_MEM_EXECUTE)
+        {
+            std::cout << "Section " << (*it)->Name << " seems to be executable, dump it.." << std::endl;
+            tmp = new Section(
+                file,
+                (const char*)(*it)->Name,
+                (*it)->PointerToRawData,
+                (*it)->SizeOfRawData,
+                Section::Executable
+            );
+
+            exec_sections.push_back(tmp);
+        }
+    }
     return exec_sections;
 }

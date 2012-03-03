@@ -2,6 +2,7 @@
 #define TOOLBOX_H
 
 #include <string>
+#include <fstream>
 
 /* Choose your verbosity level */
 enum VerbosityLevel
@@ -12,5 +13,7 @@ enum VerbosityLevel
 };
 
 std::string verbosity_to_string(VerbosityLevel lvl);
+
+std::streampos get_file_size(std::ifstream &file);
 
 #endif

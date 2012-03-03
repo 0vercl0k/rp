@@ -41,6 +41,8 @@ int main(int argc, char* argv[])
     {
         Program p(program_path);
         p.display_information(VERBOSE_LEVEL_3);
+
+        p.find_and_display_gadgets();
     }
     catch(std::string &e)
     {

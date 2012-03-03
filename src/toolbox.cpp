@@ -1,7 +1,5 @@
 #include "toolbox.hpp"
 
-#include <string>
-
 std::string verbosity_to_string(VerbosityLevel lvl)
 {
     std::string s("");
@@ -28,4 +26,18 @@ std::string verbosity_to_string(VerbosityLevel lvl)
     }
 
     return s;
+}
+
+std::streampos get_file_size(std::ifstream &file)
+{
+    std::streampos backup = file.tellg();
+
+    file.seekg(0, std::ios::beg);
+    std::streampos fsize = file.tellg();
+
+    file.seekg(0, std::ios::end );
+    fsize = file.tellg() - fsize;
+    
+    file.seekg(backup);
+    return fsize;
 }
