@@ -7,6 +7,7 @@
 
 #include "cpu.hpp"
 #include "toolbox.hpp"
+#include "section.hpp"
 
 class ExecutableFormat
 {
@@ -34,6 +35,8 @@ class ExecutableFormat
 
         /* Retrieves the class name, useful when using polymorphism */
         virtual std::string get_class_name(void) const = 0;
+
+        virtual std::vector<Section*> get_executables_section(void) = 0;
 
         /* Find the executable format used -- based mostly on the magic signature */
         static E_ExecutableFormat FindExecutableFormat(unsigned int magic_dword);

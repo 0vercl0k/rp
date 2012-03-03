@@ -15,6 +15,8 @@ class Program
 
         void display_information(VerbosityLevel lvl = VERBOSE_LEVEL_1);
 
+        void find_and_display_gadgets(void);
+
     private:
         CPU* m_cpu;
         ExecutableFormat* m_exformat;

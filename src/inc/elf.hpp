@@ -16,6 +16,8 @@ class Elf : public ExecutableFormat
 
         std::string get_class_name(void) const;
 
+        std::vector<Section*> get_executables_section(void);
+
     private:
 
         CPU::E_CPU extract_information_from_binary(std::ifstream &file);

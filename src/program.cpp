@@ -57,3 +57,9 @@ void Program::display_information(VerbosityLevel lvl)
 {
     m_exformat->display_information(lvl);
 }
+
+void Program::find_and_display_gadgets(void)
+{
+    std::cout << "Wait a few seconds, rp++ is researching gadgets.." << std::endl;
+
+}
