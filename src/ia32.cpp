@@ -115,12 +115,12 @@ Ia32::Ia32(void)
     m_gadgets.push_back(Gadget("mul esi ; ret", "\xf7\xe6\xc3", 3));
     m_gadgets.push_back(Gadget("mul edi ; ret", "\xf7\xe7\xc3", 3));
 
-    m_gadgets.push_back(Gadget("mul eax ; pop ebp ; ret", "\xf7\xe0\x5d\xc3", 3));
-    m_gadgets.push_back(Gadget("mul ebx ; pop ebp ; ret", "\xf7\xe3\x5d\xc3", 3));
-    m_gadgets.push_back(Gadget("mul ecx ; pop ebp ; ret", "\xf7\xe1\x5d\xc3", 3));
-    m_gadgets.push_back(Gadget("mul edx ; pop ebp ; ret", "\xf7\xe2\x5d\xc3", 3));
-    m_gadgets.push_back(Gadget("mul esi ; pop ebp ; ret", "\xf7\xe6\x5d\xc3", 3));
-    m_gadgets.push_back(Gadget("mul edi ; pop ebp ; ret", "\xf7\xe7\x5d\xc3", 3));
+    m_gadgets.push_back(Gadget("mul eax ; pop ebp ; ret", "\xf7\xe0\x5d\xc3", 4));
+    m_gadgets.push_back(Gadget("mul ebx ; pop ebp ; ret", "\xf7\xe3\x5d\xc3", 4));
+    m_gadgets.push_back(Gadget("mul ecx ; pop ebp ; ret", "\xf7\xe1\x5d\xc3", 4));
+    m_gadgets.push_back(Gadget("mul edx ; pop ebp ; ret", "\xf7\xe2\x5d\xc3", 4));
+    m_gadgets.push_back(Gadget("mul esi ; pop ebp ; ret", "\xf7\xe6\x5d\xc3", 4));
+    m_gadgets.push_back(Gadget("mul edi ; pop ebp ; ret", "\xf7\xe7\x5d\xc3", 4));
 
     m_gadgets.push_back(Gadget("div eax ; ret", "\xf7\xf0\xc3", 3));
     m_gadgets.push_back(Gadget("div ebx ; ret", "\xf7\xf3\xc3", 3));
@@ -129,12 +129,12 @@ Ia32::Ia32(void)
     m_gadgets.push_back(Gadget("div esi ; ret", "\xf7\xf6\xc3", 3));
     m_gadgets.push_back(Gadget("div edi ; ret", "\xf7\xf7\xc3", 3));
 
-    m_gadgets.push_back(Gadget("div eax ; pop ebp ; ret", "\xf7\xf0\x5d\xc3", 3));
-    m_gadgets.push_back(Gadget("div ebx ; pop ebp ; ret", "\xf7\xf3\x5d\xc3", 3));
-    m_gadgets.push_back(Gadget("div ecx ; pop ebp ; ret", "\xf7\xf1\x5d\xc3", 3));
-    m_gadgets.push_back(Gadget("div edx ; pop ebp ; ret", "\xf7\xf2\x5d\xc3", 3));
-    m_gadgets.push_back(Gadget("div esi ; pop ebp ; ret", "\xf7\xf6\x5d\xc3", 3));
-    m_gadgets.push_back(Gadget("div edi ; pop ebp ; ret", "\xf7\xf7\x5d\xc3", 3));
+    m_gadgets.push_back(Gadget("div eax ; pop ebp ; ret", "\xf7\xf0\x5d\xc3", 4));
+    m_gadgets.push_back(Gadget("div ebx ; pop ebp ; ret", "\xf7\xf3\x5d\xc3", 4));
+    m_gadgets.push_back(Gadget("div ecx ; pop ebp ; ret", "\xf7\xf1\x5d\xc3", 4));
+    m_gadgets.push_back(Gadget("div edx ; pop ebp ; ret", "\xf7\xf2\x5d\xc3", 4));
+    m_gadgets.push_back(Gadget("div esi ; pop ebp ; ret", "\xf7\xf6\x5d\xc3", 4));
+    m_gadgets.push_back(Gadget("div edi ; pop ebp ; ret", "\xf7\xf7\x5d\xc3", 4));
 
     m_gadgets.push_back(Gadget("neg eax ; ret", "\xf7\xd8\xc3", 3));
     m_gadgets.push_back(Gadget("neg ebx ; ret", "\xf7\xdb\xc3", 3));
@@ -143,12 +143,12 @@ Ia32::Ia32(void)
     m_gadgets.push_back(Gadget("neg esi ; ret", "\xf7\xde\xc3", 3));
     m_gadgets.push_back(Gadget("neg edi ; ret", "\xf7\xdf\xc3", 3));
 
-    m_gadgets.push_back(Gadget("neg eax ; pop ebp ; ret", "\xf7\xd8\x5d\xc3", 3));
-    m_gadgets.push_back(Gadget("neg ebx ; pop ebp ; ret", "\xf7\xdb\x5d\xc3", 3));
-    m_gadgets.push_back(Gadget("neg ecx ; pop ebp ; ret", "\xf7\xd9\x5d\xc3", 3));
-    m_gadgets.push_back(Gadget("neg edx ; pop ebp ; ret", "\xf7\xda\x5d\xc3", 3));
-    m_gadgets.push_back(Gadget("neg esi ; pop ebp ; ret", "\xf7\xde\x5d\xc3", 3));
-    m_gadgets.push_back(Gadget("neg edi ; pop ebp ; ret", "\xf7\xdf\x5d\xc3", 3));
+    m_gadgets.push_back(Gadget("neg eax ; pop ebp ; ret", "\xf7\xd8\x5d\xc3", 4));
+    m_gadgets.push_back(Gadget("neg ebx ; pop ebp ; ret", "\xf7\xdb\x5d\xc3", 4));
+    m_gadgets.push_back(Gadget("neg ecx ; pop ebp ; ret", "\xf7\xd9\x5d\xc3", 4));
+    m_gadgets.push_back(Gadget("neg edx ; pop ebp ; ret", "\xf7\xda\x5d\xc3", 4));
+    m_gadgets.push_back(Gadget("neg esi ; pop ebp ; ret", "\xf7\xde\x5d\xc3", 4));
+    m_gadgets.push_back(Gadget("neg edi ; pop ebp ; ret", "\xf7\xdf\x5d\xc3", 4));
 
     m_gadgets.push_back(Gadget("not eax ; ret", "\xf7\xd0\xc3", 3));
     m_gadgets.push_back(Gadget("not ebx ; ret", "\xf7\xd3\xc3", 3));
@@ -157,12 +157,12 @@ Ia32::Ia32(void)
     m_gadgets.push_back(Gadget("not esi ; ret", "\xf7\xd6\xc3", 3));
     m_gadgets.push_back(Gadget("not edi ; ret", "\xf7\xd7\xc3", 3));
 
-    m_gadgets.push_back(Gadget("not eax ; pop ebp ; ret", "\xf7\xd0\x5d\xc3", 3));
-    m_gadgets.push_back(Gadget("not ebx ; pop ebp ; ret", "\xf7\xd3\x5d\xc3", 3));
-    m_gadgets.push_back(Gadget("not ecx ; pop ebp ; ret", "\xf7\xd1\x5d\xc3", 3));
-    m_gadgets.push_back(Gadget("not edx ; pop ebp ; ret", "\xf7\xd2\x5d\xc3", 3));
-    m_gadgets.push_back(Gadget("not esi ; pop ebp ; ret", "\xf7\xd6\x5d\xc3", 3));
-    m_gadgets.push_back(Gadget("not edi ; pop ebp ; ret", "\xf7\xd7\x5d\xc3", 3));
+    m_gadgets.push_back(Gadget("not eax ; pop ebp ; ret", "\xf7\xd0\x5d\xc3", 4));
+    m_gadgets.push_back(Gadget("not ebx ; pop ebp ; ret", "\xf7\xd3\x5d\xc3", 4));
+    m_gadgets.push_back(Gadget("not ecx ; pop ebp ; ret", "\xf7\xd1\x5d\xc3", 4));
+    m_gadgets.push_back(Gadget("not edx ; pop ebp ; ret", "\xf7\xd2\x5d\xc3", 4));
+    m_gadgets.push_back(Gadget("not esi ; pop ebp ; ret", "\xf7\xd6\x5d\xc3", 4));
+    m_gadgets.push_back(Gadget("not edi ; pop ebp ; ret", "\xf7\xd7\x5d\xc3", 4));
 
     m_gadgets.push_back(Gadget("shr eax, 1 ; ret", "\xd1\xe8\xc3", 3));
     m_gadgets.push_back(Gadget("shr ebx, 1 ; ret", "\xd1\xeb\xc3", 3));
@@ -199,13 +199,13 @@ Ia32::Ia32(void)
     m_gadgets.push_back(Gadget("xchg eax, edi ; ret", "\x97\xc3", 2));
     m_gadgets.push_back(Gadget("xchg eax, ebp ; ret", "\x95\xc3", 2));
 
-    m_gadgets.push_back(Gadget("xchg eax, esp ; pop ebp ; ret", "\x94\x5d\xc3", 2));
-    m_gadgets.push_back(Gadget("xchg eax, ebx ; pop ebp ; ret", "\x93\x5d\xc3", 2));
-    m_gadgets.push_back(Gadget("xchg eax, ecx ; pop ebp ; ret", "\x91\x5d\xc3", 2));
-    m_gadgets.push_back(Gadget("xchg eax, edx ; pop ebp ; ret", "\x92\x5d\xc3", 2));
-    m_gadgets.push_back(Gadget("xchg eax, esi ; pop ebp ; ret", "\x96\x5d\xc3", 2));
-    m_gadgets.push_back(Gadget("xchg eax, edi ; pop ebp ; ret", "\x97\x5d\xc3", 2));
-    m_gadgets.push_back(Gadget("xchg eax, ebp ; pop ebp ; ret", "\x95\x5d\xc3", 2));
+    m_gadgets.push_back(Gadget("xchg eax, esp ; pop ebp ; ret", "\x94\x5d\xc3", 3));
+    m_gadgets.push_back(Gadget("xchg eax, ebx ; pop ebp ; ret", "\x93\x5d\xc3", 3));
+    m_gadgets.push_back(Gadget("xchg eax, ecx ; pop ebp ; ret", "\x91\x5d\xc3", 3));
+    m_gadgets.push_back(Gadget("xchg eax, edx ; pop ebp ; ret", "\x92\x5d\xc3", 3));
+    m_gadgets.push_back(Gadget("xchg eax, esi ; pop ebp ; ret", "\x96\x5d\xc3", 3));
+    m_gadgets.push_back(Gadget("xchg eax, edi ; pop ebp ; ret", "\x97\x5d\xc3", 3));
+    m_gadgets.push_back(Gadget("xchg eax, ebp ; pop ebp ; ret", "\x95\x5d\xc3", 3));
 
     m_gadgets.push_back(Gadget("bswap eax ; ret", "\x0f\xc8\xc3", 3));
     m_gadgets.push_back(Gadget("bswap ebx ; ret", "\x0f\xcb\xc3", 3));
@@ -214,12 +214,12 @@ Ia32::Ia32(void)
     m_gadgets.push_back(Gadget("bswap esi ; ret", "\x0f\xce\xc3", 3));
     m_gadgets.push_back(Gadget("bswap edi ; ret", "\x0f\xcf\xc3", 3));
 
-    m_gadgets.push_back(Gadget("bswap eax ; pop ebp ; ret", "\x0f\xc8\x5d\xc3", 3));
-    m_gadgets.push_back(Gadget("bswap ebx ; pop ebp ; ret", "\x0f\xcb\x5d\xc3", 3));
-    m_gadgets.push_back(Gadget("bswap ecx ; pop ebp ; ret", "\x0f\xc9\x5d\xc3", 3));
-    m_gadgets.push_back(Gadget("bswap edx ; pop ebp ; ret", "\x0f\xca\x5d\xc3", 3));
-    m_gadgets.push_back(Gadget("bswap esi ; pop ebp ; ret", "\x0f\xce\x5d\xc3", 3));
-    m_gadgets.push_back(Gadget("bswap edi ; pop ebp ; ret", "\x0f\xcf\x5d\xc3", 3));
+    m_gadgets.push_back(Gadget("bswap eax ; pop ebp ; ret", "\x0f\xc8\x5d\xc3", 4));
+    m_gadgets.push_back(Gadget("bswap ebx ; pop ebp ; ret", "\x0f\xcb\x5d\xc3", 4));
+    m_gadgets.push_back(Gadget("bswap ecx ; pop ebp ; ret", "\x0f\xc9\x5d\xc3", 4));
+    m_gadgets.push_back(Gadget("bswap edx ; pop ebp ; ret", "\x0f\xca\x5d\xc3", 4));
+    m_gadgets.push_back(Gadget("bswap esi ; pop ebp ; ret", "\x0f\xce\x5d\xc3", 4));
+    m_gadgets.push_back(Gadget("bswap edi ; pop ebp ; ret", "\x0f\xcf\x5d\xc3", 4));
 
     m_gadgets.push_back(Gadget("mov eax, ebx ; pop ebx ; pop ebp ; ret", "\x89\xd8\x5b\x5d\xc3", 5));
     m_gadgets.push_back(Gadget("mov eax, edx ; pop ebx ; pop esi ; pop edi ; pop ebp ; ret", "\x89\xd0\x5b\x5e\x5f\x5d\xc3", 7));
@@ -493,7 +493,7 @@ std::vector<Gadget*> Ia32::find_gadget_in_memory(unsigned char *p_memory, unsign
                         it->get_disassembly(),
                         it->get_opcodes(),
                         it->get_size(),
-                        (unsigned int)(p_memory + i)
+                        i
                     );
 
                     gadgets_found.push_back(gadget);

@@ -75,8 +75,11 @@ void Program::find_and_display_gadgets(void)
 
         for(std::vector<Gadget*>::iterator it2 = gadgets_found.begin(); it2 != gadgets_found.end(); ++it2)
         {
-            unsigned int offset = (*it)->get_offset() + (*it2)->get_offset();
-            std::cout << "gadget @ " <<  offset << " dissas: " << (*it2)->get_disassembly() << std::endl;
+            unsigned int absolute_offset_section = (*it)->get_offset();
+            unsigned int absolute_offset_gadget = absolute_offset_section + (*it2)->get_offset();
+            unsigned long long va = m_exformat->raw_offset_to_va(absolute_offset_gadget, absolute_offset_section);
+
+            std::cout << "found in " <<  (*it)->get_name() << " at "  << va << "(raw offset: " << absolute_offset_gadget << ") dissas: " << (*it2)->get_disassembly() << std::endl;
         }
     }
 }

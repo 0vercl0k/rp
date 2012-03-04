@@ -18,6 +18,8 @@ class Elf : public ExecutableFormat
 
         std::vector<Section*> get_executables_section(std::ifstream & file);
 
+        unsigned long long raw_offset_to_va(const unsigned int absolute_raw_offset, const unsigned int absolute_raw_offset_section) const;
+
     private:
 
         CPU::E_CPU extract_information_from_binary(std::ifstream &file);

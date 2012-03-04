@@ -38,6 +38,8 @@ class ExecutableFormat
 
         virtual std::vector<Section*> get_executables_section(std::ifstream & file) = 0;
 
+        virtual unsigned long long raw_offset_to_va(const unsigned int absolute_raw_offset, const unsigned int absolute_raw_offset_section) const = 0;
+
         /* Find the executable format used -- based mostly on the magic signature */
         static E_ExecutableFormat FindExecutableFormat(unsigned int magic_dword);
 

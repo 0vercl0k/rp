@@ -104,3 +104,8 @@ std::vector<Section*> Elf::get_executables_section(std::ifstream & file)
     std::vector<Section*> exec_sections;
     return exec_sections;
 }
+
+unsigned long long Elf::raw_offset_to_va(const unsigned int absolute_raw_offset, const unsigned int absolute_raw_offset_section) const
+{
+    return 0;
+}
