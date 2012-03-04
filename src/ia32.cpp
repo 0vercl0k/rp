@@ -1,5 +1,7 @@
 #include "ia32.hpp"
 
+#include <cstring>
+
 Ia32::Ia32(void)
 {
     m_gadgets.push_back(Gadget("int 0x80", "\xcd\x80", 2));
