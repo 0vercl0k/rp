@@ -4,13 +4,13 @@
 #include "platform.h"
 #include "toolbox.hpp"
 #include "coloshell.hpp"
+#include "section.hpp"
 
 #include <iostream>
 #include <fstream>
 #include <iomanip>
 #include <vector>
 #include <string>
-#include <list>
 #include <cstring>
 
 /* Information extracted from winnt.h ; a bit of template-kung-fu and here it goes ! */
@@ -222,8 +222,16 @@ typedef Elf_Shdr_Abstraction<x64Version> Elf_Shdr64_Abstraction;
 
 struct ExecutableLinkingFormatLayout
 {
+    explicit ExecutableLinkingFormatLayout(void)
+    {}
+
+    virtual ~ExecutableLinkingFormatLayout(void)
+    {}
+    
     virtual void fill_structures(std::ifstream &file) = 0;
     virtual void display(VerbosityLevel lvl = VERBOSE_LEVEL_1) const = 0;
+    virtual std::vector<Section*> get_executable_section(std::ifstream &file) const = 0;
+    virtual unsigned long long raw_offset_to_va(const unsigned long long absolute_raw_offset, const unsigned long long absolute_raw_offset_section) const = 0;
 };
 
 #define SHT_SYMTAB      2
@@ -233,8 +241,8 @@ template<class T>
 struct ELFLayout : public ExecutableLinkingFormatLayout
 {
     Elf_Ehdr<T> elfHeader;
-    std::list<Elf_Phdr<T>*> elfProgramHeaders;
-    std::list<Elf_Shdr_Abstraction<T>*> elfSectionHeaders;
+    std::vector<Elf_Phdr<T>*> elfProgramHeaders;
+    std::vector<Elf_Shdr_Abstraction<T>*> elfSectionHeaders;
     T offset_string_table, size_string_table;
 
 
@@ -243,12 +251,12 @@ struct ELFLayout : public ExecutableLinkingFormatLayout
 
     ~ELFLayout(void)
     {
-        for(typename std::list<Elf_Phdr<T>*>::const_iterator it = elfProgramHeaders.begin();
+        for(typename std::vector<Elf_Phdr<T>*>::const_iterator it = elfProgramHeaders.begin();
             it != elfProgramHeaders.end();
             ++it)
             delete *it;
 
-        for(typename std::list<Elf_Shdr_Abstraction<T>*>::const_iterator it = elfSectionHeaders.begin();
+        for(typename std::vector<Elf_Shdr_Abstraction<T>*>::const_iterator it = elfSectionHeaders.begin();
             it != elfSectionHeaders.end();
             ++it)
             delete *it;
@@ -259,7 +267,7 @@ struct ELFLayout : public ExecutableLinkingFormatLayout
         unsigned int i = 0;
         elfHeader.display(lvl);
 
-        for(typename std::list<Elf_Phdr<T>*>::const_iterator it = elfProgramHeaders.begin();
+        for(typename std::vector<Elf_Phdr<T>*>::const_iterator it = elfProgramHeaders.begin();
             it != elfProgramHeaders.end();
             ++it)
                 (*it)->display(lvl);
@@ -275,7 +283,7 @@ struct ELFLayout : public ExecutableLinkingFormatLayout
         w_gre("name");
         std::cout << std::endl << std::setw(70) << std::setfill('-') << "-" << std::endl;
 
-        for(typename std::list<Elf_Shdr_Abstraction<T>*>::const_iterator it = elfSectionHeaders.begin();
+        for(typename std::vector<Elf_Shdr_Abstraction<T>*>::const_iterator it = elfSectionHeaders.begin();
             it != elfSectionHeaders.end();
             ++it)
         {
@@ -365,6 +373,46 @@ struct ELFLayout : public ExecutableLinkingFormatLayout
 
         /* Set correctly the pointer */
         file.seekg(off);
+    }
+
+    std::vector<Section*> get_executable_section(std::ifstream &file) const
+    {
+        std::vector<Section*> exec_sections;
+
+        for(typename std::vector<Elf_Phdr<T>*>::const_iterator it = elfProgramHeaders.begin(); it != elfProgramHeaders.end(); ++it)
+        {
+            if((*it)->p_flags & 1)
+            {
+                Section *sec = new Section(
+                    file,
+                    type_to_str((*it)->p_type).c_str(),
+                    (*it)->p_offset,
+                    (*it)->p_filesz,
+                    Section::Executable
+                );
+
+                exec_sections.push_back(sec);
+            }
+        }
+
+        return exec_sections;
+    }
+
+    unsigned long long raw_offset_to_va(const unsigned long long absolute_raw_offset, const unsigned long long absolute_raw_offset_section) const
+    {
+
+        for(typename std::vector<Elf_Phdr<T>*>::const_iterator it = elfProgramHeaders.begin();
+            it != elfProgramHeaders.end();
+            ++it)
+        {
+            if(absolute_raw_offset >= (*it)->p_offset && 
+                absolute_raw_offset <= ((*it)->p_offset + (*it)->p_filesz))
+            {
+                return (*it)->p_vaddr + (absolute_raw_offset - absolute_raw_offset_section);
+            }
+        }
+
+        return 0;
     }
 };
 

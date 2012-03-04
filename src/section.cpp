@@ -1,7 +1,7 @@
 #include "section.hpp"
 #include "toolbox.hpp"
 
-Section::Section(std::ifstream &file, const char *name, const unsigned int offset, const unsigned int size, const Properties props)
+Section::Section(std::ifstream &file, const char *name, const unsigned long long offset, const unsigned long long size, const Properties props)
 : m_name(name), m_offset(offset), m_size(size), m_props(props), m_section(NULL)
 {
     /* I don't want ANY of this int overflow crap. */
@@ -9,7 +9,8 @@ Section::Section(std::ifstream &file, const char *name, const unsigned int offse
         throw std::string("Integer overflow spotted!");
 
     /* NB: std::streampos performs unsigned check */
-    if((offset+size) >= get_file_size(file))
+    unsigned long long fsize = get_file_size(file);
+    if((offset+size) >= fsize)
         throw std::string("Your file seems to be fucked up");
 
     std::streampos backup = file.tellg();
@@ -32,7 +33,7 @@ std::string Section::get_name(void) const
     return m_name;
 }
 
-unsigned int Section::get_size(void) const
+unsigned long long Section::get_size(void) const
 {
     return m_size;
 }
@@ -42,7 +43,7 @@ unsigned char* Section::get_section_buffer(void) const
     return m_section;
 }
 
-const unsigned int Section::get_offset(void) const
+const unsigned long long Section::get_offset(void) const
 {
     return m_offset;
 }

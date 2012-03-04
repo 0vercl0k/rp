@@ -144,7 +144,7 @@ std::vector<Section*> PE::get_executables_section(std::ifstream & file)
     return exec_sections;
 }
 
-unsigned long long PE::raw_offset_to_va(const unsigned int absolute_raw_offset, const unsigned int absolute_raw_offset_section) const
+unsigned long long PE::raw_offset_to_va(const unsigned long long absolute_raw_offset, const unsigned long long absolute_raw_offset_section) const
 {
     for(std::vector<RP_IMAGE_SECTION_HEADER*>::iterator it = m_pPELayout->imgSectionHeaders.begin();
         it != m_pPELayout->imgSectionHeaders.end();

@@ -14,18 +14,18 @@ class Section
             Executable
         };
 
-        explicit Section(std::ifstream &file, const char *name, const unsigned int offset, const unsigned int size, const Properties props);
+        explicit Section(std::ifstream &file, const char *name, const unsigned long long offset, const unsigned long long size, const Properties props);
         ~Section(void);
 
         std::string get_name(void) const;
-        unsigned int get_size(void) const;
+        unsigned long long get_size(void) const;
         unsigned char *get_section_buffer(void) const;
-        const unsigned int get_offset(void) const;
+        const unsigned long long get_offset(void) const;
 
     private:
         std::string m_name;
-        const unsigned int m_offset;
-        const unsigned int m_size;
+        const unsigned long long m_offset;
+        const unsigned long long m_size;
         const Properties m_props;
         unsigned char *m_section;
 };

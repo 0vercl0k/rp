@@ -101,11 +101,10 @@ CPU* Elf::get_cpu(std::ifstream &file)
 
 std::vector<Section*> Elf::get_executables_section(std::ifstream & file)
 {
-    std::vector<Section*> exec_sections;
-    return exec_sections;
+    return m_ELFLayout->get_executable_section(file);
 }
 
-unsigned long long Elf::raw_offset_to_va(const unsigned int absolute_raw_offset, const unsigned int absolute_raw_offset_section) const
+unsigned long long Elf::raw_offset_to_va(const unsigned long long absolute_raw_offset, const unsigned long long absolute_raw_offset_section) const
 {
-    return 0;
+    return m_ELFLayout->raw_offset_to_va(absolute_raw_offset, absolute_raw_offset_section);
 }

@@ -476,11 +476,11 @@ std::string Ia32::get_class_name(void) const
     return std::string("Ia32");
 }
 
-std::vector<Gadget*> Ia32::find_gadget_in_memory(unsigned char *p_memory, unsigned int size)
+std::vector<Gadget*> Ia32::find_gadget_in_memory(unsigned char *p_memory, unsigned long long size)
 {
     std::vector<Gadget*> gadgets_found;
 
-    for(unsigned int i = 0; i < size; ++i)
+    for(unsigned long long i = 0; i < size; ++i)
     {
         for(std::vector<Gadget>::iterator it = m_gadgets.begin(); it != m_gadgets.end(); ++it)
         {

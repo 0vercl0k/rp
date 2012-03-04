@@ -5,6 +5,7 @@
 #include "pe.hpp"
 #include "elf.hpp"
 #include "section.hpp"
+#include "coloshell.hpp"
 
 Program::Program(const std::string & program_path)
 : m_cpu(NULL), m_exformat(NULL)
@@ -66,20 +67,22 @@ void Program::find_and_display_gadgets(void)
 
     for(std::vector<Section*>::iterator it = executable_sections.begin(); it != executable_sections.end(); ++it)
     {
-        std::cout << "in " << (*it)->get_name() << ".." << std::endl;
+        std::cout << "in " << (*it)->get_name() << "..";
 
         std::vector<Gadget*> gadgets_found = m_cpu->find_gadget_in_memory(
             (*it)->get_section_buffer(),
             (*it)->get_size()
         );
 
+        std::cout << std::dec << gadgets_found.size() << " gadgets found" << std::endl;
         for(std::vector<Gadget*>::iterator it2 = gadgets_found.begin(); it2 != gadgets_found.end(); ++it2)
         {
-            unsigned int absolute_offset_section = (*it)->get_offset();
-            unsigned int absolute_offset_gadget = absolute_offset_section + (*it2)->get_offset();
+            unsigned long long absolute_offset_section = (*it)->get_offset();
+            unsigned long long absolute_offset_gadget = absolute_offset_section + (*it2)->get_offset();
             unsigned long long va = m_exformat->raw_offset_to_va(absolute_offset_gadget, absolute_offset_section);
-
-            std::cout << "found in " <<  (*it)->get_name() << " at "  << va << "(raw offset: " << absolute_offset_gadget << ") dissas: " << (*it2)->get_disassembly() << std::endl;
+            
+            display_gadget_lf(va, *it2);
+            //std::cout << "found in " <<  (*it)->get_name() << " at "  << va << "(raw offset: " << absolute_offset_gadget << ") dissas: " << (*it2)->get_disassembly() << std::endl;
         }
     }
 }
