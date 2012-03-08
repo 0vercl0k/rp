@@ -16,7 +16,10 @@ Section::Section(std::ifstream &file, const char *name, const unsigned long long
     std::streampos backup = file.tellg();
 
     file.seekg(offset, std::ios::beg);
-    m_section = new unsigned char[m_size];
+    m_section = new (std::nothrow) unsigned char[m_size];
+    if(m_section == NULL)
+        throw std::string("Cannote allocate a section.");
+
     file.read((char*)m_section, m_size);
 
     file.seekg(backup);

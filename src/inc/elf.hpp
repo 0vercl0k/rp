@@ -12,7 +12,7 @@ class Elf : public ExecutableFormat
 
         CPU* get_cpu(std::ifstream &file);
 
-        void display_information(VerbosityLevel lvl);
+        void display_information(const VerbosityLevel lvl) const;
 
         std::string get_class_name(void) const;
 
@@ -27,7 +27,7 @@ class Elf : public ExecutableFormat
         template<class T>
         void init_properly_ELFLayout(void)
         {
-            m_ELFLayout = new ELFLayout<T>;
+            m_ELFLayout = new (std::nothrow) ELFLayout<T>;
             if(m_ELFLayout == NULL)
                 throw std::string("m_ELFLayout allocation failed");
         }

@@ -1,6 +1,7 @@
 #include "program.hpp"
 
 #include <iostream>
+#include <map>
 
 #include "pe.hpp"
 #include "elf.hpp"
@@ -27,16 +28,19 @@ Program::Program(const std::string & program_path)
     {
         case ExecutableFormat::FORMAT_PE:
         {
-            m_exformat = new PE();
+            m_exformat = new (std::nothrow) PE();
             break;
         }
 
         case ExecutableFormat::FORMAT_ELF:
         {
-            m_exformat = new Elf();
+            m_exformat = new (std::nothrow) Elf();
             break;
         }
     }
+
+    if(m_exformat == NULL)
+        throw std::string("Cannot allocate an executable format");
 
     m_cpu = m_exformat->get_cpu(m_file);
 
@@ -63,26 +67,33 @@ void Program::display_information(VerbosityLevel lvl)
 void Program::find_and_display_gadgets(void)
 {
     std::cout << "Wait a few seconds, rp++ is researching gadgets.." << std::endl;
+
+    /* To do a ROP gadget research, we need to know the executable section */
     std::vector<Section*> executable_sections = m_exformat->get_executables_section(m_file);
 
+    /* Walk the executable sections */
     for(std::vector<Section*>::iterator it = executable_sections.begin(); it != executable_sections.end(); ++it)
     {
         std::cout << "in " << (*it)->get_name() << "..";
 
-        std::vector<Gadget*> gadgets_found = m_cpu->find_gadget_in_memory(
+        /* Let the cpu do the research (BTW we use a std::map in order to keep only unique gadget) */
+        std::map<std::string, Gadget*> gadgets_found = m_cpu->find_gadget_in_memory(
             (*it)->get_section_buffer(),
             (*it)->get_size()
         );
 
-        std::cout << std::dec << gadgets_found.size() << " gadgets found" << std::endl;
-        for(std::vector<Gadget*>::iterator it2 = gadgets_found.begin(); it2 != gadgets_found.end(); ++it2)
+        std::cout << std::dec << gadgets_found.size() << " unique gadgets found" << std::endl;
+
+        /* Now we walk the gadgets found */
+        for(std::map<std::string, Gadget*>::iterator it2 = gadgets_found.begin(); it2 != gadgets_found.end(); ++it2)
         {
             unsigned long long absolute_offset_section = (*it)->get_offset();
-            unsigned long long absolute_offset_gadget = absolute_offset_section + (*it2)->get_offset();
+            unsigned long long absolute_offset_gadget = absolute_offset_section + it2->second->get_first_offset();
+
+            /* Do not forget that VA != PA */
             unsigned long long va = m_exformat->raw_offset_to_va(absolute_offset_gadget, absolute_offset_section);
             
-            display_gadget_lf(va, *it2);
-            //std::cout << "found in " <<  (*it)->get_name() << " at "  << va << "(raw offset: " << absolute_offset_gadget << ") dissas: " << (*it2)->get_disassembly() << std::endl;
+            display_gadget_lf(va, it2);
         }
     }
 }

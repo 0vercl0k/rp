@@ -28,7 +28,7 @@ std::string PE::get_class_name(void) const
     return std::string("PE");
 }
 
-void PE::display_information(VerbosityLevel lvl)
+void PE::display_information(const VerbosityLevel lvl) const
 {
     ExecutableFormat::display_information(lvl);
     std::cout << "PE Information:" << std::endl;
@@ -101,13 +101,13 @@ CPU* PE::get_cpu(std::ifstream &file)
     {
         case CPU::CPU_IA32:
         {
-            cpu = new Ia32();
+            cpu = new (std::nothrow) Ia32();
             break;
         }
 
         case CPU::CPU_IA64:
         {
-            cpu = new Ia64();
+            cpu = new (std::nothrow) Ia64();
             break;
         }
 
@@ -121,7 +121,6 @@ CPU* PE::get_cpu(std::ifstream &file)
 std::vector<Section*> PE::get_executables_section(std::ifstream & file)
 {
     std::vector<Section*> exec_sections;
-    Section *tmp(NULL);
 
     for(std::vector<RP_IMAGE_SECTION_HEADER*>::iterator it = m_pPELayout->imgSectionHeaders.begin();
         it != m_pPELayout->imgSectionHeaders.end();
@@ -129,14 +128,16 @@ std::vector<Section*> PE::get_executables_section(std::ifstream & file)
     {
         if((*it)->Characteristics & RP_IMAGE_SCN_MEM_EXECUTE)
         {
-            std::cout << "Section " << (*it)->Name << " seems to be executable, dump it.." << std::endl;
-            tmp = new Section(
+            Section *tmp = new (std::nothrow) Section(
                 file,
                 (const char*)(*it)->Name,
                 (*it)->PointerToRawData,
                 (*it)->SizeOfRawData,
                 Section::Executable
             );
+
+            if(tmp == NULL)
+                throw std::string("Cannot allocate a section");
 
             exec_sections.push_back(tmp);
         }

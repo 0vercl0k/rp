@@ -12,7 +12,7 @@ class PE : public ExecutableFormat
 
         CPU* get_cpu(std::ifstream &file);
 
-        void display_information(VerbosityLevel lvl);
+        void display_information(const VerbosityLevel lvl) const;
 
         std::string get_class_name(void) const;
 
@@ -26,7 +26,7 @@ class PE : public ExecutableFormat
         template<class T>
         void init_properly_PELayout()
         {
-            m_pPELayout = new PELayout<T>;
+            m_pPELayout = new (std::nothrow) PELayout<T>;
             if(m_pPELayout == NULL)
                 throw std::string("m_PELayout allocation failed");
         }

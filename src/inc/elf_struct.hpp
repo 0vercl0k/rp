@@ -328,7 +328,7 @@ struct ELFLayout : public ExecutableLinkingFormatLayout
         file.seekg((std::streamoff)elfHeader.e_phoff, std::ios::beg);
         for(unsigned int i = 0; i < elfHeader.e_phnum; ++i)
         {
-            Elf_Phdr<T>* pElfProgramHeader = new Elf_Phdr<T>;
+            Elf_Phdr<T>* pElfProgramHeader = new (std::nothrow) Elf_Phdr<T>;
             if(pElfProgramHeader == NULL)
                 throw std::string("Cannot allocate pElfProgramHeader");
 
@@ -353,7 +353,7 @@ struct ELFLayout : public ExecutableLinkingFormatLayout
         file.seekg((std::streamoff)elfHeader.e_shoff, std::ios::beg);
         for(unsigned int i = 0; i < elfHeader.e_shnum; ++i)
         {
-            Elf_Shdr_Abstraction<T>* pElfSectionHeader = new Elf_Shdr_Abstraction<T>;
+            Elf_Shdr_Abstraction<T>* pElfSectionHeader = new (std::nothrow) Elf_Shdr_Abstraction<T>;
             if(pElfSectionHeader == NULL)
                 throw std::string("Cannot allocate pElfSectionHeader");
             
@@ -383,13 +383,16 @@ struct ELFLayout : public ExecutableLinkingFormatLayout
         {
             if((*it)->p_flags & 1)
             {
-                Section *sec = new Section(
+                Section *sec = new (std::nothrow) Section(
                     file,
                     type_to_str((*it)->p_type).c_str(),
                     (*it)->p_offset,
                     (*it)->p_filesz,
                     Section::Executable
                 );
+
+                if(sec == NULL)
+                    throw std::string("Cannot alocate a section");
 
                 exec_sections.push_back(sec);
             }
@@ -400,11 +403,11 @@ struct ELFLayout : public ExecutableLinkingFormatLayout
 
     unsigned long long raw_offset_to_va(const unsigned long long absolute_raw_offset, const unsigned long long absolute_raw_offset_section) const
     {
-
         for(typename std::vector<Elf_Phdr<T>*>::const_iterator it = elfProgramHeaders.begin();
             it != elfProgramHeaders.end();
             ++it)
         {
+            /* If the offset is contained in the start & end address of the section ; we have its pa */
             if(absolute_raw_offset >= (*it)->p_offset && 
                 absolute_raw_offset <= ((*it)->p_offset + (*it)->p_filesz))
             {

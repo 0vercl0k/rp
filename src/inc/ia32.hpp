@@ -11,7 +11,7 @@ class Ia32 : public CPU
 
         std::string get_class_name(void) const;
         
-        std::vector<Gadget*> find_gadget_in_memory(unsigned char *p_memory, unsigned long long size);
+        std::map<std::string, Gadget*> find_gadget_in_memory(const unsigned char *p_memory, const unsigned long long size);
 
     private:
         std::vector<Gadget> m_gadgets;

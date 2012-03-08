@@ -2,7 +2,7 @@
 #define CPU_H
 
 #include <string>
-#include <vector>
+#include <map>
 
 #include "gadget.hpp"
 
@@ -14,7 +14,7 @@ class CPU
 
         virtual std::string get_class_name(void) const = 0;
         
-        virtual std::vector<Gadget*> find_gadget_in_memory(unsigned char *p_memory, unsigned long long size) = 0;
+        virtual std::map<std::string, Gadget*> find_gadget_in_memory(const unsigned char *p_memory, const unsigned long long size) = 0;
 
         /* The different architectures RP++ handles */
         enum E_CPU

@@ -28,7 +28,7 @@ class ExecutableFormat
         virtual CPU* get_cpu(std::ifstream &file) = 0;
 
         /* Display the verbosity level */
-        virtual void display_information(VerbosityLevel lvl)
+        virtual void display_information(const VerbosityLevel lvl) const
         {
             std::cout << "Verbose level: " << verbosity_to_string(lvl) << std::endl;
         }

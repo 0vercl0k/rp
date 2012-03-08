@@ -1,6 +1,6 @@
 #include "toolbox.hpp"
 
-std::string verbosity_to_string(VerbosityLevel lvl)
+std::string verbosity_to_string(const VerbosityLevel lvl)
 {
     std::string s("");
 

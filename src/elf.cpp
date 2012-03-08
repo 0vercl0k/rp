@@ -20,7 +20,7 @@ std::string Elf::get_class_name(void) const
     return std::string("Elf");
 }
 
-void Elf::display_information(VerbosityLevel lvl)
+void Elf::display_information(const VerbosityLevel lvl) const
 {
     ExecutableFormat::display_information(lvl);
     std::cout << "Elf Information:" << std::endl;
@@ -72,23 +72,19 @@ CPU* Elf::get_cpu(std::ifstream &file)
     CPU* cpu(NULL);
     CPU::E_CPU cpu_type = CPU::CPU_UNKNOWN;
 
-    std::cout << "Ehdr: " << sizeof(Elf32_Ehdr) << " " << sizeof(Elf64_Ehdr) << std::endl;
-    std::cout << "Phdr: " << sizeof(Elf32_Phdr) << " " << sizeof(Elf64_Phdr) << std::endl;
-    std::cout << "Shdr: " << sizeof(Elf32_Shdr) << " " << sizeof(Elf64_Shdr) << std::endl;
-
     cpu_type = extract_information_from_binary(file);
 
     switch(cpu_type)
     {
         case CPU::CPU_IA32:
         {
-            cpu = new Ia32();
+            cpu = new (std::nothrow) Ia32();
             break;
         }
 
         case CPU::CPU_IA64:
         {
-            cpu = new Ia64();
+            cpu = new (std::nothrow) Ia64();
             break;
         }
 
@@ -96,6 +92,9 @@ CPU* Elf::get_cpu(std::ifstream &file)
             throw std::string("Cannot determine the CPU type");
     }
     
+    if(cpu == NULL)
+        throw std::string("Cannot allocate a cpu");
+
     return cpu;
 }
 
