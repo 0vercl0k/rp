@@ -1,4 +1,5 @@
 #include "ia32.hpp"
+#include "rpexception.hpp"
 
 #include <cstring>
 
@@ -485,7 +486,7 @@ std::map<std::string, Gadget*> Ia32::find_gadget_in_memory(const unsigned char *
         for(std::vector<Gadget>::iterator it = m_gadgets.begin(); it != m_gadgets.end(); ++it)
         {
             if(i + it->get_size() < i)
-                throw std::string("Integer overflow spotted!");
+                RAISE_EXCEPTION("Integer overflow spotted!");
 
             if(i + it->get_size() <= size)
             {
@@ -506,7 +507,7 @@ std::map<std::string, Gadget*> Ia32::find_gadget_in_memory(const unsigned char *
                             );
 
                         if(gadget == NULL)
-                            throw std::string("Cannot allocate a gadget.");
+                            RAISE_EXCEPTION("Cannot allocate a gadget.");
 
                         gadgets_found.insert(std::make_pair(
                             gadget->get_disassembly(),

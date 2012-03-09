@@ -57,7 +57,7 @@ CPU::E_CPU PE::extract_information_from_binary(std::ifstream &file)
     file.read((char*)&imgNtHeaders32, sizeof(unsigned int) + sizeof(RP_IMAGE_FILE_HEADER) + sizeof(unsigned int));
     
     if(imgNtHeaders32.Signature != RP_IMAGE_NT_SIGNATURE)
-        throw std::string("This file doesn't seem to be a correct PE (bad IMAGE_NT_SIGNATURE)");
+        RAISE_EXCEPTION("This file doesn't seem to be a correct PE (bad IMAGE_NT_SIGNATURE)");
 
     switch(imgNtHeaders32.OptionalHeader.Magic)
     {
@@ -78,7 +78,7 @@ CPU::E_CPU PE::extract_information_from_binary(std::ifstream &file)
         }
 
         default:
-            throw std::string("Cannot determine the CPU type");
+            RAISE_EXCEPTION("Cannot determine the CPU type");
     }
     
     /* Now we can fill the structure */
@@ -112,7 +112,7 @@ CPU* PE::get_cpu(std::ifstream &file)
         }
 
         default:
-            throw std::string("Cannot determine the CPU type");
+            RAISE_EXCEPTION("Cannot determine the CPU type");
     }
     
     return cpu;
@@ -137,7 +137,7 @@ std::vector<Section*> PE::get_executables_section(std::ifstream & file)
             );
 
             if(tmp == NULL)
-                throw std::string("Cannot allocate a section");
+                RAISE_EXCEPTION("Cannot allocate a section");
 
             exec_sections.push_back(tmp);
         }

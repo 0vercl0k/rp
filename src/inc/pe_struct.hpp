@@ -4,6 +4,7 @@
 #include "platform.h"
 #include "toolbox.hpp"
 #include "coloshell.hpp"
+#include "rpexception.hpp"
 
 #include <fstream>
 #include <iostream>
@@ -423,7 +424,7 @@ struct PELayout : public PortableExecutableLayout
         {
             RP_IMAGE_SECTION_HEADER* pImgSectionHeader = new RP_IMAGE_SECTION_HEADER;
             if(pImgSectionHeader == NULL)
-                throw std::string("Cannot allocate memory for pImgSectionHeader");
+                RAISE_EXCEPTION("Cannot allocate memory for pImgSectionHeader");
             
             file.read((char*)pImgSectionHeader, get_image_section_header_size());
             imgSectionHeaders.push_back(pImgSectionHeader);

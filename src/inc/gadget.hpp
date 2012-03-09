@@ -21,7 +21,7 @@ class Gadget
 
         unsigned long long get_first_offset(void) const;
 
-        unsigned int get_nb(void) const;
+        size_t get_nb(void) const;
 
     private:
         const char *m_disassembly;

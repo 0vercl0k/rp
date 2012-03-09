@@ -40,7 +40,7 @@ unsigned long long Gadget::get_first_offset(void) const
     return m_offsets.at(0);
 }
 
-unsigned int Gadget::get_nb(void) const
+size_t Gadget::get_nb(void) const
 {
     return m_offsets.size();
 }

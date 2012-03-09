@@ -56,7 +56,7 @@ CPU::E_CPU Elf::extract_information_from_binary(std::ifstream &file)
         }
 
         default:
-            throw std::string("Cannot determine the CPU type");
+            RAISE_EXCEPTION("Cannot determine the CPU type");
     }
 
     /* Filling the structure now !*/
@@ -89,11 +89,11 @@ CPU* Elf::get_cpu(std::ifstream &file)
         }
 
         default:
-            throw std::string("Cannot determine the CPU type");
+            RAISE_EXCEPTION("Cannot determine the CPU type");
     }
     
     if(cpu == NULL)
-        throw std::string("Cannot allocate a cpu");
+        RAISE_EXCEPTION("Cannot allocate a cpu");
 
     return cpu;
 }

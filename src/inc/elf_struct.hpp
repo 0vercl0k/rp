@@ -5,6 +5,7 @@
 #include "toolbox.hpp"
 #include "coloshell.hpp"
 #include "section.hpp"
+#include "rpexception.hpp"
 
 #include <iostream>
 #include <fstream>
@@ -330,7 +331,7 @@ struct ELFLayout : public ExecutableLinkingFormatLayout
         {
             Elf_Phdr<T>* pElfProgramHeader = new (std::nothrow) Elf_Phdr<T>;
             if(pElfProgramHeader == NULL)
-                throw std::string("Cannot allocate pElfProgramHeader");
+                RAISE_EXCEPTION("Cannot allocate pElfProgramHeader");
 
             file.read((char*)pElfProgramHeader, sizeof(Elf_Phdr<T>));
             elfProgramHeaders.push_back(pElfProgramHeader);
@@ -345,7 +346,7 @@ struct ELFLayout : public ExecutableLinkingFormatLayout
         file.seekg((std::streamoff)offset_string_table, std::ios::beg);
         char* string_table_section = new (std::nothrow) char[(unsigned int)size_string_table];
         if(string_table_section == NULL)
-            throw std::string("Cannot allocate string_table_section");
+            RAISE_EXCEPTION("Cannot allocate string_table_section");
 
         file.read(string_table_section, (std::streamsize)size_string_table);
 
@@ -355,7 +356,7 @@ struct ELFLayout : public ExecutableLinkingFormatLayout
         {
             Elf_Shdr_Abstraction<T>* pElfSectionHeader = new (std::nothrow) Elf_Shdr_Abstraction<T>;
             if(pElfSectionHeader == NULL)
-                throw std::string("Cannot allocate pElfSectionHeader");
+                RAISE_EXCEPTION("Cannot allocate pElfSectionHeader");
             
             file.read((char*)&pElfSectionHeader->header, sizeof(Elf_Shdr<T>));
 
@@ -392,7 +393,7 @@ struct ELFLayout : public ExecutableLinkingFormatLayout
                 );
 
                 if(sec == NULL)
-                    throw std::string("Cannot alocate a section");
+                    RAISE_EXCEPTION("Cannot alocate a section");
 
                 exec_sections.push_back(sec);
             }

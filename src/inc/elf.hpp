@@ -3,6 +3,7 @@
 
 #include "executable_format.hpp"
 #include "elf_struct.hpp"
+#include "rpexception.hpp"
 
 class Elf : public ExecutableFormat
 {
@@ -29,7 +30,7 @@ class Elf : public ExecutableFormat
         {
             m_ELFLayout = new (std::nothrow) ELFLayout<T>;
             if(m_ELFLayout == NULL)
-                throw std::string("m_ELFLayout allocation failed");
+                RAISE_EXCEPTION("m_ELFLayout allocation failed");
         }
 
         ExecutableLinkingFormatLayout* m_ELFLayout;

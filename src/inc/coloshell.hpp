@@ -2,6 +2,7 @@
 #define COLOSHELL_HPP
 
 #include "platform.h"
+#include "rpexception.hpp"
 #include <iostream>
 
 #ifdef WINDOWS
@@ -34,7 +35,7 @@ static void enable_color(const Colors colo)
 #ifdef WINDOWS
     HANDLE hStdOutput = GetStdHandle(STD_OUTPUT_HANDLE);
     if(hStdOutput == INVALID_HANDLE_VALUE)
-        throw std::string("Cannot find a STD_OUTPUT_HANDLE valid value");
+        RAISE_EXCEPTION("Cannot find a STD_OUTPUT_HANDLE valid value");
 
     SetConsoleTextAttribute(
         hStdOutput,
@@ -54,7 +55,7 @@ static void disable_color(void)
 #ifdef WINDOWS
     HANDLE hStdOutput = GetStdHandle(STD_OUTPUT_HANDLE);
     if(hStdOutput == INVALID_HANDLE_VALUE)
-        throw std::string("Cannot find a STD_OUTPUT_HANDLE valid value");
+        RAISE_EXCEPTION("Cannot find a STD_OUTPUT_HANDLE valid value");
 
     SetConsoleTextAttribute(
         hStdOutput,

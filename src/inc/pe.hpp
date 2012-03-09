@@ -3,6 +3,7 @@
 
 #include "executable_format.hpp"
 #include "pe_struct.hpp"
+#include "rpexception.hpp"
 
 class PE : public ExecutableFormat
 {
@@ -28,7 +29,7 @@ class PE : public ExecutableFormat
         {
             m_pPELayout = new (std::nothrow) PELayout<T>;
             if(m_pPELayout == NULL)
-                throw std::string("m_PELayout allocation failed");
+                RAISE_EXCEPTION("m_PELayout allocation failed");
         }
 
         PortableExecutableLayout* m_pPELayout;

@@ -7,6 +7,7 @@
 #include "elf.hpp"
 #include "section.hpp"
 #include "coloshell.hpp"
+#include "rpexception.hpp"
 
 Program::Program(const std::string & program_path)
 : m_cpu(NULL), m_exformat(NULL)
@@ -16,13 +17,13 @@ Program::Program(const std::string & program_path)
     std::cout << "Trying to open '" << program_path << "'.." << std::endl;
     m_file.open(program_path.c_str(), std::ios::binary);
     if(m_file.is_open() == false)
-        throw std::string("Cannot open the file");
+        RAISE_EXCEPTION("Cannot open the file");
 
     m_file.read((char*)&magic_dword, sizeof(magic_dword));
 
     ExecutableFormat::E_ExecutableFormat guessed_format = ExecutableFormat::FindExecutableFormat(magic_dword);
     if(guessed_format == ExecutableFormat::FORMAT_UNKNOWN)
-        throw std::string("Do not know the executable format of your file");
+        RAISE_EXCEPTION("Do not know the executable format of your file");
 
     switch(guessed_format)
     {
@@ -40,7 +41,7 @@ Program::Program(const std::string & program_path)
     }
 
     if(m_exformat == NULL)
-        throw std::string("Cannot allocate an executable format");
+        RAISE_EXCEPTION("Cannot allocate an executable format");
 
     m_cpu = m_exformat->get_cpu(m_file);
 
@@ -66,7 +67,7 @@ void Program::display_information(VerbosityLevel lvl)
 
 void Program::find_and_display_gadgets(void)
 {
-    std::cout << "Wait a few seconds, rp++ is researching gadgets.." << std::endl;
+    std::cout << std::endl << "Wait a few seconds, rp++ is researching gadgets.." << std::endl;
 
     /* To do a ROP gadget research, we need to know the executable section */
     std::vector<Section*> executable_sections = m_exformat->get_executables_section(m_file);
@@ -74,7 +75,7 @@ void Program::find_and_display_gadgets(void)
     /* Walk the executable sections */
     for(std::vector<Section*>::iterator it = executable_sections.begin(); it != executable_sections.end(); ++it)
     {
-        std::cout << "in " << (*it)->get_name() << "..";
+        std::cout << "in " << (*it)->get_name() << ".. ";
 
         /* Let the cpu do the research (BTW we use a std::map in order to keep only unique gadget) */
         std::map<std::string, Gadget*> gadgets_found = m_cpu->find_gadget_in_memory(

@@ -1,5 +1,7 @@
 #include <iostream>
+#include <exception>
 
+#include "coloshell.hpp"
 #include "platform.h"
 #include "program.hpp"
 
@@ -44,9 +46,11 @@ int main(int argc, char* argv[])
 
         p.find_and_display_gadgets();
     }
-    catch(std::string &e)
+    catch(const std::exception &e)
     {
-        std::cout << "Exception: " << e << std::endl;
+        enable_color(COLO_RED);
+        std::cout << e.what() << std::endl;
+        disable_color();
     }
    
     return 0;
