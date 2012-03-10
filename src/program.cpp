@@ -89,7 +89,7 @@ void Program::find_and_display_gadgets(void)
         for(std::map<std::string, Gadget*>::iterator it2 = gadgets_found.begin(); it2 != gadgets_found.end(); ++it2)
         {
             unsigned long long absolute_offset_section = (*it)->get_offset();
-            unsigned long long absolute_offset_gadget = absolute_offset_section + it2->second->get_first_offset();
+            unsigned long long absolute_offset_gadget = absolute_offset_section + it2->second->get_offset();
 
             /* Do not forget that VA != PA */
             unsigned long long va = m_exformat->raw_offset_to_va(absolute_offset_gadget, absolute_offset_section);

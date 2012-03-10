@@ -4,6 +4,7 @@
 #include <string>
 #include <fstream>
 #include <iostream>
+#include <vector>
 
 #include "cpu.hpp"
 #include "toolbox.hpp"

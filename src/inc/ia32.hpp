@@ -1,6 +1,7 @@
 #ifndef IA32_H
 #define IA32_H
 
+#include <vector>
 #include "cpu.hpp"
 
 class Ia32 : public CPU

@@ -36,7 +36,7 @@ int main(int argc, char* argv[])
     BeaDisassembler a;
 
     unsigned char buffer[] = "\xe9\x31\xc0\xc3\x00\xc2\xc2\x01\xDE\xc3\x13\x37";
-    a.disassemble(buffer, sizeof(buffer), (long long)buffer, 10);
+    a.disassemble(buffer, sizeof(buffer), (long long)buffer, 3);
     /*
     if(argc != 2)
     {

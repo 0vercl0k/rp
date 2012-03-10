@@ -1,18 +1,9 @@
 #include "beadisassembler.hpp"
+#include "gadget.hpp"
 
 #include <cstring>
 #include <iostream>
 #include <list>
-
-struct Instruction
-{
-    Instruction(std::string disass, unsigned long long vaddr)
-        : m_disass(disass), m_vaddr(vaddr)
-    {}
-
-    std::string m_disass;
-    unsigned long long m_vaddr;
-};
 
 BeaDisassembler::BeaDisassembler(void)
 {
@@ -27,8 +18,8 @@ BeaDisassembler::~BeaDisassembler(void)
 
 std::string BeaDisassembler::disassemble(unsigned char* data, unsigned int size, long long vaddr, unsigned int depth)
 {
+    std::list<Gadget*> gadgets;
     int error = 0;
-    unsigned int i = 0;
     DISASM ret_instr = {0};
 
     for(unsigned int offset = 0; offset < size; ++offset)
@@ -52,11 +43,12 @@ std::string BeaDisassembler::disassemble(unsigned char* data, unsigned int size,
             //std::cout << "I found a RET @ " << std::hex << m_dis.VirtualAddr << std::endl;
             memcpy(&ret_instr, &m_dis, sizeof(DISASM));
             std::list<Instruction> gadget;
-            
+
             /* The RET instruction is the latest of our instruction chain */
             gadget.push_front(Instruction(
                 std::string(ret_instr.CompleteInstr),
-                ret_instr.EIP
+                offset,
+                len
             ));
 
             for(unsigned int i = 0; i < depth; ++i)
@@ -64,6 +56,10 @@ std::string BeaDisassembler::disassemble(unsigned char* data, unsigned int size,
                 bool is_valid_instruction = false;
                 while(is_valid_instruction == false)
                 {
+                    /* We respect the limits of the buffer */
+                    if(m_dis.EIP <= (UIntPtr)data)
+                        break;
+
                     m_dis.EIP--;
                     m_dis.VirtualAddr--;
                     
@@ -99,16 +95,17 @@ std::string BeaDisassembler::disassemble(unsigned char* data, unsigned int size,
                         3] \xE9\x31\xC0
                         4] ...
                     */
-                    if(m_dis.EIP + len_instr > last_instr.m_vaddr)
+                    if(m_dis.EIP + len_instr > last_instr.get_absolute_address(data))
                         continue;
 
                     // We want consecutive gadget, not with a "hole" between them
-                    if(m_dis.EIP + len_instr != last_instr.m_vaddr)
+                    if(m_dis.EIP + len_instr != last_instr.get_absolute_address(data))
                         break;
 
                     gadget.push_front(Instruction(
                         std::string(m_dis.CompleteInstr),
-                        m_dis.EIP
+                        m_dis.EIP,
+                        len_instr
                     ));
 
                     if(gadget.size() == (depth + 1))
@@ -118,12 +115,18 @@ std::string BeaDisassembler::disassemble(unsigned char* data, unsigned int size,
 
             if(gadget.size() > 1)
             {
-                for(std::list<Instruction>::const_iterator it = gadget.begin(); it != gadget.end(); ++it)
-                    std::cout << it->m_disass << " ; ";
-                std::cout << std::endl;
+                Gadget * g = new Gadget();
+                for(std::list<Instruction>::iterator it = gadget.begin(); it != gadget.end(); ++it)
+                    g->add_instruction(&(*it));
+
+                gadgets.push_back(g);
             }
         }
     }
 
+    for(std::list<Gadget*>::const_iterator it = gadgets.begin(); it != gadgets.end(); ++it)
+    {
+        std::cout << (*it)->get_disassembly() << std::endl;
+    }
     return std::string("tg");
 }
