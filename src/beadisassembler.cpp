@@ -18,7 +18,7 @@ BeaDisassembler::BeaDisassembler(void)
 {
     memset(&m_dis, 0, sizeof(DISASM));
     m_dis.Options = NasmSyntax + PrefixedNumeral + ShowSegmentRegs;
-    m_dis.Archi = 0;
+    m_dis.Archi = 0; //ia32
 }
 
 BeaDisassembler::~BeaDisassembler(void)
@@ -38,8 +38,13 @@ std::string BeaDisassembler::disassemble(unsigned char* data, unsigned int size,
         m_dis.SecurityBlock = size - offset;
 
         int len = Disasm(&m_dis);
-        if(len == OUT_OF_BLOCK || len == UNKNOWN_OPCODE)
+        /* I guess we're done ! */
+        if(len == OUT_OF_BLOCK)
             break;
+
+        /* OK this one is an unknow opcode, goto the next one */
+        if(len == UNKNOWN_OPCODE)
+            continue;
 
         if(m_dis.Instruction.BranchType == RetType)
         {
@@ -48,6 +53,7 @@ std::string BeaDisassembler::disassemble(unsigned char* data, unsigned int size,
             memcpy(&ret_instr, &m_dis, sizeof(DISASM));
             std::list<Instruction> gadget;
             
+            /* The RET instruction is the latest of our instruction chain */
             gadget.push_front(Instruction(
                 std::string(ret_instr.CompleteInstr),
                 ret_instr.EIP
