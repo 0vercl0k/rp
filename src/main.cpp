@@ -34,7 +34,9 @@ int main(int argc, char* argv[])
 {
     display_version();
     BeaDisassembler a;
-    std::cout << a.disassemble((unsigned char*)"\xef\x01\xc3", 3) << std::endl;
+
+    unsigned char buffer[] = "\xe9\x31\xc0\xc3\x00\xc2\xc2\x01\xDE\xc3\x13\x37";
+    a.disassemble(buffer, sizeof(buffer), (long long)buffer, 10);
     /*
     if(argc != 2)
     {
