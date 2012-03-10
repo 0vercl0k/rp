@@ -4,6 +4,7 @@
 #include "coloshell.hpp"
 #include "platform.h"
 #include "program.hpp"
+#include "beadisassembler.hpp"
 
 #define NUM_V "1.3.3.7"
 
@@ -32,6 +33,9 @@ void display_usage()
 int main(int argc, char* argv[])
 {
     display_version();
+    BeaDisassembler a;
+    std::cout << a.disassemble((unsigned char*)"\xef\x01\xc3", 3) << std::endl;
+    /*
     if(argc != 2)
     {
         display_usage();
@@ -52,6 +56,6 @@ int main(int argc, char* argv[])
         std::cout << e.what() << std::endl;
         disable_color();
     }
-   
+   */
     return 0;
 }
