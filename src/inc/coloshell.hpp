@@ -157,8 +157,6 @@ static void coloshell(const T t, const Colors colo)
     std::cout << std::endl;                                             \
 }
 
-#define display_gadget_lf(va, gadget) /* */
-/*
 #define display_gadget_lf(va, gadget) {                                                                       \
     enable_color(COLO_RED);                                                                                   \
     std::cout << "0x" << std::setw(sizeof(va)) << std::right << std::setfill('0');                            \
@@ -169,5 +167,5 @@ static void coloshell(const T t, const Colors colo)
     std::cout << (gadget)->first << " (" << std::dec << (gadget)->second->get_nb() << " one)" << std::endl;   \
     disable_color();                                                                                          \
 }
-*/
+
 #endif
