@@ -76,11 +76,13 @@ void Program::find_and_display_gadgets(void)
     for(std::vector<Section*>::iterator it = executable_sections.begin(); it != executable_sections.end(); ++it)
     {
         std::cout << "in " << (*it)->get_name() << ".. ";
+        unsigned long long va_section = m_exformat->raw_offset_to_va((*it)->get_offset(), (*it)->get_offset());
 
         /* Let the cpu do the research (BTW we use a std::map in order to keep only unique gadget) */
         std::map<std::string, Gadget*> gadgets_found = m_cpu->find_gadget_in_memory(
             (*it)->get_section_buffer(),
-            (*it)->get_size()
+            (*it)->get_size(),
+            va_section
         );
 
         std::cout << std::dec << gadgets_found.size() << " unique gadgets found" << std::endl;
@@ -88,12 +90,9 @@ void Program::find_and_display_gadgets(void)
         /* Now we walk the gadgets found */
        
         for(std::map<std::string, Gadget*>::iterator it2 = gadgets_found.begin(); it2 != gadgets_found.end(); ++it2)
-        {
-            unsigned long long absolute_offset_section = (*it)->get_offset();
-            unsigned long long absolute_offset_gadget = absolute_offset_section + it2->second->get_first_offset();
-        
+        {      
             /* Do not forget that VA != PA */
-            unsigned long long va = m_exformat->raw_offset_to_va(absolute_offset_gadget, absolute_offset_section);
+            unsigned long long va = va_section + it2->second->get_first_offset();
             
             display_gadget_lf(va, it2);
         }

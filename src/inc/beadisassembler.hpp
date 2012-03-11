@@ -10,12 +10,22 @@
 
 #include <list>
 
+/*
+    This class aims to use the BeaEngine in order to find gadget in x86/x64 code.
+*/
 class BeaDisassembler
 {
     public:
-        explicit BeaDisassembler(void);
+        enum Arch
+        {
+            IA32 = 0,
+            IA64 = 64
+        };
+
+        explicit BeaDisassembler(Arch arch);
         ~BeaDisassembler(void);
 
+        /* This function returns the whole gadgets found in [data, data+size] ; it tries to find gadget with <= depth instruction */
         std::list<Gadget*> find_rop_gadgets(const unsigned char* data, unsigned long long size, unsigned long long vaddr, unsigned int depth = 1);
 
     private:

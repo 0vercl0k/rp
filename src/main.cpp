@@ -15,9 +15,15 @@
 #endif
 
 #ifdef WINDOWS
-#define VERSION VERSION_TMP " for Windows."
+#define VERSION_TM VERSION_TMP " for Windows"
 #else
-#define VERSION VERSION_TMP " for Unix."
+#define VERSION_TM VERSION_TMP " for Unix"
+#endif
+
+#ifdef _DEBUG
+#define VERSION VERSION_TM " (Debug)."
+#else
+#define VERSION VERSION_TM " (Release)."
 #endif
 
 void display_version()

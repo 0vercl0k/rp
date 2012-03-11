@@ -4,6 +4,9 @@
 #include <string>
 #include <fstream>
 
+/*
+    Each binary is divided in section, actually it is a chunk of the binary of a specific size which contains code
+*/
 class Section
 {
     public:
@@ -14,12 +17,20 @@ class Section
             Executable
         };
 
+        /* The constructor will make a copy of the memory in its own buffer */
         explicit Section(std::ifstream &file, const char *name, const unsigned long long offset, const unsigned long long size, const Properties props);
         ~Section(void);
-
+        
+        /* Get the name of the section */
         std::string get_name(void) const;
+
+        /* Get the size of the section */
         unsigned long long get_size(void) const;
+
+        /* Get the section code ; it's the copy the constructor have made */
         unsigned char *get_section_buffer(void) const;
+
+        /* Get the offset of the section */
         const unsigned long long get_offset(void) const;
 
     private:

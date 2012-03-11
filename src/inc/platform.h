@@ -31,22 +31,9 @@
 
 #ifdef WINDOWS
 	#undef UNICODE
-	/*
-    extern "C"
-	{
-		#include <windows.h>
-	}
-    */
 #endif
 
 #ifdef LINUX
-    /*
-	extern "C"
-	{
-		#include <errno.h>
-		#include <unistd.h>
-	}
-    */
 #endif
 
 #define x86Version unsigned int

@@ -37,8 +37,18 @@ class ExecutableFormat
         /* Retrieves the class name, useful when using polymorphism */
         virtual std::string get_class_name(void) const = 0;
 
+        /* Get the executable section of you binary ; it is there we will look for gadgets */
         virtual std::vector<Section*> get_executables_section(std::ifstream & file) = 0;
 
+        /* 
+            A very useful method to do the conversion raw_offset (relative to a section) to virtual address (which is absolute) 
+            Example:
+                offset = 0x10
+                raw_section_offset = 0x100
+
+                virtual_section_offset = 0x1000
+                raw_offset_to_va(offset, 0x100) will return 0x1010
+        */
         virtual unsigned long long raw_offset_to_va(const unsigned long long absolute_raw_offset, const unsigned long long absolute_raw_offset_section) const = 0;
 
         /* Find the executable format used -- based mostly on the magic signature */

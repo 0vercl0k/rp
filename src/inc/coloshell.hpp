@@ -9,6 +9,8 @@
 #include <windows.h>
 #endif
 
+/* Here you will find all you need to display the data in a cute way on a windows/unix terminal */
+
 #ifdef WINDOWS
     enum Colors
     {

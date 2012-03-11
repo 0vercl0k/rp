@@ -2,11 +2,11 @@
 
 #include <cstring>
 
-BeaDisassembler::BeaDisassembler(void)
+BeaDisassembler::BeaDisassembler(Arch arch)
 {
     memset(&m_dis, 0, sizeof(DISASM));
     m_dis.Options = NasmSyntax + PrefixedNumeral + ShowSegmentRegs;
-    m_dis.Archi = 0; //ia32
+    m_dis.Archi = arch;
 }
 
 BeaDisassembler::~BeaDisassembler(void)
@@ -101,7 +101,7 @@ std::list<Gadget*> BeaDisassembler::find_rop_gadgets(const unsigned char* data, 
 
                     gadget.push_front(Instruction(
                         std::string(m_dis.CompleteInstr),
-                        m_dis.EIP,
+                        m_dis.EIP - (unsigned long long)data,
                         len_instr
                     ));
 

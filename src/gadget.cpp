@@ -28,7 +28,7 @@ void Gadget::add_instruction(Instruction* p_instruction)
     if(m_offsets.size() == 0)
         m_offsets.push_back(p_instruction->get_offset());
 
-    m_instructions.push_front(p_instruction);
+    m_instructions.push_back(p_instruction);
     m_size += p_instruction->get_size();
     m_disassembly += p_instruction->get_disassembly();
     m_disassembly += " ; ";

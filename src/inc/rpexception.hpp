@@ -6,6 +6,7 @@
 
 #define RAISE_EXCEPTION(msg) throw RpException(__FILE__,  __LINE__, __FUNCTION__, msg)
 
+/* RpException is there to have a proper exception report ; easier to corret bugs */
 class RpException : public std::exception
 {
     public:
