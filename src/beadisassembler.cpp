@@ -1,9 +1,6 @@
 #include "beadisassembler.hpp"
-#include "gadget.hpp"
 
 #include <cstring>
-#include <iostream>
-#include <list>
 
 BeaDisassembler::BeaDisassembler(void)
 {
@@ -16,7 +13,7 @@ BeaDisassembler::~BeaDisassembler(void)
 {
 }
 
-std::string BeaDisassembler::disassemble(unsigned char* data, unsigned int size, long long vaddr, unsigned int depth)
+std::list<Gadget*> BeaDisassembler::find_rop_gadgets(const unsigned char* data, unsigned long long size, unsigned long long vaddr, unsigned int depth)
 {
     std::list<Gadget*> gadgets;
     int error = 0;
@@ -26,7 +23,7 @@ std::string BeaDisassembler::disassemble(unsigned char* data, unsigned int size,
     {
         m_dis.EIP = (UIntPtr)(data + offset);
         m_dis.VirtualAddr = vaddr + offset;
-        m_dis.SecurityBlock = size - offset;
+        m_dis.SecurityBlock = (UInt32)(size - offset);
 
         int len = Disasm(&m_dis);
         /* I guess we're done ! */
@@ -117,16 +114,12 @@ std::string BeaDisassembler::disassemble(unsigned char* data, unsigned int size,
             {
                 Gadget * g = new Gadget();
                 for(std::list<Instruction>::iterator it = gadget.begin(); it != gadget.end(); ++it)
-                    g->add_instruction(&(*it));
+                    g->add_instruction(new Instruction(*it));
 
                 gadgets.push_back(g);
             }
         }
     }
 
-    for(std::list<Gadget*>::const_iterator it = gadgets.begin(); it != gadgets.end(); ++it)
-    {
-        std::cout << (*it)->get_disassembly() << std::endl;
-    }
-    return std::string("tg");
+    return gadgets;
 }

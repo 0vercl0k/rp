@@ -31,7 +31,7 @@ void Gadget::add_instruction(Instruction* p_instruction)
     m_disassembly += " ; ";
 }
 
-unsigned long long Gadget::get_offset(void) const
+unsigned long long Gadget::get_va(void) const
 {
     return m_instructions.front()->get_offset();
 }

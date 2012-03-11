@@ -17,7 +17,7 @@ class Gadget
         
         void add_instruction(Instruction* p_instruction);
 
-        unsigned long long get_offset(void) const;
+        unsigned long long get_va(void) const;
 
     private:
         std::string m_disassembly;

@@ -9,7 +9,7 @@ class Instruction
         explicit Instruction(std::string disass, unsigned long long offset, unsigned int size);
         ~Instruction(void);
 
-        unsigned long long get_absolute_address(unsigned char* ptr);
+        unsigned long long get_absolute_address(const unsigned char* ptr);
 
         unsigned int get_size(void) const;
 
