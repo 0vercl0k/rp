@@ -362,6 +362,9 @@ struct PortableExecutableLayout
     static const unsigned int image_dos_header_size = sizeof(RP_IMAGE_DOS_HEADER);
     static const unsigned int image_section_header_size = sizeof(RP_IMAGE_SECTION_HEADER);
 
+    virtual ~PortableExecutableLayout(void)
+    {}
+
     virtual void display(VerbosityLevel lvl = VERBOSE_LEVEL_1) const
     {
         imgDosHeader.display(lvl);
