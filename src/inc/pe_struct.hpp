@@ -141,6 +141,9 @@ __attribute__((packed))
 // Optional header format.
 //
 
+#define RP_IMAGE_DLL_CHARACTERISTICS_DYNAMIC_BASE 0x40
+#define RP_IMAGE_DLL_CHARACTERISTICS_NX_COMPAT 0x100
+
 template<class T>
 struct RP_IMAGE_OPTIONAL_HEADER
 {
@@ -183,6 +186,12 @@ struct RP_IMAGE_OPTIONAL_HEADER<x86Version> {
     void display(VerbosityLevel lvl = VERBOSE_LEVEL_1) const
     {
         w_yel_lf("-> IMAGE_OPTIONAL_HEADER32:");
+        
+        std::cout << " ASLR: ";
+        w_red_lf((DllCharacteristics & RP_IMAGE_DLL_CHARACTERISTICS_DYNAMIC_BASE) ? "Yes" : "No");
+
+        std::cout << " NX: ";
+        w_red_lf((DllCharacteristics & RP_IMAGE_DLL_CHARACTERISTICS_NX_COMPAT) ? "Yes" : "No");
 
         if(lvl > VERBOSE_LEVEL_1)
         {
@@ -241,6 +250,12 @@ struct RP_IMAGE_OPTIONAL_HEADER<x64Version> {
     void display(VerbosityLevel lvl = VERBOSE_LEVEL_1) const
     {
         w_yel_lf("-> IMAGE_OPTIONAL_HEADERS64:");
+
+        std::cout << " ASLR: ";
+        w_red_lf((DllCharacteristics & RP_IMAGE_DLL_CHARACTERISTICS_DYNAMIC_BASE) ? "Yes" : "No");
+
+        std::cout << " NX: ";
+        w_red_lf((DllCharacteristics & RP_IMAGE_DLL_CHARACTERISTICS_NX_COMPAT) ? "Yes" : "No");
 
         if(lvl > VERBOSE_LEVEL_1)
         {

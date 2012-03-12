@@ -3,16 +3,10 @@ TODO:
 * Improve global design:
 	* Normalize fill_structures in ExecutableFormat
 
-* Better exceptions handling
-
-* Elf_Phdr => factorize type_to_str, flag_to_str
-
-* Improve the display of the executable format => '0' filling crap ; I f*ucking hate std::cout #@!
-
-* Add some color on some field
-
 * PE+ELF testing & crashing test
 
-* x86 warning when using seekg with an unsigned long long
+* retf & iretd => not valid ending instruction in a gadget but call reg32/jmp reg32 are!
 
-* Add x86/x64 build to the CMakeList.txt
+* display useful information: aslr awareness, nx support in elf/pe
+
+* pe: check the sizeof optional header before trying to read its content
