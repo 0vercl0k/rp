@@ -39,25 +39,25 @@
 #endif
 
 struct RP_IMAGE_DOS_HEADER {      // DOS .EXE header
-    unsigned short   e_magic;                     // Magic number
-    unsigned short   e_cblp;                      // Bytes on last page of file
-    unsigned short   e_cp;                        // Pages in file
-    unsigned short   e_crlc;                      // Relocations
-    unsigned short   e_cparhdr;                   // Size of header in paragraphs
-    unsigned short   e_minalloc;                  // Minimum extra paragraphs needed
-    unsigned short   e_maxalloc;                  // Maximum extra paragraphs needed
-    unsigned short   e_ss;                        // Initial (relative) SS value
-    unsigned short   e_sp;                        // Initial SP value
-    unsigned short   e_csum;                      // Checksum
-    unsigned short   e_ip;                        // Initial IP value
-    unsigned short   e_cs;                        // Initial (relative) CS value
-    unsigned short   e_lfarlc;                    // File address of relocation table
-    unsigned short   e_ovno;                      // Overlay number
-    unsigned short   e_res[4];                    // Reserved words
-    unsigned short   e_oemid;                     // OEM identifier (for e_oeminfo)
-    unsigned short   e_oeminfo;                   // OEM information; e_oemid specific
-    unsigned short   e_res2[10];                  // Reserved words
-    unsigned int     e_lfanew;                    // File address of new exe header
+    unsigned short e_magic;       // Magic number
+    unsigned short e_cblp;        // Bytes on last page of file
+    unsigned short e_cp;          // Pages in file
+    unsigned short e_crlc;        // Relocations
+    unsigned short e_cparhdr;     // Size of header in paragraphs
+    unsigned short e_minalloc;    // Minimum extra paragraphs needed
+    unsigned short e_maxalloc;    // Maximum extra paragraphs needed
+    unsigned short e_ss;          // Initial (relative) SS value
+    unsigned short e_sp;          // Initial SP value
+    unsigned short e_csum;        // Checksum
+    unsigned short e_ip;          // Initial IP value
+    unsigned short e_cs;          // Initial (relative) CS value
+    unsigned short e_lfarlc;      // File address of relocation table
+    unsigned short e_ovno;        // Overlay number
+    unsigned short e_res[4];      // Reserved words
+    unsigned short e_oemid;       // OEM identifier (for e_oeminfo)
+    unsigned short e_oeminfo;     // OEM information; e_oemid specific
+    unsigned short e_res2[10];    // Reserved words
+    unsigned int   e_lfanew;      // File address of new exe header
 
     void display(VerbosityLevel lvl =  VERBOSE_LEVEL_1) const
     {
@@ -91,13 +91,18 @@ __attribute__((packed))
 #define RP_IMAGE_NT_OPTIONAL_HDR64_MAGIC 0x20b
 
 struct RP_IMAGE_FILE_HEADER {
-    unsigned short    Machine;
-    unsigned short    NumberOfSections;
+    unsigned short Machine;
+    unsigned short NumberOfSections;
     unsigned int   TimeDateStamp;
     unsigned int   PointerToSymbolTable;
     unsigned int   NumberOfSymbols;
-    unsigned short    SizeOfOptionalHeader;
-    unsigned short    Characteristics;
+    unsigned short SizeOfOptionalHeader;
+    unsigned short Characteristics;
+
+    unsigned short get_size_of_optionnal_header(void) const
+    {
+        return SizeOfOptionalHeader;
+    }
 
     void display(VerbosityLevel lvl = VERBOSE_LEVEL_1) const
     {
@@ -127,22 +132,22 @@ __attribute__((packed))
 //
 
 struct RP_IMAGE_DATA_DIRECTORY {
-    unsigned int   VirtualAddress;
-    unsigned int   Size;
+    unsigned int VirtualAddress;
+    unsigned int Size;
 }
 #ifdef LINUX
 __attribute__((packed))
 #endif
 ;
 
-#define RP_IMAGE_NUMBEROF_DIRECTORY_ENTRIES    16
+#define RP_IMAGE_NUMBEROF_DIRECTORY_ENTRIES       16
 
 //
 // Optional header format.
 //
 
 #define RP_IMAGE_DLL_CHARACTERISTICS_DYNAMIC_BASE 0x40
-#define RP_IMAGE_DLL_CHARACTERISTICS_NX_COMPAT 0x100
+#define RP_IMAGE_DLL_CHARACTERISTICS_NX_COMPAT    0x100
 
 template<class T>
 struct RP_IMAGE_OPTIONAL_HEADER
@@ -151,36 +156,36 @@ struct RP_IMAGE_OPTIONAL_HEADER
 
 template<>
 struct RP_IMAGE_OPTIONAL_HEADER<x86Version> {
-    unsigned short        Magic;
-    unsigned char        MajorLinkerVersion;
-    unsigned char        MinorLinkerVersion;
-    unsigned int       SizeOfCode;
-    unsigned int       SizeOfInitializedData;
-    unsigned int       SizeOfUninitializedData;
-    unsigned int       AddressOfEntryPoint;
-    unsigned int       BaseOfCode;
-    unsigned int       BaseOfData;
-    unsigned int       ImageBase;
-    unsigned int       SectionAlignment;
-    unsigned int       FileAlignment;
-    unsigned short        MajorOperatingSystemVersion;
-    unsigned short        MinorOperatingSystemVersion;
-    unsigned short        MajorImageVersion;
-    unsigned short        MinorImageVersion;
-    unsigned short        MajorSubsystemVersion;
-    unsigned short        MinorSubsystemVersion;
-    unsigned int       Win32VersionValue;
-    unsigned int       SizeOfImage;
-    unsigned int       SizeOfHeaders;
-    unsigned int       CheckSum;
-    unsigned short        Subsystem;
-    unsigned short        DllCharacteristics;
-    unsigned int   SizeOfStackReserve;
-    unsigned int   SizeOfStackCommit;
-    unsigned int   SizeOfHeapReserve;
-    unsigned int   SizeOfHeapCommit;
-    unsigned int       LoaderFlags;
-    unsigned int       NumberOfRvaAndSizes;
+    unsigned short          Magic;
+    unsigned char           MajorLinkerVersion;
+    unsigned char           MinorLinkerVersion;
+    unsigned int            SizeOfCode;
+    unsigned int            SizeOfInitializedData;
+    unsigned int            SizeOfUninitializedData;
+    unsigned int            AddressOfEntryPoint;
+    unsigned int            BaseOfCode;
+    unsigned int            BaseOfData;
+    unsigned int            ImageBase;
+    unsigned int            SectionAlignment;
+    unsigned int            FileAlignment;
+    unsigned short          MajorOperatingSystemVersion;
+    unsigned short          MinorOperatingSystemVersion;
+    unsigned short          MajorImageVersion;
+    unsigned short          MinorImageVersion;
+    unsigned short          MajorSubsystemVersion;
+    unsigned short          MinorSubsystemVersion;
+    unsigned int            Win32VersionValue;
+    unsigned int            SizeOfImage;
+    unsigned int            SizeOfHeaders;
+    unsigned int            CheckSum;
+    unsigned short          Subsystem;
+    unsigned short          DllCharacteristics;
+    unsigned int            SizeOfStackReserve;
+    unsigned int            SizeOfStackCommit;
+    unsigned int            SizeOfHeapReserve;
+    unsigned int            SizeOfHeapCommit;
+    unsigned int            LoaderFlags;
+    unsigned int            NumberOfRvaAndSizes;
     RP_IMAGE_DATA_DIRECTORY DataDirectory[RP_IMAGE_NUMBEROF_DIRECTORY_ENTRIES];
 
     void display(VerbosityLevel lvl = VERBOSE_LEVEL_1) const
@@ -216,35 +221,35 @@ __attribute__((packed))
 
 template<>
 struct RP_IMAGE_OPTIONAL_HEADER<x64Version> {
-    unsigned short        Magic;
-    unsigned char        MajorLinkerVersion;
-    unsigned char        MinorLinkerVersion;
-    unsigned int       SizeOfCode;
-    unsigned int       SizeOfInitializedData;
-    unsigned int       SizeOfUninitializedData;
-    unsigned int       AddressOfEntryPoint;
-    unsigned int       BaseOfCode;
-    unsigned long long   ImageBase;
-    unsigned int       SectionAlignment;
-    unsigned int       FileAlignment;
-    unsigned short        MajorOperatingSystemVersion;
-    unsigned short        MinorOperatingSystemVersion;
-    unsigned short        MajorImageVersion;
-    unsigned short        MinorImageVersion;
-    unsigned short        MajorSubsystemVersion;
-    unsigned short        MinorSubsystemVersion;
-    unsigned int       Win32VersionValue;
-    unsigned int       SizeOfImage;
-    unsigned int       SizeOfHeaders;
-    unsigned int       CheckSum;
-    unsigned short        Subsystem;
-    unsigned short        DllCharacteristics;
-    unsigned long long   SizeOfStackReserve;
-    unsigned long long   SizeOfStackCommit;
-    unsigned long long   SizeOfHeapReserve;
-    unsigned long long   SizeOfHeapCommit;
-    unsigned int       LoaderFlags;
-    unsigned int       NumberOfRvaAndSizes;
+    unsigned short          Magic;
+    unsigned char           MajorLinkerVersion;
+    unsigned char           MinorLinkerVersion;
+    unsigned int            SizeOfCode;
+    unsigned int            SizeOfInitializedData;
+    unsigned int            SizeOfUninitializedData;
+    unsigned int            AddressOfEntryPoint;
+    unsigned int            BaseOfCode;
+    unsigned long long      ImageBase;
+    unsigned int            SectionAlignment;
+    unsigned int            FileAlignment;
+    unsigned short          MajorOperatingSystemVersion;
+    unsigned short          MinorOperatingSystemVersion;
+    unsigned short          MajorImageVersion;
+    unsigned short          MinorImageVersion;
+    unsigned short          MajorSubsystemVersion;
+    unsigned short          MinorSubsystemVersion;
+    unsigned int            Win32VersionValue;
+    unsigned int            SizeOfImage;
+    unsigned int            SizeOfHeaders;
+    unsigned int            CheckSum;
+    unsigned short          Subsystem;
+    unsigned short          DllCharacteristics;
+    unsigned long long      SizeOfStackReserve;
+    unsigned long long      SizeOfStackCommit;
+    unsigned long long      SizeOfHeapReserve;
+    unsigned long long      SizeOfHeapCommit;
+    unsigned int            LoaderFlags;
+    unsigned int            NumberOfRvaAndSizes;
     RP_IMAGE_DATA_DIRECTORY DataDirectory[RP_IMAGE_NUMBEROF_DIRECTORY_ENTRIES];
 
     void display(VerbosityLevel lvl = VERBOSE_LEVEL_1) const
@@ -285,22 +290,22 @@ typedef RP_IMAGE_OPTIONAL_HEADER<x64Version> RP_IMAGE_OPTIONAL_HEADER64;
 // Section header format.
 //
 
-#define RP_IMAGE_SIZEOF_SHORT_NAME              8
-#define RP_IMAGE_SCN_MEM_EXECUTE 0x00000020
+#define RP_IMAGE_SIZEOF_SHORT_NAME 8
+#define RP_IMAGE_SCN_MEM_EXECUTE   0x00000020
 
 struct RP_IMAGE_SECTION_HEADER {
     unsigned char    Name[RP_IMAGE_SIZEOF_SHORT_NAME];
     union {
-        unsigned int   PhysicalAddress;
-        unsigned int   VirtualSize;
+        unsigned int PhysicalAddress;
+        unsigned int VirtualSize;
     } Misc;
     unsigned int   VirtualAddress;
     unsigned int   SizeOfRawData;
     unsigned int   PointerToRawData;
     unsigned int   PointerToRelocations;
     unsigned int   PointerToLinenumbers;
-    unsigned short    NumberOfRelocations;
-    unsigned short    NumberOfLinenumbers;
+    unsigned short NumberOfRelocations;
+    unsigned short NumberOfLinenumbers;
     unsigned int   Characteristics;
 
     void display(VerbosityLevel lvl = VERBOSE_LEVEL_1) const
@@ -328,8 +333,8 @@ __attribute__((packed))
 
 template<class T>
 struct RP_IMAGE_NT_HEADERS {
-    unsigned int Signature;
-    RP_IMAGE_FILE_HEADER FileHeader;
+    unsigned int                Signature;
+    RP_IMAGE_FILE_HEADER        FileHeader;
     RP_IMAGE_OPTIONAL_HEADER<T> OptionalHeader;
 
     /* Keep in mind this offset is relative to the NT Header ! 
@@ -346,7 +351,9 @@ struct RP_IMAGE_NT_HEADERS {
 
         if(lvl > VERBOSE_LEVEL_1)
         {
-            OptionalHeader.display(lvl);
+            /* Yeah. I know I'm not supposed to do that this way */
+            if(FileHeader.get_size_of_optionnal_header() >= sizeof(OptionalHeader))
+                OptionalHeader.display(lvl);
         }
 
         if(lvl > VERBOSE_LEVEL_2)
@@ -371,11 +378,8 @@ typedef RP_IMAGE_NT_HEADERS<x64Version> RP_IMAGE_NT_HEADERS64;
 
 struct PortableExecutableLayout
 {
-    RP_IMAGE_DOS_HEADER imgDosHeader;
+    RP_IMAGE_DOS_HEADER                   imgDosHeader;
     std::vector<RP_IMAGE_SECTION_HEADER*> imgSectionHeaders;
-
-    static const unsigned int image_dos_header_size = sizeof(RP_IMAGE_DOS_HEADER);
-    static const unsigned int image_section_header_size = sizeof(RP_IMAGE_SECTION_HEADER);
 
     virtual ~PortableExecutableLayout(void)
     {}
@@ -396,9 +400,8 @@ struct PortableExecutableLayout
         return sizeof(RP_IMAGE_SECTION_HEADER);
     }
 
-    virtual unsigned int get_nt_headers_size(void) const = 0;
-    virtual void fill_nt_structures(std::ifstream &file) = 0;
-
+    virtual unsigned int get_nt_headers_size(void) const  = 0;
+    virtual void fill_nt_structures(std::ifstream &file)  = 0;
     virtual unsigned long long get_image_base(void) const = 0;
 };
 

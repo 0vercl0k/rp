@@ -71,6 +71,8 @@ void Program::find_and_display_gadgets(void)
 
     /* To do a ROP gadget research, we need to know the executable section */
     std::vector<Section*> executable_sections = m_exformat->get_executables_section(m_file);
+    if(executable_sections.size() == 0)
+        std::cout << "It seems your binary haven't executable sections." << std::endl;
 
     /* Walk the executable sections */
     for(std::vector<Section*>::iterator it = executable_sections.begin(); it != executable_sections.end(); ++it)
