@@ -8,7 +8,15 @@
 */
 class SafeInt
 {
-    static inline unsigned long long Add(const unsigned long long a, const unsigned long long b);
+    template<class T>
+    static inline T Add(const T a, const T b)
+    {
+        T result = a + b;
+        if(result < a)
+            RAISE_EXCEPTION("Integer overflow detected.");
+
+        return result;
+    }
 };
 
 #endif

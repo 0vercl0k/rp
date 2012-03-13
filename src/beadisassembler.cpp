@@ -5,7 +5,7 @@
 BeaDisassembler::BeaDisassembler(Arch arch)
 {
     memset(&m_dis, 0, sizeof(DISASM));
-    m_dis.Options = NasmSyntax + PrefixedNumeral + ShowSegmentRegs;
+    m_dis.Options = NasmSyntax + PrefixedNumeral ;//+ ShowSegmentRegs;
     m_dis.Archi = arch;
 }
 
@@ -16,14 +16,18 @@ BeaDisassembler::~BeaDisassembler(void)
 std::list<Gadget*> BeaDisassembler::find_rop_gadgets(const unsigned char* data, unsigned long long size, unsigned long long vaddr, unsigned int depth)
 {
     std::list<Gadget*> gadgets;
-    int error = 0;
-    DISASM ret_instr = {0};
-
+    /* 
+        TODO:
+        -> remove the jmp far
+        -> remove the ret/call/jmp instruction except for the last one (don't want something like inc eax ; jmp [eax] ; stuff ;
+    */
     for(unsigned int offset = 0; offset < size; ++offset)
     {
         m_dis.EIP = (UIntPtr)(data + offset);
         m_dis.VirtualAddr = vaddr + offset;
         m_dis.SecurityBlock = (UInt32)(size - offset);
+        
+        DISASM ret_instr = {0};
 
         int len = Disasm(&m_dis);
         /* I guess we're done ! */
@@ -34,10 +38,21 @@ std::list<Gadget*> BeaDisassembler::find_rop_gadgets(const unsigned char* data, 
         if(len == UNKNOWN_OPCODE)
             continue;
 
-        if(m_dis.Instruction.BranchType == RetType)
+        if(
+            /* We accept all the ret type instructions (except retf/iret) */
+            (m_dis.Instruction.BranchType == RetType && strncmp(m_dis.Instruction.Mnemonic, "retf", 4) != 0 && strncmp(m_dis.Instruction.Mnemonic, "iretd", 4) != 0) || 
+            /* call reg32 / call [reg32] */
+            (m_dis.Instruction.BranchType == CallType && m_dis.Instruction.AddrValue == 0) ||
+            /* jmp reg32 / jmp [reg32] */
+            (m_dis.Instruction.BranchType == JmpType && m_dis.Instruction.AddrValue == 0)
+          )
         {
+            if(strcmp(m_dis.CompleteInstr, "jmp ebp") == 0)
+            {
+                std::string("bla");
+            }
+
             /* Okay I found a RET ; now I can build the gadget */
-            //std::cout << "I found a RET @ " << std::hex << m_dis.VirtualAddr << std::endl;
             memcpy(&ret_instr, &m_dis, sizeof(DISASM));
             std::list<Instruction> gadget;
 
@@ -106,8 +121,15 @@ std::list<Gadget*> BeaDisassembler::find_rop_gadgets(const unsigned char* data, 
                 if(gadget.size() >= (depth + 1))
                     is_valid_instruction = true;
             }
-
-            if(gadget.size() > 1)
+            
+            /*
+                Ok, if we have a chain of instruction, we have a gadget (a single ret instruction isn't interesting, is it?) 
+                Hm I only accept call/jmp reg32 ; call/jmp [reg32] as a gadget
+            */
+            if(
+                gadget.size() > 1 || 
+                ((ret_instr.Instruction.BranchType == CallType || ret_instr.Instruction.BranchType == JmpType) && ret_instr.Instruction.AddrValue == 0)
+              )
             {
                 Gadget * g = new Gadget();
                 for(std::list<Instruction>::iterator it = gadget.begin(); it != gadget.end(); ++it)
