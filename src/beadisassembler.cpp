@@ -1,4 +1,5 @@
 #include "beadisassembler.hpp"
+#include "safeint.hpp"
 
 #include <cstring>
 
@@ -24,7 +25,7 @@ std::list<Gadget*> BeaDisassembler::find_rop_gadgets(const unsigned char* data, 
     for(unsigned int offset = 0; offset < size; ++offset)
     {
         m_dis.EIP = (UIntPtr)(data + offset);
-        m_dis.VirtualAddr = vaddr + offset;
+        m_dis.VirtualAddr = SafeAddU64(vaddr, offset);
         m_dis.SecurityBlock = (UInt32)(size - offset);
         
         DISASM ret_instr = {0};
@@ -47,11 +48,6 @@ std::list<Gadget*> BeaDisassembler::find_rop_gadgets(const unsigned char* data, 
             (m_dis.Instruction.BranchType == JmpType && m_dis.Instruction.AddrValue == 0)
           )
         {
-            if(strcmp(m_dis.CompleteInstr, "jmp ebp") == 0)
-            {
-                std::string("bla");
-            }
-
             /* Okay I found a RET ; now I can build the gadget */
             memcpy(&ret_instr, &m_dis, sizeof(DISASM));
             std::list<Instruction> gadget;
@@ -63,9 +59,11 @@ std::list<Gadget*> BeaDisassembler::find_rop_gadgets(const unsigned char* data, 
                 len
             ));
 
-            bool is_valid_instruction = false;
-            while(is_valid_instruction == false)
+            while(true)
             {
+                if(gadget.size() >= (depth + 1))
+                    break;
+
                 /* We respect the limits of the buffer */
                 if(m_dis.EIP <= (UIntPtr)data)
                     break;
@@ -80,7 +78,7 @@ std::list<Gadget*> BeaDisassembler::find_rop_gadgets(const unsigned char* data, 
                 if(len_instr == UNKNOWN_OPCODE)
                 {
                     /* If we have a first valid instruction, but the second one is unknown ; we return it even if its size is < depth */
-                    if(gadget.size() > 0)
+                    if(gadget.size() > 1)
                         break;
                     else
                         continue;
@@ -117,26 +115,16 @@ std::list<Gadget*> BeaDisassembler::find_rop_gadgets(const unsigned char* data, 
                     m_dis.EIP - (unsigned long long)data,
                     len_instr
                 ));
-
-                if(gadget.size() >= (depth + 1))
-                    is_valid_instruction = true;
             }
             
-            /*
-                Ok, if we have a chain of instruction, we have a gadget (a single ret instruction isn't interesting, is it?) 
-                Hm I only accept call/jmp reg32 ; call/jmp [reg32] as a gadget
-            */
-            if(
-                gadget.size() > 1 || 
-                ((ret_instr.Instruction.BranchType == CallType || ret_instr.Instruction.BranchType == JmpType) && ret_instr.Instruction.AddrValue == 0)
-              )
-            {
-                Gadget * g = new Gadget();
-                for(std::list<Instruction>::iterator it = gadget.begin(); it != gadget.end(); ++it)
-                    g->add_instruction(new Instruction(*it));
+            Gadget * g = new (std::nothrow) Gadget();
+            if(g == NULL)
+                RAISE_EXCEPTION("Cannot allocate a gadget");
 
-                gadgets.push_back(g);
-            }
+            for(std::list<Instruction>::iterator it = gadget.begin(); it != gadget.end(); ++it)
+                g->add_instruction(new Instruction(*it));
+
+            gadgets.push_back(g);
         }
     }
 

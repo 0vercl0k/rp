@@ -1,17 +1,14 @@
 #include "section.hpp"
 #include "toolbox.hpp"
 #include "rpexception.hpp"
+#include "safeint.hpp"
 
 Section::Section(std::ifstream &file, const char *name, const unsigned long long offset, const unsigned long long size, const Properties props)
 : m_name(name), m_offset(offset), m_size(size), m_props(props), m_section(NULL)
 {
-    /* I don't want ANY of this int overflow crap. */
-    if((offset + size) < offset)
-        RAISE_EXCEPTION("Integer overflow spotted!");
-
     /* NB: std::streampos performs unsigned check */
     unsigned long long fsize = get_file_size(file);
-    if((offset+size) >= fsize)
+    if(SafeAddU64(offset, size) >= fsize)
         RAISE_EXCEPTION("Your file seems to be fucked up");
 
     std::streampos backup = file.tellg();

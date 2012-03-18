@@ -18,12 +18,12 @@ std::string Ia32::get_class_name(void) const
     return std::string("Ia32");
 }
 
-std::map<std::string, Gadget*> Ia32::find_gadget_in_memory(const unsigned char *p_memory, const unsigned long long size, const unsigned long long vaddr)
+std::map<std::string, Gadget*> Ia32::find_gadget_in_memory(const unsigned char *p_memory, const unsigned long long size, const unsigned long long vaddr, const unsigned int depth)
 {
     std::map<std::string, Gadget*> unique_gadgets;
     
     BeaDisassembler bea(BeaDisassembler::IA32);
-    std::list<Gadget*> gadgets = bea.find_rop_gadgets(p_memory, size, vaddr);
+    std::list<Gadget*> gadgets = bea.find_rop_gadgets(p_memory, size, vaddr, depth);
     for(std::list<Gadget*>::iterator it = gadgets.begin(); it != gadgets.end(); ++it)
     {
         if(unique_gadgets.count((*it)->get_disassembly()) > 0)

@@ -26,7 +26,7 @@ class BeaDisassembler
         ~BeaDisassembler(void);
 
         /* This function returns the whole gadgets found in [data, data+size] ; it tries to find gadget with depth instruction (without the ret one) */
-        std::list<Gadget*> find_rop_gadgets(const unsigned char* data, unsigned long long size, unsigned long long vaddr, unsigned int depth = 5);
+        std::list<Gadget*> find_rop_gadgets(const unsigned char* data, unsigned long long size, unsigned long long vaddr, unsigned int depth);
 
     private:
         DISASM m_dis;

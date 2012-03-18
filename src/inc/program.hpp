@@ -15,7 +15,7 @@ class Program
 
         void display_information(VerbosityLevel lvl = VERBOSE_LEVEL_1);
 
-        void find_and_display_gadgets(void);
+        void find_and_display_gadgets(unsigned int depth);
 
     private:
         CPU* m_cpu;

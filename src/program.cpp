@@ -65,7 +65,7 @@ void Program::display_information(VerbosityLevel lvl)
     m_exformat->display_information(lvl);
 }
 
-void Program::find_and_display_gadgets(void)
+void Program::find_and_display_gadgets(unsigned int depth)
 {
     std::cout << std::endl << "Wait a few seconds, rp++ is researching gadgets.." << std::endl;
 
@@ -84,7 +84,8 @@ void Program::find_and_display_gadgets(void)
         std::map<std::string, Gadget*> gadgets_found = m_cpu->find_gadget_in_memory(
             (*it)->get_section_buffer(),
             (*it)->get_size(),
-            va_section
+            va_section,
+            depth
         );
 
         std::cout << std::dec << gadgets_found.size() << " unique gadgets found" << std::endl;

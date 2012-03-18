@@ -47,6 +47,7 @@ void display_usage()
     std::cout << "\t -d: Display several information concerning the binary" << std::endl;
     std::cout << "\t     Specify the level of verbosity, 0 (default) to 3" << std::endl;
     std::cout << "\t -r: Find a bunch of gadgets usable in your future exploits" << std::endl;
+    std::cout << "\t     Specify the maximum number of instruction your gadgets will have (btw, the final instruction doesn't count)" << std::endl;
     std::cout << "\t -v: Display the version of rp++ you are using" << std::endl;
 }
 
@@ -60,7 +61,7 @@ int main(int argc, char* argv[])
 
     int c;
     bool d_flag = false, r_flag = false, v_flag = false;
-    unsigned int display_value = 0;
+    unsigned int display_value = 0, depth = 0;
 
     std::string program_path(argv[1]);
 
@@ -68,7 +69,7 @@ int main(int argc, char* argv[])
     try
     {
         Program p(program_path);
-        while ((c = getopt(argc - 1, &argv[1], "vrd:")) != -1)
+        while ((c = getopt(argc - 1, &argv[1], "vr:d:")) != -1)
         {
             switch (c)
             {
@@ -78,6 +79,7 @@ int main(int argc, char* argv[])
 
                 case 'r':
                     r_flag = true;
+                    depth = atoi(optarg);
                     break;
 
                 case 'd':
@@ -97,7 +99,7 @@ int main(int argc, char* argv[])
             p.display_information((display_value > 2)? VERBOSE_LEVEL_1 : (VerbosityLevel)display_value);
 
         if(r_flag)
-            p.find_and_display_gadgets();
+            p.find_and_display_gadgets(depth);
     }
     catch(const std::exception &e)
     {
