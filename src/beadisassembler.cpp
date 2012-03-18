@@ -19,8 +19,8 @@ std::list<Gadget*> BeaDisassembler::find_rop_gadgets(const unsigned char* data, 
     std::list<Gadget*> gadgets;
     /* 
         TODO:
-        -> remove the jmp far
-        -> remove the ret/call/jmp instruction except for the last one (don't want something like inc eax ; jmp [eax] ; stuff ;
+        -> add function to check the jump instructions: je/jne/jc/jne/..
+
     */
     for(unsigned int offset = 0; offset < size; ++offset)
     {
@@ -41,11 +41,13 @@ std::list<Gadget*> BeaDisassembler::find_rop_gadgets(const unsigned char* data, 
 
         if(
             /* We accept all the ret type instructions (except retf/iret) */
-            (m_dis.Instruction.BranchType == RetType && strncmp(m_dis.Instruction.Mnemonic, "retf", 4) != 0 && strncmp(m_dis.Instruction.Mnemonic, "iretd", 4) != 0) || 
+            ((m_dis.Instruction.BranchType == RetType && strncmp(m_dis.Instruction.Mnemonic, "retf", 4) != 0 && strncmp(m_dis.Instruction.Mnemonic, "iretd", 4) != 0) || 
             /* call reg32 / call [reg32] */
             (m_dis.Instruction.BranchType == CallType && m_dis.Instruction.AddrValue == 0) ||
             /* jmp reg32 / jmp [reg32] */
-            (m_dis.Instruction.BranchType == JmpType && m_dis.Instruction.AddrValue == 0)
+            (m_dis.Instruction.BranchType == JmpType && m_dis.Instruction.AddrValue == 0)) &&
+            /* Yeah, entrance isn't allowed to the jmp far/call far */
+            strstr(m_dis.CompleteInstr, "far") == NULL
           )
         {
             /* Okay I found a RET ; now I can build the gadget */
@@ -110,11 +112,42 @@ std::list<Gadget*> BeaDisassembler::find_rop_gadgets(const unsigned char* data, 
                 if(m_dis.EIP + len_instr != last_instr.get_absolute_address(data))
                     break;
 
-                gadget.push_front(Instruction(
-                    std::string(m_dis.CompleteInstr),
-                    m_dis.EIP - (unsigned long long)data,
-                    len_instr
-                ));
+                /*
+                    OK now we can filter the instruction allowed
+                     1] Only the last instruction must jmp/call/ret somewhere
+                     2] Other details: disallow the jmp far etc
+                */
+                if(m_dis.Instruction.BranchType != RetType && 
+                   m_dis.Instruction.BranchType != JmpType &&
+                   m_dis.Instruction.BranchType != CallType &&
+                   m_dis.Instruction.BranchType != JE &&
+                   m_dis.Instruction.BranchType != JB &&
+                   m_dis.Instruction.BranchType != JC &&
+                   m_dis.Instruction.BranchType != JO &&
+                   m_dis.Instruction.BranchType != JA &&
+                   m_dis.Instruction.BranchType != JS &&
+                   m_dis.Instruction.BranchType != JP &&
+                   m_dis.Instruction.BranchType != JL &&
+                   m_dis.Instruction.BranchType != JG &&
+                   m_dis.Instruction.BranchType != JNE &&
+                   m_dis.Instruction.BranchType != JNB &&
+                   m_dis.Instruction.BranchType != JNC &&
+                   m_dis.Instruction.BranchType != JNO &&
+                   m_dis.Instruction.BranchType != JECXZ &&
+                   m_dis.Instruction.BranchType != JNA &&
+                   m_dis.Instruction.BranchType != JNS &&
+                   m_dis.Instruction.BranchType != JNP &&
+                   m_dis.Instruction.BranchType != JNL &&
+                   m_dis.Instruction.BranchType != JNG &&
+                   m_dis.Instruction.BranchType != JNB &&
+                   strstr(m_dis.CompleteInstr, "far") == NULL)
+                {
+                    gadget.push_front(Instruction(
+                        std::string(m_dis.CompleteInstr),
+                        m_dis.EIP - (unsigned long long)data,
+                        len_instr
+                        ));
+                }
             }
             
             Gadget * g = new (std::nothrow) Gadget();
