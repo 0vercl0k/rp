@@ -1,6 +1,7 @@
 #include "beadisassembler.hpp"
 #include "safeint.hpp"
 
+#include <iostream>
 #include <cstring>
 
 BeaDisassembler::BeaDisassembler(Arch arch)
@@ -17,6 +18,7 @@ BeaDisassembler::~BeaDisassembler(void)
 std::list<Gadget*> BeaDisassembler::find_rop_gadgets(const unsigned char* data, unsigned long long size, unsigned long long vaddr, unsigned int depth)
 {
     std::list<Gadget*> gadgets;
+
     /* 
         TODO:
         -> add function to check the jump instructions: je/jne/jc/jne/..
@@ -161,5 +163,6 @@ std::list<Gadget*> BeaDisassembler::find_rop_gadgets(const unsigned char* data, 
         }
     }
 
+    std::cout << "A total of " << gadgets.size() << " gadgets." << std::endl;
     return gadgets;
 }

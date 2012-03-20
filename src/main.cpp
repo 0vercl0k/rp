@@ -43,7 +43,7 @@ void display_usage()
     std::cout << "\t           Specify the level of verbosity, 0 (default) to 2" << std::endl;
     std::cout << "\t -r <int>: Find a bunch of gadgets usable in your future exploits" << std::endl;
     std::cout << "\t           Specify the maximum number of instruction in your gadgets" << std::endl;
-    std::cout << "\t -v       : Display the version of rp++ you are using" << std::endl;
+    std::cout << "\t -v      : Display the version of rp++ you are using" << std::endl;
 }
 
 int main(int argc, char* argv[])
