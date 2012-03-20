@@ -18,8 +18,8 @@ std::map<std::string, Gadget*> Ia64::find_gadget_in_memory(const unsigned char *
 {
     std::map<std::string, Gadget*> unique_gadgets;
 
-    BeaDisassembler bea(BeaDisassembler::IA64);
-    std::list<Gadget*> gadgets = bea.find_rop_gadgets(p_memory, size, vaddr, depth);
+    BeaDisassembler bea(BeaDisassembler::IA64, depth);
+    std::list<Gadget*> gadgets = bea.find_rop_gadgets(p_memory, size, vaddr);
     for(std::list<Gadget*>::iterator it = gadgets.begin(); it != gadgets.end(); ++it)
     {
         if(unique_gadgets.count((*it)->get_disassembly()) > 0)

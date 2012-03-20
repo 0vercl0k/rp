@@ -4,103 +4,126 @@
 #include <iostream>
 #include <cstring>
 
-BeaDisassembler::BeaDisassembler(Arch arch)
+BeaDisassembler::BeaDisassembler(Arch arch, unsigned int depth)
+: m_depth(depth)
 {
     memset(&m_dis, 0, sizeof(DISASM));
     m_dis.Options = NasmSyntax + PrefixedNumeral ;//+ ShowSegmentRegs;
     m_dis.Archi = arch;
+
+
 }
 
 BeaDisassembler::~BeaDisassembler(void)
 {
 }
 
-std::list<Gadget*> BeaDisassembler::find_all_gadget_from_ret(const unsigned char* data, DISASM* d_ret, unsigned int depth)
+std::list<Gadget*> BeaDisassembler::find_all_gadget_from_ret(const unsigned char* data, DISASM* d_ret, unsigned long long offset, unsigned int len)
 {
     std::list<Gadget*> gadgets;
+    std::list<Instruction> gadget;
 
-            //   /* The RET instruction is the latest of our instruction chain */
-            //gadget.push_front(Instruction(
-            //    std::string(ret_instr.CompleteInstr),
-            //    offset,
-            //    len
-            //));
+    
+    /* The RET instruction is the latest of our instruction chain */
+    gadget.push_front(Instruction(
+        std::string(d_ret->CompleteInstr),
+        offset,
+        len
+    ));
 
-            //while(true)
-            //{
-            //    if(gadget.size() >= (depth + 1))
-            //        break;
+    m_dis.EIP = d_ret->EIP;
+    m_dis.VirtualAddr = d_ret->VirtualAddr;
 
-            //    /* We respect the limits of the buffer */
-            //    if(m_dis.EIP <= (UIntPtr)data)
-            //        break;
+    while(true)
+    {
+        if(gadget.size() >= (m_depth + 1))
+            break;
 
-            //    m_dis.EIP--;
-            //    m_dis.VirtualAddr--;
-            //    
-            //    //TODO: Fix properly the security block
-            //    m_dis.SecurityBlock = 0;
+        /* We respect the limits of the buffer */
+        if(m_dis.EIP <= (UIntPtr)data)
+            break;
 
-            //    int len_instr = Disasm(&m_dis);
-            //    if(len_instr == UNKNOWN_OPCODE)
-            //    {
-            //        /* If we have a first valid instruction, but the second one is unknown ; we return it even if its size is < depth */
-            //        if(gadget.size() > 1)
-            //            break;
-            //        else
-            //            continue;
-            //    }
-            //    
-            //    if(len_instr == OUT_OF_BLOCK)
-            //        break;
+        m_dis.EIP--;
+        m_dis.VirtualAddr--;
+        
+        //TODO: Fix properly the security block
+        m_dis.SecurityBlock = 0;
 
-            //    Instruction & last_instr = gadget.front();
+        int len_instr = Disasm(&m_dis);
+        if(len_instr == UNKNOWN_OPCODE)
+        {
+            /* If we have a first valid instruction, but the second one is unknown ; we return it even if its size is < depth */
+            if(gadget.size() > 1)
+                break;
+            else
+                continue;
+        }
+        
+        if(len_instr == OUT_OF_BLOCK)
+            break;
 
-            //    /*
-            //        We don't want to reuse the opcode of the ret instruction to create a new one:
-            //           Example:
-            //            data = \xE9
-            //                   \x31
-            //                   \xC0
-            //                   \xC3
-            //                   \x00
-            //       So our ret is at data +3, we try to have a valid instruction with:
-            //        1] \xC0 ; but NOT \xC0\xC3
-            //        2] \x31\xC0
-            //        3] \xE9\x31\xC0
-            //        4] ...
-            //    */
-            //    if(m_dis.EIP + len_instr > last_instr.get_absolute_address(data))
-            //        continue;
+        Instruction & last_instr = gadget.front();
 
-            //    // We want consecutive gadget, not with a "hole" between them
-            //    if(m_dis.EIP + len_instr != last_instr.get_absolute_address(data))
-            //        break;
+        /*
+            We don't want to reuse the opcode of the ret instruction to create a new one:
+               Example:
+                data = \xE9
+                       \x31
+                       \xC0
+                       \xC3
+                       \x00
+           So our ret is at data +3, we try to have a valid instruction with:
+            1] \xC0 ; but NOT \xC0\xC3
+            2] \x31\xC0
+            3] \xE9\x31\xC0
+            4] ...
+        */
+        if(m_dis.EIP + len_instr > last_instr.get_absolute_address(data))
+            continue;
 
-            //    /*
-            //        OK now we can filter the instruction allowed
-            //         1] Only the last instruction must jmp/call/ret somewhere
-            //         2] Other details: disallow the jmp far etc
-            //    */
-            //    if(is_valid_instruction(&m_dis))
-            //    {
-            //        gadget.push_front(Instruction(
-            //            std::string(m_dis.CompleteInstr),
-            //            m_dis.EIP - (unsigned long long)data,
-            //            len_instr
-            //        ));
-            //    }
-            //}
-            //
-            //Gadget * g = new (std::nothrow) Gadget();
-            //if(g == NULL)
-            //    RAISE_EXCEPTION("Cannot allocate a gadget");
+        // We want consecutive gadget, not with a "hole" between them
+        if(m_dis.EIP + len_instr != last_instr.get_absolute_address(data))
+            break;
 
-            //for(std::list<Instruction>::iterator it = gadget.begin(); it != gadget.end(); ++it)
-            //    g->add_instruction(new Instruction(*it));
+        /*
+            OK now we can filter the instruction allowed
+             1] Only the last instruction must jmp/call/ret somewhere
+             2] Other details: disallow the jmp far etc
+        */
+        if(is_valid_instruction(&m_dis))
+        {
+            gadget.push_front(Instruction(
+                std::string(m_dis.CompleteInstr),
+                m_dis.EIP - (unsigned long long)data,
+                len_instr
+            ));
+        }
+    }
+    
+    /* 
+        Now I have the longest gadget (in term of instruction, <= depth),
+        I can add the sub-gadget
+        Example:
+            longuest = xor ecx, ecx ; pop edx ; ret
+            gadgets = [
+                'xor ecx, ecx ; pop edx ; ret',
+                'pop edx ; ret',
+                'ret'
+           ]
+    */
 
-            //gadgets.push_back(g);
+    for(std::list<Instruction>::iterator it = gadget.begin(); it != gadget.end(); ++it)
+    {
+        Gadget *sub_gadget = new (std::nothrow) Gadget();
+        if(sub_gadget == NULL)
+            RAISE_EXCEPTION("Cannot allocate a gadget");
 
+        for(std::list<Instruction>::iterator it2 = it; it2 != gadget.end(); ++it2)
+            sub_gadget->add_instruction(new Instruction(*it2));
+
+        gadgets.push_back(sub_gadget);
+    }
+    
     return gadgets;
 }
 
@@ -109,19 +132,19 @@ bool BeaDisassembler::is_valid_ending_instruction(DISASM* d)
     Int32 branch_type = d->Instruction.BranchType;
     UInt64 addr_value = d->Instruction.AddrValue;
     char *mnemonic = d->Instruction.Mnemonic;
+    bool is_good_branch_type = (
+        /* We accept all the ret type instructions (except retf/iret) */
+        (branch_type == RetType && strncmp(mnemonic, "retf", 4) != 0 && strncmp(mnemonic, "iretd", 4) != 0) || 
+
+        /* call reg32 / call [reg32] */
+        (branch_type == CallType && addr_value == 0) ||
+
+        /* jmp reg32 / jmp [reg32] */
+        (branch_type == JmpType && addr_value == 0)
+    );
 
     return (
-        (
-            /* We accept all the ret type instructions (except retf/iret) */
-            (branch_type == RetType && strncmp(mnemonic, "retf", 4) != 0 && strncmp(mnemonic, "iretd", 4) != 0) || 
-            
-            /* call reg32 / call [reg32] */
-            (branch_type == CallType && addr_value == 0) ||
-            
-            /* jmp reg32 / jmp [reg32] */
-            (branch_type == JmpType && addr_value == 0)
-        ) &&
-
+        is_good_branch_type && 
         /* Yeah, entrance isn't allowed to the jmp far/call far */
         strstr(d->CompleteInstr, "far") == NULL
     );
@@ -158,7 +181,7 @@ bool BeaDisassembler::is_valid_instruction(DISASM *d)
         );
 }
 
-std::list<Gadget*> BeaDisassembler::find_rop_gadgets(const unsigned char* data, unsigned long long size, unsigned long long vaddr, unsigned int depth)
+std::list<Gadget*> BeaDisassembler::find_rop_gadgets(const unsigned char* data, unsigned long long size, unsigned long long vaddr)
 {
     std::list<Gadget*> merged_gadgets;
 
@@ -189,7 +212,7 @@ std::list<Gadget*> BeaDisassembler::find_rop_gadgets(const unsigned char* data, 
             /* Okay I found a RET ; now I can build the gadget */
             memcpy(&ret_instr, &m_dis, sizeof(DISASM));
 
-            std::list<Gadget*> gadgets = find_all_gadget_from_ret(data, &ret_instr, depth);
+            std::list<Gadget*> gadgets = find_all_gadget_from_ret(data, &ret_instr, offset, len);
             for(std::list<Gadget*>::iterator it = gadgets.begin(); it != gadgets.end(); ++it)
                 merged_gadgets.push_back(*it);
         }
