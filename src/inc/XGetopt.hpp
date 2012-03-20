@@ -15,9 +15,14 @@
 #ifndef XGETOPT_H
 #define XGETOPT_H
 
+#include "platform.h"
+
+#ifdef LINUX
+#include <unistd.h>
+#else
 extern int optind, opterr;
 extern TCHAR *optarg;
 
 int getopt(int argc, TCHAR *argv[], TCHAR *optstring);
-
+#endif
 #endif //XGETOPT_H

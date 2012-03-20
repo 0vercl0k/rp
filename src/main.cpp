@@ -3,17 +3,11 @@
 #include "program.hpp"
 #include "beadisassembler.hpp"
 #include "toolbox.hpp"
+#include "XGetopt.hpp"
 
 #include <iostream>
 #include <exception>
 #include <cstdlib>
-
-#ifdef WINDOWS
-#include "XGetopt.hpp"
-#else
-#include <unistd.h>
-#endif
-
 
 #define NUM_V "0.1"
 
@@ -42,34 +36,32 @@ void display_version()
 
 void display_usage()
 {
-    std::cout << std::endl << "USAGE:" << std::endl << "./rp++ <file> <option>\n" << std::endl;
+    std::cout << std::endl << "USAGE:" << std::endl << "./rp++ <option>\n" << std::endl;
     std::cout << "Options:" << std::endl;
-    std::cout << "\t -d: Display several information concerning the binary" << std::endl;
-    std::cout << "\t     Specify the level of verbosity, 0 (default) to 3" << std::endl;
-    std::cout << "\t -r: Find a bunch of gadgets usable in your future exploits" << std::endl;
-    std::cout << "\t     Specify the maximum number of instruction your gadgets will have (btw, the final instruction doesn't count)" << std::endl;
-    std::cout << "\t -v: Display the version of rp++ you are using" << std::endl;
+    std::cout << "\t -f      : Give me the path of the binary" << std::endl;
+    std::cout << "\t -d [0-2]: Display several information concerning the binary" << std::endl;
+    std::cout << "\t           Specify the level of verbosity, 0 (default) to 2" << std::endl;
+    std::cout << "\t -r <int>: Find a bunch of gadgets usable in your future exploits" << std::endl;
+    std::cout << "\t           Specify the maximum number of instruction in your gadgets" << std::endl;
+    std::cout << "\t -v       : Display the version of rp++ you are using" << std::endl;
 }
 
 int main(int argc, char* argv[])
 {
-    if(argc < 2)
+    if(argc == 1)
     {
         display_usage();
         return -1;
     }
 
     int c;
-    bool d_flag = false, r_flag = false, v_flag = false;
+    bool d_flag = false, r_flag = false, v_flag = false, f_flag = false;
     unsigned int display_value = 0, depth = 0;
-
-    std::string program_path(argv[1]);
-
-     
+    char* p_file = NULL;
+    
     try
     {
-        Program p(program_path);
-        while ((c = getopt(argc - 1, &argv[1], "vr:d:")) != -1)
+        while ((c = getopt(argc, argv, "vr:d:f:")) != -1)
         {
             switch (c)
             {
@@ -86,7 +78,12 @@ int main(int argc, char* argv[])
                     d_flag = true;
                     display_value = atoi(optarg);
                     break;
-               
+
+                case 'f':
+                    f_flag = true;
+                    p_file = optarg;
+                    break;
+
                 default:
                     continue;
             }
@@ -94,12 +91,18 @@ int main(int argc, char* argv[])
 
         if(v_flag)
             display_version();
+        
+        if(f_flag)
+        {
+            std::string program_path(p_file);
+            Program p(program_path);
 
-        if(d_flag)
-            p.display_information((display_value > 2)? VERBOSE_LEVEL_1 : (VerbosityLevel)display_value);
+            if(d_flag)
+                p.display_information((display_value > 2)? VERBOSE_LEVEL_1 : (VerbosityLevel)display_value);
 
-        if(r_flag)
-            p.find_and_display_gadgets(depth);
+            if(r_flag)
+                p.find_and_display_gadgets(depth);
+        }
     }
     catch(const std::exception &e)
     {
