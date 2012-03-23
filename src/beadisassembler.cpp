@@ -4,8 +4,8 @@
 #include <iostream>
 #include <cstring>
 
-BeaDisassembler::BeaDisassembler(Arch arch, unsigned int depth)
-: m_depth(depth)
+BeaDisassembler::BeaDisassembler(Arch arch, unsigned int depth, unsigned long long vaddr)
+: m_depth(depth), m_vaddr(vaddr)
 {
     memset(&m_dis, 0, sizeof(DISASM));
     m_dis.Options = NasmSyntax + PrefixedNumeral ;//+ ShowSegmentRegs;
@@ -21,10 +21,17 @@ BeaDisassembler::~BeaDisassembler(void)
 std::list<Gadget*> BeaDisassembler::find_all_gadget_new_algo(const unsigned char* data, DISASM* d_ret, unsigned long long offset, unsigned int len)
 {
     std::list<Gadget*> gadgets;
-    
+
     // we go back at the longuest instruction possible (x86: max size = 15bytes)
     m_dis.EIP         = d_ret->EIP - m_depth*15;
     m_dis.VirtualAddr = d_ret->VirtualAddr - m_depth*15;
+
+    //going back yeah, but not too much :))
+    if(m_dis.EIP < (unsigned long long)data)
+    {
+        m_dis.EIP = (UIntPtr)data;
+        m_dis.VirtualAddr = m_vaddr;
+    }
 
     while(m_dis.EIP < d_ret->EIP)
     {

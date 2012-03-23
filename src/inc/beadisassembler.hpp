@@ -22,7 +22,7 @@ class BeaDisassembler
             IA64 = 64
         };
 
-        explicit BeaDisassembler(Arch arch, unsigned int depth);
+        explicit BeaDisassembler(Arch arch, unsigned int depth, unsigned long long vaddr);
         ~BeaDisassembler(void);
 
         /* This function returns the whole gadgets found in [data, data+size] ; it tries to find gadget with depth instruction (without the ret one) */
@@ -36,6 +36,7 @@ class BeaDisassembler
 
         DISASM m_dis;
         unsigned int m_depth;
+        unsigned long long m_vaddr;
 };
 
 #endif
