@@ -8,6 +8,7 @@
 #include "section.hpp"
 #include "coloshell.hpp"
 #include "rpexception.hpp"
+#include "toolbox.hpp"
 
 Program::Program(const std::string & program_path)
 : m_cpu(NULL), m_exformat(NULL)
@@ -98,6 +99,28 @@ void Program::find_and_display_gadgets(unsigned int depth)
             unsigned long long va = va_section + it2->second->get_first_offset();
             
             display_gadget_lf(va, it2);
+        }
+    }
+}
+
+void Program::search_and_display(const char* hex)
+{
+    std::vector<Section*> executable_sections = m_exformat->get_executables_section(m_file);
+    if(executable_sections.size() == 0)
+        std::cout << "It seems your binary haven't executable sections." << std::endl;
+
+    unsigned int size = 0;
+    unsigned char* hex_values = string_to_hex(hex, &size);
+
+    for(std::vector<Section*>::iterator it = executable_sections.begin(); it != executable_sections.end(); ++it)
+    {
+        std::list<unsigned long long> ret = (*it)->search_in_memory(hex_values, size);
+        for(std::list<unsigned long long>::iterator it2 = ret.begin(); it2 != ret.end(); ++it2)
+        {
+            unsigned long long va_section = m_exformat->raw_offset_to_va((*it)->get_offset(), (*it)->get_offset());
+            unsigned long long va = va_section + *it2;
+
+            display_offset_lf(va, hex);
         }
     }
 }

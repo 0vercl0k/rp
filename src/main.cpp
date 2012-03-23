@@ -38,11 +38,16 @@ void display_usage()
 {
     std::cout << std::endl << "USAGE:" << std::endl << "./rp++ <option>\n" << std::endl;
     std::cout << "Options:" << std::endl;
-    std::cout << "\t -f      : Give me the path of the binary" << std::endl;
+    std::cout << "\t -f      : Give me the path of the binary" << std::endl << std::endl;
+
     std::cout << "\t -d [0-2]: Display several information concerning the binary" << std::endl;
-    std::cout << "\t           Specify the level of verbosity, 0 (default) to 2" << std::endl;
+    std::cout << "\t           Specify the level of verbosity, 0 (default) to 2" << std::endl << std::endl;
+
     std::cout << "\t -r <int>: Find a bunch of gadgets usable in your future exploits" << std::endl;
-    std::cout << "\t           Specify the maximum number of instruction in your gadgets" << std::endl;
+    std::cout << "\t           Specify the maximum number of instruction in your gadgets" << std::endl << std::endl;
+
+    std::cout << "\t -s <hex>: Perfom a research of your hex values in the executable sections of your binary" << std::endl << std::endl;
+
     std::cout << "\t -v      : Display the version of rp++ you are using" << std::endl;
 }
 
@@ -55,13 +60,13 @@ int main(int argc, char* argv[])
     }
 
     int c;
-    bool d_flag = false, r_flag = false, v_flag = false, f_flag = false;
+    bool d_flag = false, r_flag = false, v_flag = false, f_flag = false, s_flag = false;
     unsigned int display_value = 0, depth = 0;
-    char* p_file = NULL;
+    char* p_file = NULL, *p_hex_values = NULL;
     
     try
     {
-        while ((c = getopt(argc, argv, "vr:d:f:")) != -1)
+        while ((c = getopt(argc, argv, "vr:d:f:s:")) != -1)
         {
             switch (c)
             {
@@ -84,6 +89,11 @@ int main(int argc, char* argv[])
                     p_file = optarg;
                     break;
 
+                case 's':
+                    s_flag = true;
+                    p_hex_values = optarg;
+                    break;
+
                 default:
                     continue;
             }
@@ -102,6 +112,9 @@ int main(int argc, char* argv[])
 
             if(r_flag)
                 p.find_and_display_gadgets(depth);
+
+            if(s_flag)
+                p.search_and_display(p_hex_values);
         }
     }
     catch(const std::exception &e)

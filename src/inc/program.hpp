@@ -3,6 +3,7 @@
 
 #include <string>
 #include <fstream>
+#include <list>
 
 #include "cpu.hpp"
 #include "executable_format.hpp"
@@ -16,6 +17,8 @@ class Program
         void display_information(VerbosityLevel lvl = VERBOSE_LEVEL_1);
 
         void find_and_display_gadgets(unsigned int depth);
+
+        void search_and_display(const char *hex);
 
     private:
         CPU* m_cpu;

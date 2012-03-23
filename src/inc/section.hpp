@@ -2,6 +2,7 @@
 #define SECTION_HPP
 
 #include <string>
+#include <list>
 #include <fstream>
 
 /*
@@ -32,6 +33,8 @@ class Section
 
         /* Get the offset of the section */
         const unsigned long long get_offset(void) const;
+
+        std::list<unsigned long long> search_in_memory(const unsigned char *val, const unsigned int size);
 
     private:
         std::string m_name;

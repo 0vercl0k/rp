@@ -3,6 +3,8 @@
 #include "rpexception.hpp"
 #include "safeint.hpp"
 
+#include <cstring>
+
 Section::Section(std::ifstream &file, const char *name, const unsigned long long offset, const unsigned long long size, const Properties props)
 : m_name(name), m_offset(offset), m_size(size), m_props(props), m_section(NULL)
 {
@@ -47,4 +49,20 @@ unsigned char* Section::get_section_buffer(void) const
 const unsigned long long Section::get_offset(void) const
 {
     return m_offset;
+}
+
+std::list<unsigned long long> Section::search_in_memory(const unsigned char *val, const unsigned int size)
+{
+    unsigned long long offset = 0;
+    std::list<unsigned long long> val_found;
+
+    while(offset < m_size)
+    {
+        if(std::memcmp(m_section + offset, val, size) == 0)
+            val_found.push_back(offset);
+
+        offset += size;
+    }
+
+    return val_found;
 }

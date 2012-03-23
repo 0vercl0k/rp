@@ -170,4 +170,15 @@ static void coloshell(const T t, const Colors colo)
     disable_color();                                                                                          \
 }
 
+#define display_offset_lf(va, hex_val) {                                               \
+    enable_color(COLO_RED);                                                            \
+    std::cout << "0x" << std::setw(sizeof(va)) << std::right << std::setfill('0');     \
+    std::cout << std::hex << va;                                                       \
+    disable_color();                                                                   \
+    std::cout << ": ";                                                                 \
+    enable_color(COLO_GREEN);                                                          \
+    std::cout << hex_val << std::endl;                                                 \
+    disable_color();                                                                   \
+}
+
 #endif
