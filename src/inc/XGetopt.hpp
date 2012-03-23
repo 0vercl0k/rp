@@ -20,6 +20,7 @@
 #ifdef LINUX
 #include <unistd.h>
 #else
+#include <windows.h>
 extern int optind, opterr;
 extern TCHAR *optarg;
 

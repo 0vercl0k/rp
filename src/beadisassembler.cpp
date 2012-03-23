@@ -18,11 +18,14 @@ BeaDisassembler::~BeaDisassembler(void)
 {
 }
 
-std::list<Gadget*> BeaDisassembler::find_all_gadget_new_algo(const unsigned char* data, DISASM* d_ret, unsigned long long offset, unsigned int len)
+std::list<Gadget*> BeaDisassembler::find_all_gadget_from_ret(const unsigned char* data, DISASM* d_ret, unsigned long long offset, unsigned int len)
 {
     std::list<Gadget*> gadgets;
 
-    // we go back at the longuest instruction possible (x86: max size = 15bytes)
+    /*
+        We go back, trying to create the longuest gadget possible with the longuest instructions
+        "On INTEL processors, (in IA-32 or intel 64 modes), instruction never exceeds 15 bytes." -- beaengine.org
+    */
     m_dis.EIP         = d_ret->EIP - m_depth*15;
     m_dis.VirtualAddr = d_ret->VirtualAddr - m_depth*15;
 
@@ -80,115 +83,6 @@ std::list<Gadget*> BeaDisassembler::find_all_gadget_new_algo(const unsigned char
         m_dis.EIP = saved_eip + 1;
     }
 
-    return gadgets;
-}
-
-std::list<Gadget*> BeaDisassembler::find_all_gadget_from_ret(const unsigned char* data, DISASM* d_ret, unsigned long long offset, unsigned int len)
-{
-    std::list<Gadget*> gadgets;
-    std::list<Instruction> gadget;
-
-    
-    /* The RET instruction is the latest of our instruction chain */
-    gadget.push_front(Instruction(
-        std::string(d_ret->CompleteInstr),
-        offset,
-        len
-    ));
-
-    m_dis.EIP = d_ret->EIP;
-    m_dis.VirtualAddr = d_ret->VirtualAddr;
-
-    while(true)
-    {
-        if(gadget.size() >= (m_depth + 1))
-            break;
-
-        /* We respect the limits of the buffer */
-        if(m_dis.EIP <= (UIntPtr)data)
-            break;
-
-        m_dis.EIP--;
-        m_dis.VirtualAddr--;
-        
-        //TODO: Fix properly the security block
-        m_dis.SecurityBlock = 0;
-
-        int len_instr = Disasm(&m_dis);
-        if(len_instr == UNKNOWN_OPCODE)
-        {
-            /* If we have a first valid instruction, but the second one is unknown ; we return it even if its size is < depth */
-            if(gadget.size() > 1)
-                break;
-            else
-                continue;
-        }
-        
-        if(len_instr == OUT_OF_BLOCK)
-            break;
-
-        Instruction & last_instr = gadget.front();
-
-        /*
-            We don't want to reuse the opcode of the ret instruction to create a new one:
-               Example:
-                data = \xE9
-                       \x31
-                       \xC0
-                       \xC3
-                       \x00
-           So our ret is at data +3, we try to have a valid instruction with:
-            1] \xC0 ; but NOT \xC0\xC3
-            2] \x31\xC0
-            3] \xE9\x31\xC0
-            4] ...
-        */
-        if(m_dis.EIP + len_instr > last_instr.get_absolute_address(data))
-            continue;
-
-        // We want consecutive gadget, not with a "hole" between them
-        if(m_dis.EIP + len_instr != last_instr.get_absolute_address(data))
-            break;
-
-        /*
-            OK now we can filter the instruction allowed
-             1] Only the last instruction must jmp/call/ret somewhere
-             2] Other details: disallow the jmp far etc
-        */
-        if(is_valid_instruction(&m_dis))
-        {
-            gadget.push_front(Instruction(
-                std::string(m_dis.CompleteInstr),
-                m_dis.EIP - (unsigned long long)data,
-                len_instr
-            ));
-        }
-    }
-    
-    /* 
-        Now I have the longest gadget (in term of instruction, <= depth),
-        I can add the sub-gadget
-        Example:
-            longuest = xor ecx, ecx ; pop edx ; ret
-            gadgets = [
-                'xor ecx, ecx ; pop edx ; ret',
-                'pop edx ; ret',
-                'ret'
-           ]
-    */
-
-    for(std::list<Instruction>::iterator it = gadget.begin(); it != gadget.end(); ++it)
-    {
-        Gadget *sub_gadget = new (std::nothrow) Gadget();
-        if(sub_gadget == NULL)
-            RAISE_EXCEPTION("Cannot allocate a gadget");
-
-        for(std::list<Instruction>::iterator it2 = it; it2 != gadget.end(); ++it2)
-            sub_gadget->add_instruction(new Instruction(*it2));
-
-        gadgets.push_back(sub_gadget);
-    }
-    
     return gadgets;
 }
 
@@ -277,7 +171,7 @@ std::list<Gadget*> BeaDisassembler::find_rop_gadgets(const unsigned char* data, 
             /* Okay I found a RET ; now I can build the gadget */
             memcpy(&ret_instr, &m_dis, sizeof(DISASM));
 
-            std::list<Gadget*> gadgets = find_all_gadget_new_algo(data, &ret_instr, offset, len);
+            std::list<Gadget*> gadgets = find_all_gadget_from_ret(data, &ret_instr, offset, len);
             for(std::list<Gadget*>::iterator it = gadgets.begin(); it != gadgets.end(); ++it)
                 merged_gadgets.push_back(*it);
         }
