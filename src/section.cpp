@@ -53,16 +53,11 @@ const unsigned long long Section::get_offset(void) const
 
 std::list<unsigned long long> Section::search_in_memory(const unsigned char *val, const unsigned int size)
 {
-    unsigned long long offset = 0;
     std::list<unsigned long long> val_found;
 
-    while(offset < m_size)
-    {
+    for(unsigned long long offset = 0; offset < m_size; offset++)
         if(std::memcmp(m_section + offset, val, size) == 0)
             val_found.push_back(offset);
-
-        offset += size;
-    }
 
     return val_found;
 }
