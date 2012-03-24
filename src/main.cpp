@@ -38,7 +38,7 @@ void display_usage()
 {
     w_yel_lf("DESCRIPTION");
     w_red("rp++");
-    std::cout << " is a very simple tool with a very simple purpose:" << std::endl << "  -> helping you to find interesting gadget in pe/elf binaries." << std::endl;
+    std::cout << " is a very simple tool with a very simple purpose:" << std::endl << "  -> helping you to find interesting gadget in pe/elf x86/x64 binaries." << std::endl;
     std::cout << "NB: The original idea goes to Jonathan Salwan and its 'ROPGadget' tool." << std::endl << std::endl;
 
     w_yel_lf("USAGE:");
@@ -70,7 +70,7 @@ int main(int argc, char* argv[])
     bool d_flag = false, r_flag = false, v_flag = false, f_flag = false, s_flag = false;
     unsigned int display_value = 0, depth = 0;
     char* p_file = NULL, *p_hex_values = NULL;
-    
+
     try
     {
         while ((c = getopt(argc, argv, "vr:d:f:s:")) != -1)
