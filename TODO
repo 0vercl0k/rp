@@ -5,8 +5,4 @@ TODO:
 
 * PE+ELF testing & crashing test
 
-* retf & iretd => not valid ending instruction in a gadget but call reg32/jmp reg32 are!
-
-* display useful information: aslr awareness, nx support in elf/pe
-
 * pe: check the sizeof optional header before trying to read its content

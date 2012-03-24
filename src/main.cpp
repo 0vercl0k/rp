@@ -36,19 +36,26 @@ void display_version()
 
 void display_usage()
 {
-    std::cout << std::endl << "USAGE:" << std::endl << "./rp++ <option>\n" << std::endl;
-    std::cout << "Options:" << std::endl;
-    std::cout << "\t -f      : Give me the path of the binary" << std::endl << std::endl;
+    w_yel_lf("DESCRIPTION");
+    w_red("rp++");
+    std::cout << " is a very simple tool with a very simple purpose:" << std::endl << "  -> helping you to find interesting gadget in pe/elf binaries." << std::endl;
+    std::cout << "NB: The original idea goes to Jonathan Salwan and its 'ROPGadget' tool." << std::endl << std::endl;
 
-    std::cout << "\t -d [0-2]: Display several information concerning the binary" << std::endl;
-    std::cout << "\t           Specify the level of verbosity, 0 (default) to 2" << std::endl << std::endl;
+    w_yel_lf("USAGE:");
+    std::cout << "./rp++ <options>\n" << std::endl;
+    
+    w_yel_lf("OPTIONS:");
+    std::cout << "   -f      : Give me the path of the binary" << std::endl << std::endl;
 
-    std::cout << "\t -r <int>: Find a bunch of gadgets usable in your future exploits" << std::endl;
-    std::cout << "\t           Specify the maximum number of instruction in your gadgets" << std::endl << std::endl;
+    std::cout << "   -d [0-2]: Display several information concerning the binary" << std::endl;
+    std::cout << "             Specify the level of verbosity, 0 (default) to 2" << std::endl << std::endl;
 
-    std::cout << "\t -s <hex>: Perfom a research of your hex values in the executable sections of your binary" << std::endl << std::endl;
+    std::cout << "   -r <int>: Find a bunch of gadgets usable in your future exploits" << std::endl;
+    std::cout << "             Specify the maximum number of instruction in your gadgets" << std::endl << std::endl;
 
-    std::cout << "\t -v      : Display the version of rp++ you are using" << std::endl;
+    std::cout << "   -s <hex>: Try to find hex values in the executable sections of your binary" << std::endl << std::endl;
+
+    std::cout << "   -v      : Display the version of rp++ you are using" << std::endl;
 }
 
 int main(int argc, char* argv[])
