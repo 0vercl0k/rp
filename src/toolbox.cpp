@@ -3,6 +3,7 @@
 
 #include <cstring>
 #include <cstdlib>
+#include <vector>
 
 std::string verbosity_to_string(const VerbosityLevel lvl)
 {
@@ -57,34 +58,53 @@ bool is_hex_char(char c)
 
 unsigned char * string_to_hex(const char* hex, unsigned int * size)
 {
-    unsigned char *buffer = NULL;
-    unsigned int len = (unsigned int)std::strlen(hex);
+    unsigned int len = (unsigned int)std::strlen(hex), i = 0, byte = 0;
+    std::vector<unsigned char> bytes;
 
-    if(len == 0 || len % 4 != 0)
+    if(len == 0)
     {
         *size = 0;
         return NULL;
     }
 
-    *size = len / 4;
-    
-    buffer = new (std::nothrow) unsigned char[sizeof(char) * (*size)];
+    while(i < len)
+    {
+        //not printable
+        if(hex[i] == '\\' && hex[i + 1] == 'x')
+        {
+            if(is_hex_char(hex[i + 2]) && is_hex_char(hex[i + 3]))
+            {
+                char str_byte[3] = {
+                    hex[i + 2],
+                    hex[i + 3],
+                    0
+                };
+
+                byte = strtoul(str_byte, NULL, 16);
+                i += 4;
+            }
+            else
+                RAISE_EXCEPTION("Your hex values aren't formated correctly");
+        }
+        //printable
+        else
+        {
+            byte = hex[i];
+            i++;
+        }
+        
+        bytes.push_back(byte);
+    }
+
+    *size = (unsigned int)bytes.size();
+
+    unsigned char *buffer = new (std::nothrow) unsigned char[*size];
     if(buffer == NULL)
         RAISE_EXCEPTION("Cannot allocate buffer");
 
-    for(unsigned int i = 0; i < len - 3; i += 4)
-    {
-        if(
-           hex[i] == '\\' && hex[i + 1] == 'x' &&
-           is_hex_char(hex[i + 2]) && is_hex_char(hex[i + 3])
-        )
-        {
-            unsigned int byte = std::strtoul(&hex[i + 2], NULL, 16);
-            buffer[i / 4] = byte;
-        }
-        else
-            RAISE_EXCEPTION("Your hex values aren't formated correctly");
-    }
+    unsigned int j = 0;
+    for(std::vector<unsigned char>::iterator it = bytes.begin(); it != bytes.end(); ++it, j++)
+        buffer[j] = *it;
 
     return buffer;
 }

@@ -123,4 +123,6 @@ void Program::search_and_display(const char* hex)
             display_offset_lf(va, hex);
         }
     }
+
+    delete[] hex_values;
 }
