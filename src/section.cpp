@@ -15,12 +15,12 @@ Section::Section(std::ifstream &file, const char *name, const unsigned long long
 
     std::streampos backup = file.tellg();
 
-    file.seekg(offset, std::ios::beg);
-    m_section = new (std::nothrow) unsigned char[m_size];
+    file.seekg((unsigned int)offset, std::ios::beg);
+    m_section = new (std::nothrow) unsigned char[(unsigned int)m_size];
     if(m_section == NULL)
         RAISE_EXCEPTION("Cannote allocate a section.");
 
-    file.read((char*)m_section, m_size);
+    file.read((char*)m_section, (unsigned int)m_size);
 
     file.seekg(backup);
 }
