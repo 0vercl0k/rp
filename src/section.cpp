@@ -55,9 +55,22 @@ std::list<unsigned long long> Section::search_in_memory(const unsigned char *val
 {
     std::list<unsigned long long> val_found;
 
-    for(unsigned long long offset = 0; offset < m_size; offset++)
+    for(unsigned long long offset = 0; offset < m_size; ++offset)
         if(std::memcmp(m_section + offset, val, size) == 0)
             val_found.push_back(offset);
+
+    return val_found;
+}
+
+std::list<unsigned long long> Section::search_integer_in_memory(const unsigned int val)
+{
+    std::list<unsigned long long> val_found;
+    for(unsigned long long offset = 0; offset < m_size; ++offset)
+    {
+        unsigned int tmp = *(unsigned int*)(m_section+offset);
+        if(tmp == val)
+            val_found.push_back(offset);
+    }
 
     return val_found;
 }

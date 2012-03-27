@@ -19,6 +19,7 @@ class Program
         void find_and_display_gadgets(unsigned int depth);
 
         void search_and_display(const char *hex);
+        void search_int_and_display(const unsigned int value);
 
     private:
         CPU* m_cpu;

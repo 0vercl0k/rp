@@ -35,6 +35,7 @@ class Section
         const unsigned long long get_offset(void) const;
 
         std::list<unsigned long long> search_in_memory(const unsigned char *val, const unsigned int size);
+        std::list<unsigned long long> search_integer_in_memory(const unsigned int val);
 
     private:
         std::string m_name;

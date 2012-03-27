@@ -45,18 +45,20 @@ void display_usage()
     std::cout << "./rp++ <options>\n" << std::endl;
     
     w_yel_lf("OPTIONS:");
-    std::cout << "   -f      : Give me the path of the binary" << std::endl << std::endl;
+    std::cout << "   -f       : Give me the path of the binary" << std::endl << std::endl;
 
-    std::cout << "   -d [0-2]: Display several information concerning the binary" << std::endl;
+    std::cout << "   -d [0-2] : Display several information concerning the binary" << std::endl;
     std::cout << "             Specify the level of verbosity, 0 (default) to 2" << std::endl << std::endl;
 
-    std::cout << "   -r <int>: Find a bunch of gadgets usable in your future exploits" << std::endl;
+    std::cout << "   -r <int> : Find a bunch of gadgets usable in your future exploits" << std::endl;
     std::cout << "             Specify the maximum number of instruction in your gadgets" << std::endl << std::endl;
 
-    std::cout << "   -s <hex>: Try to find hex values in the executable sections of your binary" << std::endl;
+    std::cout << "   -s <hex> : Try to find hex values in the executable sections of your binary" << std::endl;
     std::cout << "             You can use something like '\\x41Al\\xAB'" << std::endl << std::endl;
 
-    std::cout << "   -v      : Display the version of rp++ you are using" << std::endl;
+    std::cout << "   -i <int> : Try to find a pointer on a specific integer value" << std::endl << std::endl;
+
+    std::cout << "   -v       : Display the version of rp++ you are using" << std::endl;
 }
 
 int main(int argc, char* argv[])
@@ -68,13 +70,19 @@ int main(int argc, char* argv[])
     }
 
     int c;
-    bool d_flag = false, r_flag = false, v_flag = false, f_flag = false, s_flag = false;
-    unsigned int display_value = 0, depth = 0;
+    bool d_flag = false,
+        r_flag = false,
+        v_flag = false,
+        f_flag = false,
+        s_flag = false,
+        i_flag = false;
+
+    unsigned int display_value = 0, depth = 0, int_to_search = 0;
     char* p_file = NULL, *p_hex_values = NULL;
 
     try
     {
-        while ((c = getopt(argc, argv, "vr:d:f:s:")) != -1)
+        while ((c = getopt(argc, argv, "vr:d:f:s:i:")) != -1)
         {
             switch (c)
             {
@@ -101,6 +109,10 @@ int main(int argc, char* argv[])
                     s_flag = true;
                     p_hex_values = optarg;
                     break;
+                case 'i':
+                    i_flag = true;
+                    int_to_search = std::strtoul(optarg, NULL, 16);
+                    break;
 
                 default:
                     continue;
@@ -123,6 +135,9 @@ int main(int argc, char* argv[])
 
             if(s_flag)
                 p.search_and_display(p_hex_values);
+            
+            if(i_flag)
+                p.search_int_and_display(int_to_search);
         }
     }
     catch(const std::exception &e)

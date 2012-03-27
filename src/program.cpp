@@ -126,3 +126,23 @@ void Program::search_and_display(const char* hex)
 
     delete[] hex_values;
 }
+
+void Program::search_int_and_display(const unsigned int value)
+{
+    std::vector<Section*> executable_sections = m_exformat->get_executables_section(m_file);
+    if(executable_sections.size() == 0)
+        std::cout << "It seems your binary haven't executable sections." << std::endl;
+
+
+    for(std::vector<Section*>::iterator it = executable_sections.begin(); it != executable_sections.end(); ++it)
+    {
+        std::list<unsigned long long> ret = (*it)->search_integer_in_memory(value);
+        for(std::list<unsigned long long>::iterator it2 = ret.begin(); it2 != ret.end(); ++it2)
+        {
+            unsigned long long va_section = m_exformat->raw_offset_to_va((*it)->get_offset(), (*it)->get_offset());
+            unsigned long long va = va_section + *it2;
+
+            display_offset_lf(va, value);
+        }
+    }
+}
