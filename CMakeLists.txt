@@ -6,34 +6,40 @@ project(ROPGadget-pp)
 set(CMAKE_BUILD_TYPE Debug)
 set(EXECUTABLE_OUTPUT_PATH ../bin/)
 
+set(RP_NAME "rp")
+
 if(WIN32)
+    set(RP_NAME "${RP_NAME}-win")
     set(EXTENSION_LIBRARY .lib)
 endif(WIN32)
 
 if(UNIX)
+    set(RP_NAME "${RP_NAME}-lin")
     set(EXTENSION_LIBRARY .a)
 endif(UNIX)
 
 if(CMAKE_SIZEOF_VOID_P EQUAL 8)
+    set(RP_NAME "${RP_NAME}-x64")
     set(BEA_LIBRARY "BeaEngine64${EXTENSION_LIBRARY}")
     set(ARGTABLE_LIBRARY "argtable2.x64${EXTENSION_LIBRARY}")
 else()
+    set(RP_NAME "${RP_NAME}-x86")
     set(BEA_LIBRARY "BeaEngine32${EXTENSION_LIBRARY}")
     set(ARGTABLE_LIBRARY "argtable2.x86${EXTENSION_LIBRARY}")
 endif(CMAKE_SIZEOF_VOID_P EQUAL 8)
 
-#if(MSVC)
+if(MSVC)
     # link the CRT 
-#    foreach(flag_var CMAKE_CXX_FLAGS CMAKE_CXX_FLAGS_DEBUG CMAKE_CXX_FLAGS_RELEASE CMAKE_CXX_FLAGS_MINSIZEREL CMAKE_CXX_FLAGS_RELWITHDEBINFO)
-#        if(${flag_var} MATCHES "/MD")
-#            string(REGEX REPLACE "/MD" "/MT" ${flag_var} "${${flag_var}}")
-#        endif(${flag_var} MATCHES "/MD")
+    foreach(flag_var CMAKE_CXX_FLAGS CMAKE_CXX_FLAGS_DEBUG CMAKE_CXX_FLAGS_RELEASE CMAKE_CXX_FLAGS_MINSIZEREL CMAKE_CXX_FLAGS_RELWITHDEBINFO)
+        if(${flag_var} MATCHES "/MD")
+            string(REGEX REPLACE "/MD" "/MT" ${flag_var} "${${flag_var}}")
+        endif(${flag_var} MATCHES "/MD")
 
-#        if(${flag_var} MATCHES "/MDd")
-#            string(REGEX REPLACE "/MDd" "/MTd" ${flag_var} "${${flag_var}}")
-#        endif(${flag_var} MATCHES "/MDd")
-#    endforeach(flag_var)
-#endif(MSVC)
+        if(${flag_var} MATCHES "/MDd")
+            string(REGEX REPLACE "/MDd" "/MTd" ${flag_var} "${${flag_var}}")
+        endif(${flag_var} MATCHES "/MDd")
+    endforeach(flag_var)
+endif(MSVC)
 
 if(CMAKE_COMPILER_IS_GNUCXX)
     # an optimized static striped binary !
@@ -51,7 +57,7 @@ file(
 )
 
 add_executable(
-    rp
+    ${RP_NAME}
     ${ropgadget_pp_files}
 )
 
@@ -68,7 +74,7 @@ set_property(
 )
 
 target_link_libraries(
-    rp
+    ${RP_NAME}
     beaengine
     argtable2
 )
