@@ -54,7 +54,7 @@ int main(int argc, char* argv[])
 
     try
     {
-        if(help->count > 0)
+        if(help->count > 0 || argc == 1)
         {
             w_yel_lf("DESCRIPTION:");
             w_red("rp++");
