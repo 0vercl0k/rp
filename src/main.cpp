@@ -3,7 +3,7 @@
 #include "program.hpp"
 #include "beadisassembler.hpp"
 #include "toolbox.hpp"
-#include "XGetopt.hpp"
+#include "argtable2.h"
 
 #include <iostream>
 #include <exception>
@@ -29,115 +29,83 @@
 #define VERSION VERSION_TM " (Release)"
 #endif
 
-void display_version()
-{
-    std::cout << "You are currently using the version " << VERSION << " of rp++." << std::endl;
-}
-
-void display_usage()
-{
-    w_yel_lf("DESCRIPTION");
-    w_red("rp++");
-    std::cout << " is a very simple tool with a very simple purpose:" << std::endl << "  -> helping you to find interesting gadget in pe/elf x86/x64 binaries." << std::endl;
-    std::cout << "NB: The original idea goes to Jonathan Salwan and its 'ROPGadget' tool." << std::endl << std::endl;
-
-    w_yel_lf("USAGE:");
-    std::cout << "./rp++ <options>\n" << std::endl;
-    
-    w_yel_lf("OPTIONS:");
-    std::cout << "   -f       : Give me the path of the binary" << std::endl << std::endl;
-
-    std::cout << "   -d [0-2] : Display several information concerning the binary" << std::endl;
-    std::cout << "             Specify the level of verbosity, 0 (default) to 2" << std::endl << std::endl;
-
-    std::cout << "   -r <int> : Find a bunch of gadgets usable in your future exploits" << std::endl;
-    std::cout << "             Specify the maximum number of instruction in your gadgets" << std::endl << std::endl;
-
-    std::cout << "   -s <hex> : Try to find hex values in the executable sections of your binary" << std::endl;
-    std::cout << "             You can use something like '\\x41Al\\xAB'" << std::endl << std::endl;
-
-    std::cout << "   -i <int> : Try to find a pointer on a specific integer value" << std::endl << std::endl;
-
-    std::cout << "   -v       : Display the version of rp++ you are using" << std::endl;
-}
-
 int main(int argc, char* argv[])
 {
-    if(argc == 1)
+    struct arg_file *file    = arg_file0("f", "file", "<binary path>", "give binary path");
+    struct arg_int  *display = arg_int0("i", "info", "<0-2>", "display information concerning the elf/pe");
+    struct arg_int  *rop     = arg_int0("r", "rop", "<positive int>", "find a bunch of gadgets usable in your future exploits (the maximum number of instruction in arg)");
+    struct arg_str  *shexa   = arg_str0(NULL, "search-hexa", "<\\x90A\\x90>", "try to find hex values");
+    struct arg_str  *sint    = arg_str0(NULL, "search-int", "<int in hex>", "try to find a pointer on a specific integer value");
+    struct arg_lit  *help    = arg_lit0("h", "help", "print this help and exit");
+    struct arg_lit  *version = arg_lit0("v", "version", "print version information and exit");
+    struct arg_end  *end     = arg_end(20);
+    void* argtable[] = {file, display, rop, shexa, sint, help, version, end};
+
+    if(arg_nullcheck(argtable) != 0)
+        RAISE_EXCEPTION("Cannot allocate long option structures");
+
+    int nerrors = arg_parse(argc, argv, argtable);
+    if(nerrors > 0)
     {
-        display_usage();
+        arg_print_errors(stdout, end, "rp++");
+        std::cout << "Try './rp++ --help' for more information." << std::endl;
         return -1;
     }
 
-    int c;
-    bool d_flag = false,
-        r_flag = false,
-        v_flag = false,
-        f_flag = false,
-        s_flag = false,
-        i_flag = false;
-
-    unsigned int display_value = 0, depth = 0, int_to_search = 0;
-    char* p_file = NULL, *p_hex_values = NULL;
-
     try
     {
-        while ((c = getopt(argc, argv, "vr:d:f:s:i:")) != -1)
+        if(help->count > 0)
         {
-            switch (c)
-            {
-                case 'v':
-                    v_flag = true;
-                    break;
+            w_yel_lf("DESCRIPTION:");
+            w_red("rp++");
+            std::cout << " is a very simple tool with a very simple purpose:" << std::endl << "  -> helping you to find interesting gadget in pe/elf x86/x64 binaries." << std::endl;
+            std::cout << "NB: The original idea goes to Jonathan Salwan and its 'ROPGadget' tool." << std::endl << std::endl;
+            
+            w_yel_lf("USAGE:");
+            std::cout << "./rp++";
+            arg_print_syntax(stdout, argtable, "\n");
 
-                case 'r':
-                    r_flag = true;
-                    depth = atoi(optarg);
-                    break;
-
-                case 'd':
-                    d_flag = true;
-                    display_value = atoi(optarg);
-                    break;
-
-                case 'f':
-                    f_flag = true;
-                    p_file = optarg;
-                    break;
-
-                case 's':
-                    s_flag = true;
-                    p_hex_values = optarg;
-                    break;
-                case 'i':
-                    i_flag = true;
-                    int_to_search = std::strtoul(optarg, NULL, 16);
-                    break;
-
-                default:
-                    continue;
-            }
+            std::cout << std::endl;
+            w_yel_lf("OPTIONS:");
+            arg_print_glossary(stdout, argtable, "  %-25s %s\n");
         }
 
-        if(v_flag)
-            display_version();
-        
-        if(f_flag)
+        if(version->count > 0)
+            std::cout << "You are currently using the version " << VERSION << " of rp++." << std::endl;
+
+        /* If we've asked the help or version option, we assume the program is terminated */
+        if(version->count > 0 || help->count > 0)
+            return 0;
+
+        if(file->count > 0)
         {
-            std::string program_path(p_file);
+            std::string program_path(file->filename[0]);
             Program p(program_path);
-
-            if(d_flag)
-                p.display_information((display_value > 2)? VERBOSE_LEVEL_1 : (VerbosityLevel)display_value);
-
-            if(r_flag)
-                p.find_and_display_gadgets(depth);
-
-            if(s_flag)
-                p.search_and_display(p_hex_values);
             
-            if(i_flag)
-                p.search_int_and_display(int_to_search);
+            if(display->count > 0)
+            {
+                if(display->ival[0] < 0 || display->ival[0] > 2)
+                    display->ival[0] = 0;
+
+                p.display_information((VerbosityLevel)display->ival[0]);
+            }
+
+            if(rop->count > 0)
+            {
+                if(rop->ival[0] < 0)
+                    rop->ival[0] = 0;
+
+                p.find_and_display_gadgets(rop->ival[0]);
+            }
+
+            if(shexa->count > 0)
+                p.search_and_display(shexa->sval[0]);
+            
+            if(sint->count > 0)
+            {
+                unsigned int val = std::strtoul(sint->sval[0], NULL, 16);
+                p.search_int_and_display(val);
+            }
         }
     }
     catch(const std::exception &e)

@@ -15,23 +15,25 @@ if(UNIX)
 endif(UNIX)
 
 if(CMAKE_SIZEOF_VOID_P EQUAL 8)
-    set(NAME_LIBRARY "BeaEngine64${EXTENSION_LIBRARY}")
+    set(BEA_LIBRARY "BeaEngine64${EXTENSION_LIBRARY}")
+    set(ARGTABLE_LIBRARY "argtable2.x64${EXTENSION_LIBRARY}")
 else()
-    set(NAME_LIBRARY "BeaEngine32${EXTENSION_LIBRARY}")
+    set(BEA_LIBRARY "BeaEngine32${EXTENSION_LIBRARY}")
+    set(ARGTABLE_LIBRARY "argtable2.x86${EXTENSION_LIBRARY}")
 endif(CMAKE_SIZEOF_VOID_P EQUAL 8)
 
-if(MSVC)
+#if(MSVC)
     # link the CRT 
-    foreach(flag_var CMAKE_CXX_FLAGS CMAKE_CXX_FLAGS_DEBUG CMAKE_CXX_FLAGS_RELEASE CMAKE_CXX_FLAGS_MINSIZEREL CMAKE_CXX_FLAGS_RELWITHDEBINFO)
-        if(${flag_var} MATCHES "/MD")
-            string(REGEX REPLACE "/MD" "/MT" ${flag_var} "${${flag_var}}")
-        endif(${flag_var} MATCHES "/MD")
+#    foreach(flag_var CMAKE_CXX_FLAGS CMAKE_CXX_FLAGS_DEBUG CMAKE_CXX_FLAGS_RELEASE CMAKE_CXX_FLAGS_MINSIZEREL CMAKE_CXX_FLAGS_RELWITHDEBINFO)
+#        if(${flag_var} MATCHES "/MD")
+#            string(REGEX REPLACE "/MD" "/MT" ${flag_var} "${${flag_var}}")
+#        endif(${flag_var} MATCHES "/MD")
 
-        if(${flag_var} MATCHES "/MDd")
-            string(REGEX REPLACE "/MDd" "/MTd" ${flag_var} "${${flag_var}}")
-        endif(${flag_var} MATCHES "/MDd")
-    endforeach(flag_var)
-endif(MSVC)
+#        if(${flag_var} MATCHES "/MDd")
+#            string(REGEX REPLACE "/MDd" "/MTd" ${flag_var} "${${flag_var}}")
+#        endif(${flag_var} MATCHES "/MDd")
+#    endforeach(flag_var)
+#endif(MSVC)
 
 if(CMAKE_COMPILER_IS_GNUCXX)
     # an optimized static striped binary !
@@ -40,6 +42,7 @@ endif(CMAKE_COMPILER_IS_GNUCXX)
 
 include_directories("./src/inc/")
 include_directories("./lib/beaengine/inc/")
+include_directories("./lib/argtable2/inc/")
 
 file(
     GLOB_RECURSE
@@ -55,12 +58,19 @@ add_executable(
 add_library(beaengine STATIC IMPORTED)
 set_property(
     TARGET beaengine PROPERTY
-    IMPORTED_LOCATION ../lib/beaengine/bin/${NAME_LIBRARY}
+    IMPORTED_LOCATION ../lib/beaengine/bin/${BEA_LIBRARY}
+)
+
+add_library(argtable2 STATIC IMPORTED)
+set_property(
+    TARGET argtable2 PROPERTY
+    IMPORTED_LOCATION ../lib/argtable2/bin/${ARGTABLE_LIBRARY}
 )
 
 target_link_libraries(
     rp
     beaengine
+    argtable2
 )
 
 if(WIN32)
