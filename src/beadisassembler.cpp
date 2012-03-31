@@ -10,58 +10,62 @@ BeaDisassembler::BeaDisassembler(Arch arch, unsigned int depth, unsigned long lo
     memset(&m_dis, 0, sizeof(DISASM));
     m_dis.Options = NasmSyntax + PrefixedNumeral ;//+ ShowSegmentRegs;
     m_dis.Archi = arch;
-
-
 }
 
 BeaDisassembler::~BeaDisassembler(void)
 {
 }
 
-std::list<Gadget*> BeaDisassembler::find_all_gadget_from_ret(const unsigned char* data, DISASM* d_ret, unsigned long long offset, unsigned int len)
+std::list<Gadget*> BeaDisassembler::find_all_gadget_from_ret(const unsigned char* data, const DISASM* d_ret, unsigned long long offset, unsigned int len)
 {
     std::list<Gadget*> gadgets;
+    DISASM dis = {0};
+
+    memcpy(&dis, &m_dis, sizeof(DISASM));
 
     /*
         We go back, trying to create the longuest gadget possible with the longuest instructions
         "On INTEL processors, (in IA-32 or intel 64 modes), instruction never exceeds 15 bytes." -- beaengine.org
     */
-    m_dis.EIP         = d_ret->EIP - m_depth*15;
-    m_dis.VirtualAddr = d_ret->VirtualAddr - m_depth*15;
+    dis.EIP         = (UIntPtr)(d_ret->EIP - m_depth*15); // /!\ Warning to pointer arith
+    dis.VirtualAddr = d_ret->VirtualAddr - m_depth*15;
 
     //going back yeah, but not too much :))
-    if(m_dis.EIP < (unsigned long long)data)
+    if(dis.EIP < (UIntPtr)data)
     {
-        m_dis.EIP = (UIntPtr)data;
-        m_dis.VirtualAddr = m_vaddr;
+        dis.EIP = (UIntPtr)data;
+        dis.VirtualAddr = m_vaddr;
     }
 
-    while(m_dis.EIP < d_ret->EIP)
+    while(dis.EIP < d_ret->EIP)
     {
         std::list<Instruction> g;
-        UIntPtr saved_eip = m_dis.EIP;
+        UIntPtr saved_eip  = dis.EIP;
+        UInt64 saved_vaddr = dis.VirtualAddr;
+
         bool is_a_valid_gadget = false;
         for(unsigned int nb_ins = 0; nb_ins < m_depth; nb_ins++)
         {
-            int len_instr = Disasm(&m_dis);
-            if(len_instr == UNKNOWN_OPCODE || is_valid_instruction(&m_dis) == false)
+            int len_instr = Disasm(&dis);
+            if(len_instr == UNKNOWN_OPCODE || is_valid_instruction(&dis) == false)
                 break;
 
             g.push_back(Instruction(
-                std::string(m_dis.CompleteInstr),
-                m_dis.EIP - (UIntPtr)data,
+                std::string(dis.CompleteInstr),
+                dis.EIP - (UIntPtr)data,
                 len_instr
             ));
             
-            m_dis.EIP += len_instr;
-            if(m_dis.EIP == d_ret->EIP)
+            dis.EIP += len_instr;
+            dis.VirtualAddr += len_instr;
+            if(dis.EIP == d_ret->EIP)
             {
                 is_a_valid_gadget = true;
                 //I reach the ending instruction without depth instruction
                 break;
             }
 
-            if(m_dis.EIP > d_ret->EIP)
+            if(dis.EIP > d_ret->EIP)
                 //next!
                 break;
         }
@@ -80,7 +84,8 @@ std::list<Gadget*> BeaDisassembler::find_all_gadget_from_ret(const unsigned char
 
             gadgets.push_back(gadget);
         }
-        m_dis.EIP = saved_eip + 1;
+        dis.EIP = saved_eip + 1;
+        dis.VirtualAddr = saved_vaddr + 1;
     }
 
     return gadgets;
@@ -149,7 +154,7 @@ std::list<Gadget*> BeaDisassembler::find_rop_gadgets(const unsigned char* data, 
         -> add function to check the jump instructions: je/jne/jc/jne/..
 
     */
-    for(unsigned int offset = 0; offset < size; ++offset)
+    for(unsigned long long offset = 0; offset < size; ++offset)
     {
         m_dis.EIP = (UIntPtr)(data + offset);
         m_dis.VirtualAddr = SafeAddU64(vaddr, offset);

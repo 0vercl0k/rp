@@ -29,7 +29,7 @@ class BeaDisassembler
         std::list<Gadget*> find_rop_gadgets(const unsigned char* data, unsigned long long size, unsigned long long vaddr);
 
     private:
-        std::list<Gadget*> find_all_gadget_from_ret(const unsigned char* data, DISASM* d_ret, unsigned long long offset, unsigned int len);
+        std::list<Gadget*> find_all_gadget_from_ret(const unsigned char* data, const DISASM* d_ret, unsigned long long offset, unsigned int len);
         bool is_valid_ending_instruction(DISASM* d);
         bool is_valid_instruction(DISASM *d);
 
