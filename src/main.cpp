@@ -104,7 +104,7 @@ int main(int argc, char* argv[])
             if(sint->count > 0)
             {
                 unsigned int val = std::strtoul(sint->sval[0], NULL, 16);
-                p.search_int_and_display(val);
+                p.search_and_display(val);
             }
         }
     }
