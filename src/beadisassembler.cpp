@@ -5,23 +5,27 @@
 #include <cstring>
 
 BeaDisassembler::BeaDisassembler(Arch arch, unsigned int depth, unsigned long long vaddr)
-: m_depth(depth), m_vaddr(vaddr)
+: m_depth(depth), m_vaddr(vaddr), m_opts(NasmSyntax + PrefixedNumeral), m_arch(arch)
 {
-    memset(&m_dis, 0, sizeof(DISASM));
-    m_dis.Options = NasmSyntax + PrefixedNumeral ;//+ ShowSegmentRegs;
-    m_dis.Archi = arch;
 }
 
 BeaDisassembler::~BeaDisassembler(void)
 {
 }
 
+void BeaDisassembler::init_disasm_struct(DISASM* d)
+{
+    memset(d, 0, sizeof(DISASM));
+    d->Options = m_opts;
+    d->Archi = m_arch;
+}
+
 std::list<Gadget*> BeaDisassembler::find_all_gadget_from_ret(const unsigned char* data, const DISASM* d_ret, unsigned long long offset, unsigned int len)
 {
     std::list<Gadget*> gadgets;
-    DISASM dis = {0};
+    DISASM dis;
 
-    memcpy(&dis, &m_dis, sizeof(DISASM));
+    init_disasm_struct(&dis);
 
     /*
         We go back, trying to create the longuest gadget possible with the longuest instructions
@@ -148,6 +152,9 @@ bool BeaDisassembler::is_valid_instruction(DISASM *d)
 std::list<Gadget*> BeaDisassembler::find_rop_gadgets(const unsigned char* data, unsigned long long size, unsigned long long vaddr)
 {
     std::list<Gadget*> merged_gadgets;
+    DISASM dis;
+
+    init_disasm_struct(&dis);
 
     /* 
         TODO:
@@ -156,13 +163,11 @@ std::list<Gadget*> BeaDisassembler::find_rop_gadgets(const unsigned char* data, 
     */
     for(unsigned long long offset = 0; offset < size; ++offset)
     {
-        m_dis.EIP = (UIntPtr)(data + offset);
-        m_dis.VirtualAddr = SafeAddU64(vaddr, offset);
-        m_dis.SecurityBlock = (UInt32)(size - offset);
+        dis.EIP = (UIntPtr)(data + offset);
+        dis.VirtualAddr = SafeAddU64(vaddr, offset);
+        dis.SecurityBlock = (UInt32)(size - offset);
         
-        DISASM ret_instr = {0};
-
-        int len = Disasm(&m_dis);
+        int len = Disasm(&dis);
         /* I guess we're done ! */
         if(len == OUT_OF_BLOCK)
             break;
@@ -171,10 +176,12 @@ std::list<Gadget*> BeaDisassembler::find_rop_gadgets(const unsigned char* data, 
         if(len == UNKNOWN_OPCODE)
             continue;
 
-        if(is_valid_ending_instruction(&m_dis))
+        if(is_valid_ending_instruction(&dis))
         {
+            DISASM ret_instr;
+
             /* Okay I found a RET ; now I can build the gadget */
-            memcpy(&ret_instr, &m_dis, sizeof(DISASM));
+            memcpy(&ret_instr, &dis, sizeof(DISASM));
 
             std::list<Gadget*> gadgets = find_all_gadget_from_ret(data, &ret_instr, offset, len);
             for(std::list<Gadget*>::iterator it = gadgets.begin(); it != gadgets.end(); ++it)

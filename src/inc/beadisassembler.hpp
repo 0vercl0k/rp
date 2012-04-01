@@ -32,8 +32,10 @@ class BeaDisassembler
         std::list<Gadget*> find_all_gadget_from_ret(const unsigned char* data, const DISASM* d_ret, unsigned long long offset, unsigned int len);
         bool is_valid_ending_instruction(DISASM* d);
         bool is_valid_instruction(DISASM *d);
+        void init_disasm_struct(DISASM* d);
 
-        DISASM m_dis;
+        UInt64 m_opts;
+        UInt32 m_arch;
         unsigned int m_depth;
         unsigned long long m_vaddr;
 };
