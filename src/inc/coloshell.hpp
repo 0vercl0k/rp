@@ -159,15 +159,15 @@ static void coloshell(const T t, const Colors colo)
     std::cout << std::endl;                                             \
 }
 
-#define display_gadget_lf(va, gadget) {                                                                       \
-    enable_color(COLO_RED);                                                                                   \
-    std::cout << "0x" << std::setw(sizeof(va)) << std::right << std::setfill('0');                            \
-    std::cout << std::hex << va;                                                                              \
-    disable_color();                                                                                          \
-    std::cout << ": ";                                                                                        \
-    enable_color(COLO_GREEN);                                                                                 \
-    std::cout << (gadget)->first << " (" << std::dec << (gadget)->second->get_nb() << " one)" << std::endl;   \
-    disable_color();                                                                                          \
+#define display_gadget_lf(va, gadget) {                                                                         \
+    enable_color(COLO_RED);                                                                                     \
+    std::cout << "0x" << std::setw(sizeof(va)) << std::right << std::setfill('0');                              \
+    std::cout << std::hex << va;                                                                                \
+    disable_color();                                                                                            \
+    std::cout << ": ";                                                                                          \
+    enable_color(COLO_GREEN);                                                                                   \
+    std::cout << (gadget)->first << " (" << std::dec << (gadget)->second->get_nb() << " found)" << std::endl;   \
+    disable_color();                                                                                            \
 }
 
 #define display_offset_lf(va, hex_val) {                                               \

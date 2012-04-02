@@ -9,7 +9,9 @@
 #include <exception>
 #include <cstdlib>
 
-#define NUM_V "0.1"
+#define MAXIMUM_INSTRUCTION_PER_GADGET 20
+
+#define NUM_V "0.2"
 
 #ifdef ARCH_X64
 #define VERSION_TMP NUM_V " x64 built the " __DATE__ " " __TIME__
@@ -29,11 +31,16 @@
 #define VERSION VERSION_TM " (Release)"
 #endif
 
+/*
+TODO:
+    - Add possibility to build rp without color
+*/
+
 int main(int argc, char* argv[])
 {
     struct arg_file *file    = arg_file0("f", "file", "<binary path>", "give binary path");
-    struct arg_int  *display = arg_int0("i", "info", "<0-2>", "display information concerning the elf/pe");
-    struct arg_int  *rop     = arg_int0("r", "rop", "<positive int>", "find a bunch of gadgets usable in your future exploits (the maximum number of instruction in arg)");
+    struct arg_int  *display = arg_int0("i", "info", "<1,2,3>", "display information about the binary header");
+    struct arg_int  *rop     = arg_int0("r", "rop", "<positive int>", "find useful gadget for your future exploits, arg is the gadget maximum size in instructions");
     struct arg_str  *shexa   = arg_str0(NULL, "search-hexa", "<\\x90A\\x90>", "try to find hex values");
     struct arg_str  *sint    = arg_str0(NULL, "search-int", "<int in hex>", "try to find a pointer on a specific integer value");
     struct arg_lit  *help    = arg_lit0("h", "help", "print this help and exit");
@@ -58,8 +65,8 @@ int main(int argc, char* argv[])
         {
             w_yel_lf("DESCRIPTION:");
             w_red("rp++");
-            std::cout << " is a very simple tool with a very simple purpose:" << std::endl << "  -> helping you to find interesting gadget in pe/elf x86/x64 binaries." << std::endl;
-            std::cout << "NB: The original idea goes to Jonathan Salwan and its 'ROPGadget' tool." << std::endl << std::endl;
+            std::cout << " allows you to find ROP gadgets in pe/elf x86/x64 binaries." << std::endl;
+            std::cout << "NB: The original idea comes from (@jonathansalwan) and its 'ROPGadget' tool." << std::endl << std::endl;
             
             w_yel_lf("USAGE:");
             std::cout << "./rp++";
@@ -84,8 +91,8 @@ int main(int argc, char* argv[])
             
             if(display->count > 0)
             {
-                if(display->ival[0] < 0 || display->ival[0] > 2)
-                    display->ival[0] = 0;
+                if(display->ival[0] < VERBOSE_LEVEL_1 || display->ival[0] > VERBOSE_LEVEL_3)
+                    display->ival[0] = VERBOSE_LEVEL_1;
 
                 p.display_information((VerbosityLevel)display->ival[0]);
             }
@@ -94,6 +101,9 @@ int main(int argc, char* argv[])
             {
                 if(rop->ival[0] < 0)
                     rop->ival[0] = 0;
+
+                if(rop->ival[0] > MAXIMUM_INSTRUCTION_PER_GADGET)
+                    RAISE_EXCEPTION("You specified a maximum number of instruction too important for the --rop option");
 
                 p.find_and_display_gadgets(rop->ival[0]);
             }

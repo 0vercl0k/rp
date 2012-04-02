@@ -182,10 +182,29 @@ std::list<Gadget*> BeaDisassembler::find_rop_gadgets(const unsigned char* data, 
 
             /* Okay I found a RET ; now I can build the gadget */
             memcpy(&ret_instr, &dis, sizeof(DISASM));
+            
+            if(m_depth > 0)
+            {
+                std::list<Gadget*> gadgets = find_all_gadget_from_ret(data, &ret_instr, offset, len);
+                for(std::list<Gadget*>::iterator it = gadgets.begin(); it != gadgets.end(); ++it)
+                    merged_gadgets.push_back(*it);
+            }
+            /* If we only want to see the ending instruction ! */
+            else
+            {
+                Gadget *gadget_with_one_instr = new (std::nothrow) Gadget();
+                if(gadget_with_one_instr == NULL)
+                    RAISE_EXCEPTION("Cannot allocate gadget_with_one_instr");
 
-            std::list<Gadget*> gadgets = find_all_gadget_from_ret(data, &ret_instr, offset, len);
-            for(std::list<Gadget*>::iterator it = gadgets.begin(); it != gadgets.end(); ++it)
-                merged_gadgets.push_back(*it);
+                Instruction *ending_instr = new (std::nothrow) Instruction(
+                    std::string(ret_instr.CompleteInstr),
+                    offset,
+                    len
+                );
+                
+                gadget_with_one_instr->add_instruction(ending_instr);
+                merged_gadgets.push_back(gadget_with_one_instr);
+            }
         }
     }
 

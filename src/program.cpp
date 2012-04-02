@@ -68,7 +68,7 @@ void Program::display_information(VerbosityLevel lvl)
 
 void Program::find_and_display_gadgets(unsigned int depth)
 {
-    std::cout << std::endl << "Wait a few seconds, rp++ is researching gadgets.." << std::endl;
+    std::cout << std::endl << "Wait a few seconds, rp++ is looking for gadgets.." << std::endl;
 
     /* To do a ROP gadget research, we need to know the executable section */
     std::vector<Section*> executable_sections = m_exformat->get_executables_section(m_file);
