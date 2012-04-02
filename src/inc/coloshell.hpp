@@ -9,6 +9,8 @@
 #include <windows.h>
 #endif
 
+#define COLORS_ENABLED                     // remove this define if you don't want color in your shell
+
 /* Here you will find all you need to display the data in a cute way on a windows/unix terminal */
 
 #ifdef WINDOWS
@@ -34,6 +36,7 @@
 
 static void enable_color(const Colors colo)
 {
+#ifdef COLORS_ENABLED
 #ifdef WINDOWS
     HANDLE hStdOutput = GetStdHandle(STD_OUTPUT_HANDLE);
     if(hStdOutput == INVALID_HANDLE_VALUE)
@@ -50,10 +53,14 @@ static void enable_color(const Colors colo)
     };
     std::cout << colors[colo];
 #endif
+
+#else
+#endif
 }
 
 static void disable_color(void)
 {
+#ifdef COLORS_ENABLED
 #ifdef WINDOWS
     HANDLE hStdOutput = GetStdHandle(STD_OUTPUT_HANDLE);
     if(hStdOutput == INVALID_HANDLE_VALUE)
@@ -69,6 +76,8 @@ static void disable_color(void)
         "\x1b[93m", "\x1b[0m"
     };
     std::cout << colors[COLO_DEFAULT];
+#endif
+#else
 #endif
 }
 

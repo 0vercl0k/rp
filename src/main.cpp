@@ -1,3 +1,4 @@
+#include "main.hpp"
 #include "coloshell.hpp"
 #include "platform.h"
 #include "program.hpp"
@@ -8,33 +9,6 @@
 #include <iostream>
 #include <exception>
 #include <cstdlib>
-
-#define MAXIMUM_INSTRUCTION_PER_GADGET 20
-
-#define NUM_V "0.2"
-
-#ifdef ARCH_X64
-#define VERSION_TMP NUM_V " x64 built the " __DATE__ " " __TIME__
-#else
-#define VERSION_TMP NUM_V " x86 built the " __DATE__ " " __TIME__
-#endif
-
-#ifdef WINDOWS
-#define VERSION_TM VERSION_TMP " for Windows"
-#else
-#define VERSION_TM VERSION_TMP " for Unix"
-#endif
-
-#ifdef _DEBUG
-#define VERSION VERSION_TM " (Debug)"
-#else
-#define VERSION VERSION_TM " (Release)"
-#endif
-
-/*
-TODO:
-    - Add possibility to build rp without color
-*/
 
 int main(int argc, char* argv[])
 {
