@@ -83,12 +83,21 @@ int main(int argc, char* argv[])
             }
 
             if(shexa->count > 0)
-                p.search_and_display(shexa->sval[0]);
+            {
+                unsigned int size = 0;
+                unsigned char* hex_values = string_to_hex(shexa->sval[0], &size);
+             
+                if(hex_values == NULL)
+                    RAISE_EXCEPTION("Cannot allocate hex_values");
+
+                p.search_and_display(hex_values, size);
+                delete[] hex_values;
+            }
             
             if(sint->count > 0)
             {
                 unsigned int val = std::strtoul(sint->sval[0], NULL, 16);
-                p.search_and_display(val);
+                p.search_and_display((const unsigned char*)&val, sizeof(unsigned int));
             }
         }
     }

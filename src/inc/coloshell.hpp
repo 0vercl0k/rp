@@ -179,15 +179,20 @@ static void coloshell(const T t, const Colors colo)
     disable_color();                                                                                            \
 }
 
-#define display_offset_lf(va, hex_val) {                                               \
-    enable_color(COLO_RED);                                                            \
-    std::cout << "0x" << std::setw(sizeof(va)) << std::right << std::setfill('0');     \
-    std::cout << std::hex << va;                                                       \
-    disable_color();                                                                   \
-    std::cout << ": ";                                                                 \
-    enable_color(COLO_GREEN);                                                          \
-    std::cout << hex_val << std::endl;                                                 \
-    disable_color();                                                                   \
+#define display_offset_lf(va, hex_val, size) {                                                            \
+    enable_color(COLO_RED);                                                                               \
+    std::cout << "0x" << std::setw(sizeof(va)) << std::right << std::setfill('0');                        \
+    std::cout << std::hex << va;                                                                          \
+    disable_color();                                                                                      \
+    std::cout << ": ";                                                                                    \
+    enable_color(COLO_GREEN);                                                                             \
+    for(unsigned int i = 0, b = 0; i < size; ++i)                                                         \
+    {                                                                                                     \
+        b = hex_val[i];                                                                                   \
+        std::cout << "\\x" << std::setw(2) << std::left << std::setfill('0') << std::hex << b;            \
+    }                                                                                                     \
+    std::cout << std::endl;                                                                               \
+    disable_color();                                                                                      \
 }
 
 #endif
