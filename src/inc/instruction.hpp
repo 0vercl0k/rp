@@ -9,7 +9,7 @@
 class Instruction
 {
     public:
-        explicit Instruction(std::string disass, unsigned long long offset, unsigned int size);
+        explicit Instruction(std::string disass, std::string mnemonic, unsigned long long offset, unsigned int size);
         ~Instruction(void);
 
         unsigned long long get_absolute_address(const unsigned char* ptr);
@@ -23,8 +23,11 @@ class Instruction
         /* Get the text representation of the instruction */
         std::string get_disassembly(void) const;
 
+        std::string get_mnemonic(void) const;
+
     private:
         std::string m_disass;
+        std::string m_mnemonic;
         unsigned long long m_offset;
         unsigned int m_size;
 };

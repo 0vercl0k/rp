@@ -56,6 +56,7 @@ std::list<Gadget*> BeaDisassembler::find_all_gadget_from_ret(const unsigned char
 
             g.push_back(Instruction(
                 std::string(dis.CompleteInstr),
+                std::string(dis.Instruction.Mnemonic),
                 dis.EIP - (UIntPtr)data,
                 len_instr
             ));
@@ -76,13 +77,17 @@ std::list<Gadget*> BeaDisassembler::find_all_gadget_from_ret(const unsigned char
 
         if(is_a_valid_gadget)
         {
-            g.push_back(Instruction(
+            Instruction *ending_instr = new (std::nothrow) Instruction(
                 std::string(d_ret->CompleteInstr),
+                std::string(d_ret->Instruction.Mnemonic),
                 d_ret->EIP - (UIntPtr)data,
                 len
-            ));
+            );
 
-            Gadget *gadget = new Gadget;
+            if(ending_instr == NULL)
+                RAISE_EXCEPTION("Cannot allocate ending_instr");
+
+            Gadget *gadget = new (std::nothrow) Gadget(ending_instr);
             for(std::list<Instruction>::iterator it = g.begin(); it != g.end(); ++it)
                 gadget->add_instruction(new Instruction(*it));
 
@@ -195,17 +200,20 @@ std::list<Gadget*> BeaDisassembler::find_rop_gadgets(const unsigned char* data, 
             /* If we only want to see the ending instruction ! */
             else
             {
-                Gadget *gadget_with_one_instr = new (std::nothrow) Gadget();
-                if(gadget_with_one_instr == NULL)
-                    RAISE_EXCEPTION("Cannot allocate gadget_with_one_instr");
-
                 Instruction *ending_instr = new (std::nothrow) Instruction(
                     std::string(ret_instr.CompleteInstr),
+                    std::string(ret_instr.Instruction.Mnemonic),
                     offset,
                     len
                 );
                 
-                gadget_with_one_instr->add_instruction(ending_instr);
+                if(ending_instr == NULL)
+                    RAISE_EXCEPTION("Cannot allocate ending_instr");
+
+                Gadget *gadget_with_one_instr = new (std::nothrow) Gadget(ending_instr);
+                if(gadget_with_one_instr == NULL)
+                    RAISE_EXCEPTION("Cannot allocate gadget_with_one_instr");
+
                 merged_gadgets.push_back(gadget_with_one_instr);
             }
         }
