@@ -108,7 +108,10 @@ bool BeaDisassembler::is_valid_ending_instruction(DISASM* d)
         (branch_type == CallType && addr_value == 0) ||
 
         /* jmp reg32 / jmp [reg32] */
-        (branch_type == JmpType && addr_value == 0)
+        (branch_type == JmpType && addr_value == 0) ||
+
+        /* int 0x80 & int 0x2e */
+        (strncmp(d->CompleteInstr, "int 0x80", 8) == 0 || strncmp(d->CompleteInstr, "int 0x2e", 8) == 0)
     );
 
     return (
