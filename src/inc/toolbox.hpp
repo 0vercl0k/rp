@@ -18,4 +18,6 @@ std::streampos get_file_size(std::ifstream &file);
 
 unsigned char * string_to_hex(const char* hex, unsigned int * size);
 
+bool is_matching(std::string &disass, const char* p);
+
 #endif

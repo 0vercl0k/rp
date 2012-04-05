@@ -47,6 +47,31 @@ std::streampos get_file_size(std::ifstream &file)
     return fsize;
 }
 
+/* this function is a lot inspirated from the previous work of jonathan salwan */
+bool is_matching(std::string &disass, const char* p)
+{
+    std::string pattern(p);
+
+    /* we have to check the *entire* pattern */
+    if(pattern.size() > disass.size())
+        return false;
+
+    size_t i = 0, max = (disass.length() >= pattern.length()) ? pattern.length() : disass.length();
+    bool it_matches = true;
+
+    while(i < max)
+    {
+        if(pattern.at(i) != '?' && pattern.at(i) != disass.at(i))
+        {
+            it_matches = false;
+            break;
+        }
+
+        ++i;
+    }
+
+    return it_matches;
+}
 bool is_hex_char(char c)
 {
     return (

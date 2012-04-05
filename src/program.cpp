@@ -92,8 +92,9 @@ void Program::find_and_display_gadgets(unsigned int depth)
 
         std::cout << std::dec << gadgets_found.size() << " unique gadgets found" << std::endl;
 
+        Gadget::search_specific_gadget(gadgets_found);
+
         /* Now we walk the gadgets found */
-       
         for(std::map<std::string, Gadget*>::iterator it2 = gadgets_found.begin(); it2 != gadgets_found.end(); ++it2)
         {      
             /* Do not forget that VA != PA */

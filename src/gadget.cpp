@@ -1,4 +1,6 @@
 #include "gadget.hpp"
+#include "coloshell.hpp"
+#include "toolbox.hpp"
 
 Gadget::Gadget(Instruction* ending_instr)
 : m_size(0), m_ending_instruction(ending_instr)
@@ -18,7 +20,7 @@ Gadget::~Gadget(void)
 
 std::string Gadget::get_disassembly(void) const
 {
-    return m_disassembly + " ; " + m_ending_instruction->get_disassembly();
+    return m_disassembly + m_ending_instruction->get_disassembly();
 }
 
 unsigned int Gadget::get_size(void) const
@@ -52,12 +54,27 @@ void Gadget::add_offset(unsigned long long off)
     m_offsets.push_back(off);
 }
 
-void Gadget::search_specific_gadget(std::list<Gadget*> &g)
+std::list<Instruction*> Gadget::get_instructions(void)
 {
-    for(std::list<Gadget*>::const_iterator it = g.begin(); it != g.end(); ++it)
+    return m_instructions;
+}
+
+void Gadget::search_specific_gadget(std::map<std::string, Gadget*> &g)
+{
+    std::cout << "here are the pop gadget: " << std::endl;
+    for(std::map<std::string, Gadget*>::const_iterator it = g.begin(); it != g.end(); ++it)
     {
-        Gadget *gadget = *it;
+        std::list<Instruction*> instrs = it->second->get_instructions();
+        if(instrs.size() == 1)
+        {
+            Instruction *last_instr = instrs.back();
+            if(is_matching(last_instr->get_disassembly(), "pop e??"))
+            {
+                std::cout << "A gadget with pop eax start @" << (it->second->get_first_offset() + last_instr->get_offset()) << std::endl;
+            }
+        }
     }
+    std::cout << "DONNNNNEEEEE" << std::endl;
 }
 
 Instruction* Gadget::get_ending_instruction(void)

@@ -4,6 +4,7 @@
 #include <list>
 #include <string>
 #include <vector>
+#include <map>
 
 #include "instruction.hpp"
 
@@ -30,6 +31,8 @@ class Gadget
 
         Instruction* get_ending_instruction(void);
 
+        std::list<Instruction*> get_instructions(void);
+
         /* Get the first offset of this gadget */
         unsigned long long get_first_offset(void) const;
 
@@ -39,7 +42,7 @@ class Gadget
         /* Add the offset where you can find the same gadget */
         void add_offset(unsigned long long offset);
 
-        static void search_specific_gadget(std::list<Gadget*> &g);
+        static void search_specific_gadget(std::map<std::string, Gadget*> &g);
 
     private:
         std::string m_disassembly;
