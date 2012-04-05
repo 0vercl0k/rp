@@ -2,7 +2,6 @@
 #include "coloshell.hpp"
 #include "platform.h"
 #include "program.hpp"
-#include "beadisassembler.hpp"
 #include "toolbox.hpp"
 #include "argtable2.h"
 

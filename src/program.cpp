@@ -4,8 +4,7 @@
 #include <map>
 #include <sstream>
 
-#include "pe.hpp"
-#include "elf.hpp"
+#include "executable_format.hpp"
 #include "section.hpp"
 #include "coloshell.hpp"
 #include "rpexception.hpp"
@@ -23,27 +22,9 @@ Program::Program(const std::string & program_path)
 
     m_file.read((char*)&magic_dword, sizeof(magic_dword));
 
-    ExecutableFormat::E_ExecutableFormat guessed_format = ExecutableFormat::FindExecutableFormat(magic_dword);
-    if(guessed_format == ExecutableFormat::FORMAT_UNKNOWN)
-        RAISE_EXCEPTION("Do not know the executable format of your file");
-
-    switch(guessed_format)
-    {
-        case ExecutableFormat::FORMAT_PE:
-        {
-            m_exformat = new (std::nothrow) PE();
-            break;
-        }
-
-        case ExecutableFormat::FORMAT_ELF:
-        {
-            m_exformat = new (std::nothrow) Elf();
-            break;
-        }
-    }
-
+    m_exformat = ExecutableFormat::GetExecutableFormat(magic_dword);
     if(m_exformat == NULL)
-        RAISE_EXCEPTION("Cannot allocate an executable format");
+        RAISE_EXCEPTION("GetExecutableFormat fails");
 
     m_cpu = m_exformat->get_cpu(m_file);
 
@@ -92,15 +73,18 @@ void Program::find_and_display_gadgets(unsigned int depth)
 
         std::cout << std::dec << gadgets_found.size() << " unique gadgets found" << std::endl;
 
-        Gadget::search_specific_gadget(gadgets_found);
+        //Gadget::search_specific_gadget(gadgets_found);
 
         /* Now we walk the gadgets found */
-        for(std::map<std::string, Gadget*>::iterator it2 = gadgets_found.begin(); it2 != gadgets_found.end(); ++it2)
+        for(std::map<std::string, Gadget*>::iterator it = gadgets_found.begin(); it != gadgets_found.end(); ++it)
         {      
             /* Do not forget that VA != PA */
-            unsigned long long va = va_section + it2->second->get_first_offset();
+            unsigned long long va = va_section + it->second->get_first_offset();
             
-            display_gadget_lf(va, it2);
+            display_gadget_lf(va, it);
+
+            /* Avoid mem leaks */
+            delete it->second;
         }
     }
 }

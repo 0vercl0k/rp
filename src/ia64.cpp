@@ -1,5 +1,5 @@
 #include "ia64.hpp"
-#include "beadisassembler.hpp"
+#include "bearopgadgetfinder.hpp"
 
 Ia64::Ia64(void)
 {
@@ -18,7 +18,7 @@ std::map<std::string, Gadget*> Ia64::find_gadget_in_memory(const unsigned char *
 {
     std::map<std::string, Gadget*> unique_gadgets;
 
-    BeaDisassembler bea(BeaDisassembler::IA64, depth, vaddr);
+    BeaRopGadgetFinder bea(BeaRopGadgetFinder::IA64, depth);
     std::list<Gadget*> gadgets = bea.find_rop_gadgets(p_memory, size, vaddr);
     for(std::list<Gadget*>::iterator it = gadgets.begin(); it != gadgets.end(); ++it)
     {

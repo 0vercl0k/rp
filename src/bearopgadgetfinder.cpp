@@ -1,26 +1,30 @@
-#include "beadisassembler.hpp"
+#include "bearopgadgetfinder.hpp"
 #include "safeint.hpp"
 
 #include <iostream>
 #include <cstring>
 
-BeaDisassembler::BeaDisassembler(Arch arch, unsigned int depth, unsigned long long vaddr)
-: m_depth(depth), m_vaddr(vaddr), m_opts(NasmSyntax + PrefixedNumeral), m_arch(arch)
+BeaRopGadgetFinder::BeaRopGadgetFinder(E_Arch arch, unsigned int depth)
+: m_depth(depth), m_opts(NasmSyntax + PrefixedNumeral), m_arch(arch)
 {
 }
 
-BeaDisassembler::~BeaDisassembler(void)
+BeaRopGadgetFinder::~BeaRopGadgetFinder(void)
 {
 }
 
-void BeaDisassembler::init_disasm_struct(DISASM* d)
+void BeaRopGadgetFinder::init_disasm_struct(DISASM* d)
 {
     memset(d, 0, sizeof(DISASM));
+
+    /* those options are mostly display option for the disassembler engine */
     d->Options = m_opts;
+
+    /* this one is to precise what architecture we'll disassemble */
     d->Archi = m_arch;
 }
 
-std::list<Gadget*> BeaDisassembler::find_all_gadget_from_ret(const unsigned char* data, const DISASM* d_ret, unsigned long long offset, unsigned int len)
+std::list<Gadget*> BeaRopGadgetFinder::find_all_gadget_from_ret(const unsigned char* data, unsigned long long vaddr, const DISASM* ending_instr_disasm, unsigned int len_ending_instr)
 {
     std::list<Gadget*> gadgets;
     DISASM dis;
@@ -31,26 +35,32 @@ std::list<Gadget*> BeaDisassembler::find_all_gadget_from_ret(const unsigned char
         We go back, trying to create the longuest gadget possible with the longuest instructions
         "On INTEL processors, (in IA-32 or intel 64 modes), instruction never exceeds 15 bytes." -- beaengine.org
     */
-    dis.EIP         = (UIntPtr)(d_ret->EIP - m_depth*15); // /!\ Warning to pointer arith
-    dis.VirtualAddr = d_ret->VirtualAddr - m_depth*15;
+    dis.EIP         = (UIntPtr)(ending_instr_disasm->EIP - m_depth*15); // /!\ Warning to pointer arith
+    dis.VirtualAddr = ending_instr_disasm->VirtualAddr - m_depth*15;
 
-    //going back yeah, but not too much :))
+    /* going back yeah, but not too much :)) */
     if(dis.EIP < (UIntPtr)data)
     {
         dis.EIP = (UIntPtr)data;
-        dis.VirtualAddr = m_vaddr;
+        dis.VirtualAddr = vaddr;
     }
 
-    while(dis.EIP < d_ret->EIP)
+    while(dis.EIP < ending_instr_disasm->EIP)
     {
         std::list<Instruction> g;
+
+        /* save where we were in memory */
         UIntPtr saved_eip  = dis.EIP;
         UInt64 saved_vaddr = dis.VirtualAddr;
 
         bool is_a_valid_gadget = false;
+
+        /* now we'll try to find suitable sequence */
         for(unsigned int nb_ins = 0; nb_ins < m_depth; nb_ins++)
         {
             int len_instr = Disasm(&dis);
+
+            /* if the instruction isn't valid, let's try the process one byte after */
             if(len_instr == UNKNOWN_OPCODE || is_valid_instruction(&dis) == false)
                 break;
 
@@ -63,36 +73,49 @@ std::list<Gadget*> BeaDisassembler::find_all_gadget_from_ret(const unsigned char
             
             dis.EIP += len_instr;
             dis.VirtualAddr += len_instr;
-            if(dis.EIP == d_ret->EIP)
+
+            /* if the address of the latest instruction found points on the ending one, we have a winner */
+            if(dis.EIP == ending_instr_disasm->EIP)
             {
                 is_a_valid_gadget = true;
-                //I reach the ending instruction without depth instruction
+                /* NB: I reach the ending instruction without depth instruction */
                 break;
             }
 
-            if(dis.EIP > d_ret->EIP)
-                //next!
+            /* if we point after the ending one, it's not a valid sequence */
+            if(dis.EIP > ending_instr_disasm->EIP)
                 break;
         }
 
         if(is_a_valid_gadget)
         {
+            /* we have a valid gadget, time to build it ; add the instructions found & finally add the ending instruction */
+
             Instruction *ending_instr = new (std::nothrow) Instruction(
-                std::string(d_ret->CompleteInstr),
-                std::string(d_ret->Instruction.Mnemonic),
-                d_ret->EIP - (UIntPtr)data,
-                len
+                std::string(ending_instr_disasm->CompleteInstr),
+                std::string(ending_instr_disasm->Instruction.Mnemonic),
+                ending_instr_disasm->EIP - (UIntPtr)data,
+                len_ending_instr
             );
 
             if(ending_instr == NULL)
                 RAISE_EXCEPTION("Cannot allocate ending_instr");
 
-            Gadget *gadget = new (std::nothrow) Gadget(ending_instr);
+            Gadget *gadget = new (std::nothrow) Gadget();
+            if(gadget == NULL)
+                RAISE_EXCEPTION("Cannot allocate gadget");
+
+            /* Now we populate our gadget with the instructions previously found.. */
             for(std::list<Instruction>::iterator it = g.begin(); it != g.end(); ++it)
                 gadget->add_instruction(new Instruction(*it));
 
+            /* ..don't forget the ending instruction */
+            gadget->add_instruction(ending_instr);
+
             gadgets.push_back(gadget);
         }
+
+        /* goto the next byte */
         dis.EIP = saved_eip + 1;
         dis.VirtualAddr = saved_vaddr + 1;
     }
@@ -100,11 +123,12 @@ std::list<Gadget*> BeaDisassembler::find_all_gadget_from_ret(const unsigned char
     return gadgets;
 }
 
-bool BeaDisassembler::is_valid_ending_instruction(DISASM* d)
+bool BeaRopGadgetFinder::is_valid_ending_instruction(DISASM* ending_instr_d)
 {
-    Int32 branch_type = d->Instruction.BranchType;
-    UInt64 addr_value = d->Instruction.AddrValue;
-    char *mnemonic = d->Instruction.Mnemonic;
+    Int32 branch_type = ending_instr_d->Instruction.BranchType;
+    UInt64 addr_value = ending_instr_d->Instruction.AddrValue;
+    char *mnemonic = ending_instr_d->Instruction.Mnemonic, *completeInstr = ending_instr_d->CompleteInstr;
+
     bool is_good_branch_type = (
         /* We accept all the ret type instructions (except retf/iret) */
         (branch_type == RetType && strncmp(mnemonic, "retf", 4) != 0 && strncmp(mnemonic, "iretd", 4) != 0) || 
@@ -116,19 +140,20 @@ bool BeaDisassembler::is_valid_ending_instruction(DISASM* d)
         (branch_type == JmpType && addr_value == 0) ||
 
         /* int 0x80 & int 0x2e */
-        (strncmp(d->CompleteInstr, "int 0x80", 8) == 0 || strncmp(d->CompleteInstr, "int 0x2e", 8) == 0 || strncmp(d->CompleteInstr, "syscall", 7) == 0)
+        (strncmp(completeInstr, "int 0x80", 8) == 0 || strncmp(completeInstr, "int 0x2e", 8) == 0 || strncmp(completeInstr, "syscall", 7) == 0)
     );
 
     return (
         is_good_branch_type && 
+
         /* Yeah, entrance isn't allowed to the jmp far/call far */
-        strstr(d->CompleteInstr, "far") == NULL
+        strstr(completeInstr, "far") == NULL
     );
 }
 
-bool BeaDisassembler::is_valid_instruction(DISASM *d)
+bool BeaRopGadgetFinder::is_valid_instruction(DISASM *ending_instr_d)
 {
-    Int32 branch_type = d->Instruction.BranchType;
+    Int32 branch_type = ending_instr_d->Instruction.BranchType;
         return (
             branch_type != RetType && 
             branch_type != JmpType &&
@@ -153,22 +178,17 @@ bool BeaDisassembler::is_valid_instruction(DISASM *d)
             branch_type != JNL &&
             branch_type != JNG &&
             branch_type != JNB &&
-            strstr(d->CompleteInstr, "far") == NULL
+            strstr(ending_instr_d->CompleteInstr, "far") == NULL
         );
 }
 
-std::list<Gadget*> BeaDisassembler::find_rop_gadgets(const unsigned char* data, unsigned long long size, unsigned long long vaddr)
+std::list<Gadget*> BeaRopGadgetFinder::find_rop_gadgets(const unsigned char* data, unsigned long long size, unsigned long long vaddr)
 {
     std::list<Gadget*> merged_gadgets;
     DISASM dis;
 
     init_disasm_struct(&dis);
 
-    /* 
-        TODO:
-        -> add function to check the jump instructions: je/jne/jc/jne/..
-
-    */
     for(unsigned long long offset = 0; offset < size; ++offset)
     {
         dis.EIP = (UIntPtr)(data + offset);
@@ -193,7 +213,7 @@ std::list<Gadget*> BeaDisassembler::find_rop_gadgets(const unsigned char* data, 
             
             if(m_depth > 0)
             {
-                std::list<Gadget*> gadgets = find_all_gadget_from_ret(data, &ret_instr, offset, len);
+                std::list<Gadget*> gadgets = find_all_gadget_from_ret(data, vaddr, &ret_instr, len);
                 for(std::list<Gadget*>::iterator it = gadgets.begin(); it != gadgets.end(); ++it)
                     merged_gadgets.push_back(*it);
             }
@@ -210,10 +230,13 @@ std::list<Gadget*> BeaDisassembler::find_rop_gadgets(const unsigned char* data, 
                 if(ending_instr == NULL)
                     RAISE_EXCEPTION("Cannot allocate ending_instr");
 
-                Gadget *gadget_with_one_instr = new (std::nothrow) Gadget(ending_instr);
+                Gadget *gadget_with_one_instr = new (std::nothrow) Gadget();
                 if(gadget_with_one_instr == NULL)
                     RAISE_EXCEPTION("Cannot allocate gadget_with_one_instr");
 
+                /* the gadget will only have 1 ending instruction */
+                gadget_with_one_instr->add_instruction(ending_instr);
+                
                 merged_gadgets.push_back(gadget_with_one_instr);
             }
         }

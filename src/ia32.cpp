@@ -1,6 +1,6 @@
 #include "ia32.hpp"
 #include "rpexception.hpp"
-#include "beadisassembler.hpp"
+#include "bearopgadgetfinder.hpp"
 
 #include <cstring>
 #include <list>
@@ -22,10 +22,11 @@ std::map<std::string, Gadget*> Ia32::find_gadget_in_memory(const unsigned char *
 {
     std::map<std::string, Gadget*> unique_gadgets;
     
-    BeaDisassembler bea(BeaDisassembler::IA32, depth, vaddr);
+    BeaRopGadgetFinder bea(BeaRopGadgetFinder::IA32, depth);
     std::list<Gadget*> gadgets = bea.find_rop_gadgets(p_memory, size, vaddr);
     for(std::list<Gadget*>::iterator it = gadgets.begin(); it != gadgets.end(); ++it)
     {
+        /* If a gadget, with the same disassembly, has already been found ; just add its offset in the existing one */
         if(unique_gadgets.count((*it)->get_disassembly()) > 0)
         {
             std::map<std::string, Gadget*>::iterator g = unique_gadgets.find((*it)->get_disassembly());

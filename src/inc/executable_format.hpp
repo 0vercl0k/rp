@@ -51,8 +51,8 @@ class ExecutableFormat
         */
         virtual unsigned long long raw_offset_to_va(const unsigned long long absolute_raw_offset, const unsigned long long absolute_raw_offset_section) const = 0;
 
-        /* Find the executable format used -- based mostly on the magic signature */
-        static E_ExecutableFormat FindExecutableFormat(unsigned int magic_dword);
+        /* Gives you a PE/ELF instance (based mostly on the magic signature) */
+        static ExecutableFormat* GetExecutableFormat(unsigned int magic_dword);
 
     private:
 

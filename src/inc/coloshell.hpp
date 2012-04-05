@@ -4,6 +4,7 @@
 #include "platform.h"
 #include "rpexception.hpp"
 #include <iostream>
+#include <iomanip>
 
 #ifdef WINDOWS
 #include <windows.h>

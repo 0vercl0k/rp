@@ -33,7 +33,6 @@ class PE : public ExecutableFormat
         }
 
         PortableExecutableLayout* m_pPELayout;
-        CPU::E_CPU m_CPU;
 };
 
 #endif

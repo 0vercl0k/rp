@@ -8,48 +8,80 @@
 
 #include "instruction.hpp"
 
-/*
-    A gadget is a sequence of instructions that ends by a ret instruction (but sometimes by call/jmp)
-
-    In order, to keep in memory only *unique* gadgets, each gadget holds a set of offset where you can find
-    the same one.
-*/
+/*! \class Gadget
+ *
+ * A gadget is a sequence of instructions that ends by an ending instruction (ret/call/jmp)
+ * In order, to keep in memory only *unique* gadgets, each gadget holds a set of offset where you can find
+ * the same one.
+ */
 class Gadget
 {
     public:
-        explicit Gadget(Instruction* ending_instr);
+
+        explicit Gadget();
+
         ~Gadget(void);
 
-        /* Get entirely the disassembly of your gadget */
+        /*!
+         *  \brief Get the entire disassembly of your gadget
+         *  \return the disassembly
+         */
         std::string get_disassembly(void) const;
 
-        /* Get the size of your gadget */
+        /*!
+         *  \brief Get the size of your gadget
+         *  \return the size of the whole gadget
+         */
         unsigned int get_size(void) const;
         
-        /* Add an instruction to your gadget */
+        /*!
+         *  \brief Add an instruction to your gadget ; don't forget it's back pushed in the instruction list
+         *   It means the first instruction you'll insert will be the address of the gadget
+         */
         void add_instruction(Instruction* p_instruction);
 
-        Instruction* get_ending_instruction(void);
-
+        /*!
+         *  \brief Get the size of your gadget
+         *  \return the size of the whole gadget
+         */
         std::list<Instruction*> get_instructions(void);
 
-        /* Get the first offset of this gadget */
+        /*!
+         *  \brief Get the first offset of this gadget (first offset because a gadget instance stores other offset with the same disassembly in memory)
+         *  \return the offset
+         */
         unsigned long long get_first_offset(void) const;
 
-        /* Obtain the number of this specific gadget found */
+        /*!
+         *  \brief Get the number of other equivalent gadget
+         *  \return the number of the same gadget in memory
+         */
         size_t get_nb(void) const;
 
-        /* Add the offset where you can find the same gadget */
+        /*!
+         *  \brief Add the offset where you can find the same gadget
+         *
+         *  \param offset: the offset where you can find the same gadget
+         */
         void add_offset(unsigned long long offset);
+
+        /*!
+         *  \brief Get the ending instruction of this gadget
+         *  \return a pointer on the ending instruction
+         */
+        Instruction* Gadget::get_ending_instruction(void);
 
         static void search_specific_gadget(std::map<std::string, Gadget*> &g);
 
     private:
-        std::string m_disassembly;
-        unsigned int m_size;
-        Instruction *m_ending_instruction;
-        std::list<Instruction*> m_instructions;
-        std::vector<unsigned long long> m_offsets;
+
+        std::string m_disassembly; /*!< the disassembly of the gadget*/
+
+        unsigned int m_size; /*!< the size in byte of the gadget*/
+
+        std::list<Instruction*> m_instructions; /*!< the list of the different instructions composing the gadget*/
+
+        std::vector<unsigned long long> m_offsets; /*!< the vector which stores where you can find the same gadget*/
 };
 
 #endif

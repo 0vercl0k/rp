@@ -1,4 +1,6 @@
 #include "executable_format.hpp"
+#include "pe.hpp"
+#include "elf.hpp"
 
 ExecutableFormat::ExecutableFormat(void)
 {
@@ -8,25 +10,28 @@ ExecutableFormat::~ExecutableFormat(void)
 {	
 }
 
-ExecutableFormat::E_ExecutableFormat ExecutableFormat::FindExecutableFormat(unsigned int magic_dword)
+ExecutableFormat* ExecutableFormat::GetExecutableFormat(unsigned int magic_dword)
 {
-    ExecutableFormat::E_ExecutableFormat format = FORMAT_UNKNOWN;
+    ExecutableFormat *exe_format = NULL;
 
     /* Yeah, I told you this was basic. */
     switch(magic_dword)
     {
         case 0x00905A4D:
         {
-            format = FORMAT_PE;
+            exe_format = new (std::nothrow) PE();
             break;
         }
 
         case 0x464C457F:
         {
-            format = FORMAT_ELF;
+            exe_format = new (std::nothrow) Elf();
             break;
         }
     }
 
-    return format;
+    if(exe_format == NULL)
+        RAISE_EXCEPTION("Cannot allocate exe_format");
+
+    return exe_format;
 }

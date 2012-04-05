@@ -8,22 +8,53 @@
 #include "cpu.hpp"
 #include "executable_format.hpp"
 
+/*! \class Program
+ *
+ *  A program is the combination between two things: a CPU which will be used by the disassembler, 
+ *  and an ExecutableFormat in order to correctly extract the code (to find cool stuff in)
+ */
 class Program
 {
 	public:
-        explicit Program(const std::string & program_path);
-		~Program(void);
 
+       /*!
+         *  \brief Program instanciation requires a path where it can find your binary
+         *   
+         *  \param program_path: The path of your binary
+         */
+        explicit Program(const std::string & program_path);
+		
+        ~Program(void);
+
+        /*!
+         *  \brief Display information concerning the executable format (section address, entry point, stuff like that)
+         *   
+         *  \param lvl: Set the verbosity level you want
+         */
         void display_information(VerbosityLevel lvl = VERBOSE_LEVEL_1);
 
+        /*!
+         *  \brief Find all the rop gadget it can find and display them
+         *   
+         *  \param depth: Set the depth of the research (don't forget the ending instruction doesn't count -- so if you want only ending instruction, depth = 0)
+         */
         void find_and_display_gadgets(unsigned int depth);
 
+        /*!
+         *  \brief Find hex values in the section of the program
+         *   
+         *  \param hex_values: It is a pointer on where it can find the bytes to find in memory
+         *  \param size: It is the size of the buffer hex_values
+         */
         void search_and_display(const unsigned char *hex_values, unsigned int size);
 
     private:
-        CPU* m_cpu;
-        ExecutableFormat* m_exformat;
-        std::ifstream m_file;
+        
+        CPU* m_cpu; /*!< a pointer on the CPU used by your program*/
+        
+        ExecutableFormat* m_exformat; /*!< a pointer on the ExecutableFormat used by your program*/
+        
+        std::ifstream m_file; /*!< the file descriptor*/
 };
 
 #endif
