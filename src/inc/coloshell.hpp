@@ -108,7 +108,7 @@ static void coloshell(const T t, const Colors colo)
 
 /**
  * \def w_red(text)
- * \brief Display text in red on stdout
+ *  Display text in red on stdout
  *
  * \param text: the text you want to display
  */
@@ -118,7 +118,7 @@ static void coloshell(const T t, const Colors colo)
 
 /**
  * \def w_yel(text)
- * \brief Display text in yellow on stdout
+ *  Display text in yellow on stdout
  *
  * \param text: the text you want to display
  */
@@ -128,7 +128,7 @@ static void coloshell(const T t, const Colors colo)
 
 /**
  * \def w_gre(text)
- * \brief Display text in green on stdout
+ *  Display text in green on stdout
  *
  * \param text: the text you want to display
  */
@@ -138,7 +138,7 @@ static void coloshell(const T t, const Colors colo)
 
 /**
  * \def w_red_lf(text)
- * \brief Display text in red on stdout with a line feed
+ *  Display text in red on stdout with a line feed
  *
  * \param text: the text you want to display
  */
@@ -149,7 +149,7 @@ static void coloshell(const T t, const Colors colo)
 
 /**
  * \def w_yel_lf(text)
- * \brief Display text in yellow on stdout with a line feed
+ *  Display text in yellow on stdout with a line feed
  *
  * \param text: the text you want to display
  */
@@ -160,7 +160,7 @@ static void coloshell(const T t, const Colors colo)
 
 /**
  * \def w_gre_lf(text)
- * \brief Display text in green on stdout with a line feed
+ *  Display text in green on stdout with a line feed
  *
  * \param text: the text you want to display
  */
@@ -171,7 +171,7 @@ static void coloshell(const T t, const Colors colo)
 
 /**
  * \def display_hex_field(field, n)
- * \brief Display an hex value in red with 0 filling etc.
+ *  Display an hex value in red with 0 filling etc.
  *
  * \param field: It is the hex value you want to output
  * \param n: It is the size of the column
@@ -186,7 +186,7 @@ static void coloshell(const T t, const Colors colo)
 
 /**
  * \def display_hex_field_lf(field, n)
- * \brief Display an hex value in red with 0 filling, a line feed and 25b column.
+ *  Display an hex value in red with 0 filling, a line feed and 25b column.
  *
  * \param field: It is the hex value you want to output
  */
@@ -197,7 +197,7 @@ static void coloshell(const T t, const Colors colo)
 
 /**
  * \def display_hex_2fields_lf(field1, field2)
- * \brief Display two hex values in red on a same line.
+ *  Display two hex values in red on a same line.
  *
  * \param field1: It is the first hex value you want to output
  * \param field2: It is the second hex value you want to output
@@ -210,7 +210,7 @@ static void coloshell(const T t, const Colors colo)
 
 /**
  * \def display_short_hex_field(field)
- * \brief Display a short hex value in red.
+ *  Display a short hex value in red.
  *
  * \param field: It is the short hex value you want to output
  */
@@ -220,7 +220,7 @@ static void coloshell(const T t, const Colors colo)
 
 /**
  * \def display_short_hex_field_lf(field)
- * \brief Display a short hex value in red with a line feed.
+ *  Display a short hex value in red with a line feed.
  *
  * \param field: It is the short hex value you want to output
  */
@@ -231,7 +231,7 @@ static void coloshell(const T t, const Colors colo)
 
 /**
  * \def display_short_hex_2fields_lf(field1, field2)
- * \brief Display two short hex values in red with a line feed.
+ *  Display two short hex values in red with a line feed.
  *
  * \param field1: It is the first short hex value you want to output
  * \param field2: It is the second short hex value you want to output
@@ -244,7 +244,7 @@ static void coloshell(const T t, const Colors colo)
 
 /**
  * \def display_string(field_name, field)
- * \brief Display a field with its name.
+ *  Display a field with its name.
  *
  * \param field_name: It is the field name
  * \param field: It is the field
@@ -256,7 +256,7 @@ static void coloshell(const T t, const Colors colo)
 
 /**
  * \def display_string_lf(field_name, field)
- * \brief Display a field with its name and a line feed.
+ *  Display a field with its name and a line feed.
  *
  * \param field_name: It is the field name
  * \param field: It is the field
@@ -268,7 +268,7 @@ static void coloshell(const T t, const Colors colo)
 
 /**
  * \def display_2strings_lf(field_name1, field1, field_name2, field2)
- * \brief Display two fields with their names and a line feed.
+ *  Display two fields with their names and a line feed.
  *
  * \param field_name1: It is the first field name
  * \param field1: It is the first field
@@ -283,7 +283,7 @@ static void coloshell(const T t, const Colors colo)
 
 /**
  * \def display_gadget_lf(va, gadget)
- * \brief Display a gadget with a line feed and its VA.
+ *  Display a gadget with a line feed and its VA.
  *
  * \param va: It is the gadget VA
  * \param gadget: It is the gadget you want to output
@@ -301,7 +301,7 @@ static void coloshell(const T t, const Colors colo)
 
 /**
  * \def display_offset_lf(va, hex_val, size)
- * \brief Display an offset with a line feed and the hex values.
+ *  Display an offset with a line feed and the hex values.
  *
  * \param va: It is the gadget VA
  * \param hex_val: It is the hex values
