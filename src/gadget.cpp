@@ -26,21 +26,35 @@ unsigned int Gadget::get_size(void) const
     return m_size;
 }
 
-void Gadget::add_instruction(Instruction* p_instruction)
+void Gadget::add_instructions(std::list<Instruction> &instrs, unsigned long long va_section)
 {
-    /* 
-     * If we haven't any offset yet, it means this instruction is the first one added
-     * thus, the offset of the gadget
-     */
-    if(m_offsets.size() == 0)
-        m_offsets.push_back(p_instruction->get_offset());
+    for(std::list<Instruction>::const_iterator it = instrs.begin(); it != instrs.end(); ++it)
+    {
+        /* 
+         * If we haven't any offset yet, it means this instruction is the first one added
+         * thus, the offset of the gadget
+         * 
+         * XXX: Yeah I'm aware that passing the va_section is a bit weird
+         */
+        if(m_offsets.size() == 0)
+        {
+            m_offsets.push_back(it->get_offset());
+            m_va_sections.push_back(va_section);
+        }
+        
+        Instruction *instr_copy = new (std::nothrow) Instruction(*it);
+        if(instr_copy == NULL)
+            RAISE_EXCEPTION("Cannot allocate instr_copy");
 
-    /* We push the instruction in the front because the back is reserved for the ending instruction */
-    m_instructions.push_back(p_instruction);
+        /* We build our gadget instruction per instruction */
+        m_instructions.push_back(instr_copy);
 
-    m_size += p_instruction->get_size();
+        /* Don't forget to increment the size */
+        m_size += it->get_size();
 
-    m_disassembly += p_instruction->get_disassembly() + " ; ";
+        /* Build the disassembly instruction per instruction */
+        m_disassembly += it->get_disassembly() + " ; ";
+    }
 }
 
 unsigned long long Gadget::get_first_offset(void) const
@@ -48,14 +62,25 @@ unsigned long long Gadget::get_first_offset(void) const
     return m_instructions.front()->get_offset();
 }
 
+unsigned long long Gadget::get_first_va_section(void) const
+{
+    return m_va_sections.front();
+}
+
+unsigned long long Gadget::get_first_absolute_address(void) const
+{
+    return get_first_offset() + get_first_va_section();
+}
+
 size_t Gadget::get_nb(void) const
 {
     return m_offsets.size();
 }
 
-void Gadget::add_offset(unsigned long long off)
+void Gadget::add_new_one(unsigned long long offset, unsigned long long va_section)
 {
-    m_offsets.push_back(off);
+    m_offsets.push_back(offset);
+    m_va_sections.push_back(va_section);
 }
 
 std::list<Instruction*> Gadget::get_instructions(void)
@@ -65,24 +90,6 @@ std::list<Instruction*> Gadget::get_instructions(void)
     instrs.pop_back();
 
     return instrs;
-}
-
-void Gadget::search_specific_gadget(std::map<std::string, Gadget*> &g)
-{
-    std::cout << "here are the pop gadget: " << std::endl;
-    for(std::map<std::string, Gadget*>::const_iterator it = g.begin(); it != g.end(); ++it)
-    {
-        std::list<Instruction*> instrs = it->second->get_instructions();
-        if(instrs.size() == 1)
-        {
-            Instruction *last_instr = instrs.back();
-            if(is_matching(last_instr->get_disassembly(), "pop e??"))
-            {
-                std::cout << "A gadget with pop eax start @" << (it->second->get_first_offset() + last_instr->get_offset()) << std::endl;
-            }
-        }
-    }
-    std::cout << "DONNNNNEEEEE" << std::endl;
 }
 
 Instruction* Gadget::get_ending_instruction(void)

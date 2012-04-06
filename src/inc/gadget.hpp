@@ -35,10 +35,13 @@ class Gadget
         unsigned int get_size(void) const;
         
         /*!
-         *  \brief Add an instruction to your gadget ; don't forget it's back pushed in the instruction list
-         *   It means the first instruction you'll insert will be the address of the gadget
+         *  \brief Add a list of instructions to your gadget ; don't forget it's back pushed in the instruction list
+         *   It means the first instruction inserted will be the address of the gadget
+         *
+         *  \param instrs: It is a list of Instruction to create our gadget (NB: the method copy in its memory those instructions for futur usage)
+         *  \param va_section: It is the va section of the instructions ; a bit weird to pass it here yeah
          */
-        void add_instruction(Instruction* p_instruction);
+        void add_instructions(std::list<Instruction> &instrs, unsigned long long va_section);
 
         /*!
          *  \brief Get the size of your gadget
@@ -48,9 +51,21 @@ class Gadget
 
         /*!
          *  \brief Get the first offset of this gadget (first offset because a gadget instance stores other offset with the same disassembly in memory)
-         *  \return the offset
+         *  \return the offset (relative to m_va_section)
          */
         unsigned long long get_first_offset(void) const;
+
+        /*!
+         *  \brief Get the first va section of this gadget (first offset because a gadget instance stores other offset with the same disassembly in memory)
+         *  \return the va section
+         */
+        unsigned long long Gadget::get_first_va_section(void) const;
+
+        /*!
+         *  \brief Get the first absolute address of this gadget
+         *  \return the absolute address (computed like this: m_va_section + offset)
+         */
+        unsigned long long get_first_absolute_address(void) const;
 
         /*!
          *  \brief Get the number of other equivalent gadget
@@ -63,15 +78,13 @@ class Gadget
          *
          *  \param offset: the offset where you can find the same gadget
          */
-        void add_offset(unsigned long long offset);
+        void add_new_one(unsigned long long offset, unsigned long long va_section);
 
         /*!
          *  \brief Get the ending instruction of this gadget
          *  \return a pointer on the ending instruction
          */
         Instruction* Gadget::get_ending_instruction(void);
-
-        static void search_specific_gadget(std::map<std::string, Gadget*> &g);
 
     private:
 
@@ -81,7 +94,9 @@ class Gadget
 
         std::list<Instruction*> m_instructions; /*!< the list of the different instructions composing the gadget*/
 
-        std::vector<unsigned long long> m_offsets; /*!< the vector which stores where you can find the same gadget*/
+        std::vector<unsigned long long> m_offsets; /*!< the vector which stores where you can find the same gadget ; those offsets are relative to m_va_section*/
+        
+        std::vector<unsigned long long> m_va_sections; /*!< the virtual address of the section where the instructions were found*/
 };
 
 #endif

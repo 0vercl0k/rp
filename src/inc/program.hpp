@@ -4,6 +4,8 @@
 #include <string>
 #include <fstream>
 #include <list>
+#include <map>
+#include <string>
 
 #include "cpu.hpp"
 #include "executable_format.hpp"
@@ -34,11 +36,11 @@ class Program
         void display_information(VerbosityLevel lvl = VERBOSE_LEVEL_1);
 
         /*!
-         *  \brief Find all the rop gadget it can find and display them
+         *  \brief Find all the unique rop gadgets
          *   
          *  \param depth: Set the depth of the research (don't forget the ending instruction doesn't count -- so if you want only ending instruction, depth = 0)
          */
-        void find_and_display_gadgets(unsigned int depth);
+        std::map<std::string, Gadget*> find_gadgets(unsigned int depth);
 
         /*!
          *  \brief Find hex values in the section of the program

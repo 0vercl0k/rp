@@ -47,7 +47,7 @@ std::list<Gadget*> BeaRopGadgetFinder::find_all_gadget_from_ret(const unsigned c
 
     while(dis.EIP < ending_instr_disasm->EIP)
     {
-        std::list<Instruction> g;
+        std::list<Instruction> list_of_instr;
 
         /* save where we were in memory */
         UIntPtr saved_eip  = dis.EIP;
@@ -64,7 +64,7 @@ std::list<Gadget*> BeaRopGadgetFinder::find_all_gadget_from_ret(const unsigned c
             if(len_instr == UNKNOWN_OPCODE || is_valid_instruction(&dis) == false)
                 break;
 
-            g.push_back(Instruction(
+            list_of_instr.push_back(Instruction(
                 std::string(dis.CompleteInstr),
                 std::string(dis.Instruction.Mnemonic),
                 dis.EIP - (UIntPtr)data,
@@ -90,27 +90,22 @@ std::list<Gadget*> BeaRopGadgetFinder::find_all_gadget_from_ret(const unsigned c
         if(is_a_valid_gadget)
         {
             /* we have a valid gadget, time to build it ; add the instructions found & finally add the ending instruction */
-
-            Instruction *ending_instr = new (std::nothrow) Instruction(
+            
+            /* Don't forget to include the ending instruction in the chain of instruction */
+            list_of_instr.push_back(Instruction(
                 std::string(ending_instr_disasm->CompleteInstr),
                 std::string(ending_instr_disasm->Instruction.Mnemonic),
                 ending_instr_disasm->EIP - (UIntPtr)data,
                 len_ending_instr
-            );
+            ));
 
-            if(ending_instr == NULL)
-                RAISE_EXCEPTION("Cannot allocate ending_instr");
 
             Gadget *gadget = new (std::nothrow) Gadget();
             if(gadget == NULL)
                 RAISE_EXCEPTION("Cannot allocate gadget");
 
             /* Now we populate our gadget with the instructions previously found.. */
-            for(std::list<Instruction>::iterator it = g.begin(); it != g.end(); ++it)
-                gadget->add_instruction(new Instruction(*it));
-
-            /* ..don't forget the ending instruction */
-            gadget->add_instruction(ending_instr);
+            gadget->add_instructions(list_of_instr, vaddr);
 
             gadgets.push_back(gadget);
         }
@@ -220,22 +215,21 @@ std::list<Gadget*> BeaRopGadgetFinder::find_rop_gadgets(const unsigned char* dat
             /* If we only want to see the ending instruction ! */
             else
             {
-                Instruction *ending_instr = new (std::nothrow) Instruction(
+                std::list<Instruction> only_ending_instr;
+
+                only_ending_instr.push_back(Instruction(
                     std::string(ret_instr.CompleteInstr),
                     std::string(ret_instr.Instruction.Mnemonic),
                     offset,
                     len
-                );
+                ));
                 
-                if(ending_instr == NULL)
-                    RAISE_EXCEPTION("Cannot allocate ending_instr");
-
                 Gadget *gadget_with_one_instr = new (std::nothrow) Gadget();
                 if(gadget_with_one_instr == NULL)
                     RAISE_EXCEPTION("Cannot allocate gadget_with_one_instr");
 
                 /* the gadget will only have 1 ending instruction */
-                gadget_with_one_instr->add_instruction(ending_instr);
+                gadget_with_one_instr->add_instructions(only_ending_instr, vaddr);
                 
                 merged_gadgets.push_back(gadget_with_one_instr);
             }
