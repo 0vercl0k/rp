@@ -9,11 +9,10 @@ Instruction::~Instruction(void)
 {
 }
 
-unsigned long long Instruction::get_absolute_address(const unsigned char* ptr)
+unsigned long long Instruction::get_absolute_address(const unsigned char* va_section)
 {
-    return (unsigned long long)ptr + m_offset;
+    return (unsigned long long)va_section + m_offset;
 }
-
 
 unsigned int Instruction::get_size(void) const
 {

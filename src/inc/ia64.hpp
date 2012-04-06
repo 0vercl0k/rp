@@ -6,7 +6,9 @@
 class Ia64 : public CPU
 {
     public:
+        
         explicit Ia64(void);
+        
         ~Ia64(void);
 
         std::string get_class_name(void) const;

@@ -8,7 +8,9 @@
 class Elf : public ExecutableFormat
 {
     public:
+
         explicit Elf(void);
+        
         ~Elf(void);
 
         CPU* get_cpu(std::ifstream &file);

@@ -7,7 +7,9 @@
 class Ia32 : public CPU
 {
     public:
+
         explicit Ia32(void);
+        
         ~Ia32(void);
 
         std::string get_class_name(void) const;
@@ -15,6 +17,7 @@ class Ia32 : public CPU
         std::map<std::string, Gadget*> find_gadget_in_memory(const unsigned char *p_memory, const unsigned long long size, const unsigned long long vaddr, const unsigned int depth);
 
     private:
+        
         std::vector<Gadget> m_gadgets;
 };
 
