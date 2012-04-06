@@ -19,7 +19,7 @@ class CPU
         virtual ~CPU(void);
 
         /*!
-         *  \brief Obtain the name of the class (usefull when you use the polymorphism)
+         *  \brief Obtain the name of the class (useful when you use the polymorphism)
          *   
          *  \return the name of the class
          */
