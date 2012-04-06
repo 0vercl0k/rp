@@ -47,7 +47,7 @@ std::streampos get_file_size(std::ifstream &file)
     return fsize;
 }
 
-/* this function is a lot inspirated from the previous work of jonathan salwan */
+/* this function is completely inspirated from the previous work of jonathan salwan */
 bool is_matching(std::string &disass, const char* p)
 {
     std::string pattern(p);

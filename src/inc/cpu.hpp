@@ -2,7 +2,7 @@
 #define CPU_H
 
 #include <string>
-#include <map>
+#include <list>
 
 #include "gadget.hpp"
 
@@ -27,7 +27,7 @@ class CPU
         
 
         /*!
-         *  \brief Each CPU class is able to find unique gadgets in [p_memory, p_memory+size]
+         *  \brief Each CPU class is able to find all gadgets in [p_memory, p_memory+size]
          *   NB: The vaddr field is actually used by the BeaEngine when it disassembles something like jmp instruction, it needs the original virtual address to
          *   give you disassemble correctly (indeed jmp instruction are relative)
          *
@@ -36,9 +36,9 @@ class CPU
          *  \param vaddr: It is the real virtual address of the memory which will be disassembled (see the previous remark)
          *  \param depth: It is the number of maximum instructions contained by a gadget
          *
-         *  \return An association between the disassembly of the gadget and a pointer on a Gadget instance
+         *  \return A list of the Gadget instance
          */
-        virtual std::map<std::string, Gadget*> find_gadget_in_memory(const unsigned char *p_memory, const unsigned long long size, const unsigned long long vaddr, const unsigned int depth) = 0;
+        virtual std::list<Gadget*> find_gadget_in_memory(const unsigned char *p_memory, const unsigned long long size, const unsigned long long vaddr, const unsigned int depth) = 0;
 
         /*! The different architectures RP++ handles */
         enum E_CPU

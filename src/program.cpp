@@ -48,9 +48,9 @@ void Program::display_information(VerbosityLevel lvl)
     m_exformat->display_information(lvl);
 }
 
-void Program::find_and_display_gadgets(unsigned int depth)
+std::map<std::string, Gadget*> Program::find_gadgets(unsigned int depth)
 {
-    std::cout << std::endl << "Wait a few seconds, rp++ is looking for gadgets.." << std::endl;
+    std::map<std::string, Gadget*> gadgets_found;
 
     /* To do a ROP gadget research, we need to know the executable section */
     std::vector<Section*> executable_sections = m_exformat->get_executables_section(m_file);
@@ -58,35 +58,46 @@ void Program::find_and_display_gadgets(unsigned int depth)
         std::cout << "It seems your binary haven't executable sections." << std::endl;
 
     /* Walk the executable sections */
-    for(std::vector<Section*>::iterator it = executable_sections.begin(); it != executable_sections.end(); ++it)
+    for(std::vector<Section*>::iterator it_sec = executable_sections.begin(); it_sec != executable_sections.end(); ++it_sec)
     {
-        std::cout << "in " << (*it)->get_name() << ".. ";
-        unsigned long long va_section = m_exformat->raw_offset_to_va((*it)->get_offset(), (*it)->get_offset());
+        std::cout << "in " << (*it_sec)->get_name() << ".. ";
+        unsigned long long va_section = m_exformat->raw_offset_to_va((*it_sec)->get_offset(), (*it_sec)->get_offset());
 
         /* Let the cpu do the research (BTW we use a std::map in order to keep only unique gadget) */
-        std::map<std::string, Gadget*> gadgets_found = m_cpu->find_gadget_in_memory(
-            (*it)->get_section_buffer(),
-            (*it)->get_size(),
+        std::list<Gadget*> gadgets = m_cpu->find_gadget_in_memory(
+            (*it_sec)->get_section_buffer(),
+            (*it_sec)->get_size(),
             va_section,
             depth
         );
 
-        std::cout << std::dec << gadgets_found.size() << " unique gadgets found" << std::endl;
-
-        //Gadget::search_specific_gadget(gadgets_found);
-
-        /* Now we walk the gadgets found */
-        for(std::map<std::string, Gadget*>::iterator it = gadgets_found.begin(); it != gadgets_found.end(); ++it)
-        {      
-            /* Do not forget that VA != PA */
-            unsigned long long va = va_section + it->second->get_first_offset();
-            
-            display_gadget_lf(va, it);
-
-            /* Avoid mem leaks */
-            delete it->second;
+        /* Now we have a list of gadget cool, but we want to keep only the unique! */
+        for(std::list<Gadget*>::const_iterator it_g = gadgets.begin(); it_g != gadgets.end(); ++it_g)
+        {
+            /* If a gadget, with the same disassembly, has already been found ; just add its offset in the existing one */
+            if(gadgets_found.count((*it_g)->get_disassembly()) > 0)
+            {
+                std::map<std::string, Gadget*>::iterator g = gadgets_found.find((*it_g)->get_disassembly());
+                
+                /*
+                    we have found the same gadget in memory, so we just store its offset & its va section 
+                    Why we store its va section ? Because you can find the same gadget in another executable sections!
+                */
+                g->second->add_new_one((*it_g)->get_first_offset(),
+                    va_section
+                );
+            }
+            else
+            {
+                gadgets_found.insert(std::make_pair(
+                    (*it_g)->get_disassembly(),
+                    (*it_g)
+                ));
+            }
         }
     }
+
+    return gadgets_found;
 }
 
 void Program::search_and_display(const unsigned char* hex_values, unsigned int size)
@@ -102,6 +113,7 @@ void Program::search_and_display(const unsigned char* hex_values, unsigned int s
         {
             unsigned long long va_section = m_exformat->raw_offset_to_va((*it)->get_offset(), (*it)->get_offset());
             unsigned long long va = va_section + *it2;
+            
             display_offset_lf(va, hex_values, size);
         }
     }
