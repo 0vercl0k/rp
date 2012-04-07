@@ -1,2 +1,4 @@
-build/
-bin/
+./buildx86/
+./buildx64
+./build/
+./doc/
