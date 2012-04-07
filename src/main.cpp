@@ -15,13 +15,12 @@ int main(int argc, char* argv[])
     struct arg_file *file    = arg_file0("f", "file", "<binary path>", "give binary path");
     struct arg_int  *display = arg_int0("i", "info", "<1,2,3>", "display information about the binary header");
     struct arg_int  *rop     = arg_int0("r", "rop", "<positive int>", "find useful gadget for your future exploits, arg is the gadget maximum size in instructions");
-    struct arg_lit  *autorop = arg_lit0(NULL, "auto-rop", "try to generate a ROP payload automatically");
     struct arg_str  *shexa   = arg_str0(NULL, "search-hexa", "<\\x90A\\x90>", "try to find hex values");
     struct arg_str  *sint    = arg_str0(NULL, "search-int", "<int in hex>", "try to find a pointer on a specific integer value");
     struct arg_lit  *help    = arg_lit0("h", "help", "print this help and exit");
     struct arg_lit  *version = arg_lit0("v", "version", "print version information and exit");
     struct arg_end  *end     = arg_end(20);
-    void* argtable[] = {file, display, rop, autorop, shexa, sint, help, version, end};
+    void* argtable[] = {file, display, rop, shexa, sint, help, version, end};
 
     if(arg_nullcheck(argtable) != 0)
         RAISE_EXCEPTION("Cannot allocate long option structures");
@@ -93,13 +92,6 @@ int main(int argc, char* argv[])
                 }
 
                 unique_gadgets.clear();
-            }
-
-            if(autorop->count > 0)
-            {
-                std::map<std::string, Gadget*> unique_gadgets = p.find_gadgets(1);
-                AutoRop autoroping;
-                autoroping.search_specific_gadget(unique_gadgets);
             }
 
             if(shexa->count > 0)

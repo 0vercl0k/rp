@@ -316,8 +316,13 @@ static void coloshell(const T t, const Colors colo)
     enable_color(COLO_GREEN);                                                                             \
     for(unsigned int i = 0, b = 0; i < size; ++i)                                                         \
     {                                                                                                     \
-        b = hex_val[i];                                                                                   \
-        std::cout << "\\x" << std::setw(2) << std::left << std::setfill('0') << std::hex << b;            \
+        if(isprint(hex_val[i]))                                                                           \
+            std::cout << hex_val[i];                                                                      \
+        else                                                                                              \
+        {                                                                                                 \
+            unsigned int b = hex_val[i];                                                                  \
+            std::cout << "\\x" << std::setw(2) << std::left << std::setfill('0') << std::hex << b;        \
+        }                                                                                                 \
     }                                                                                                     \
     std::cout << std::endl;                                                                               \
     disable_color();                                                                                      \
