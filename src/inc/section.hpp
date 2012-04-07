@@ -11,6 +11,7 @@
 class Section
 {
     public:
+        
         enum Properties
         {
             Readable,
@@ -20,6 +21,7 @@ class Section
 
         /* The constructor will make a copy of the memory in its own buffer */
         explicit Section(std::ifstream &file, const char *name, const unsigned long long offset, const unsigned long long size, const Properties props);
+        
         ~Section(void);
         
         /* Get the name of the section */
@@ -35,13 +37,19 @@ class Section
         const unsigned long long get_offset(void) const;
 
         std::list<unsigned long long> search_in_memory(const unsigned char *val, const unsigned int size);
+        
         std::list<unsigned long long> search_in_memory(const unsigned int val);
 
     private:
+
         std::string m_name;
+        
         const unsigned long long m_offset;
+        
         const unsigned long long m_size;
+        
         const Properties m_props;
+        
         unsigned char *m_section;
 };
 

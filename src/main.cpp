@@ -4,7 +4,6 @@
 #include "program.hpp"
 #include "toolbox.hpp"
 #include "argtable2.h"
-#include "autorop.hpp"
 
 #include <iostream>
 #include <exception>

@@ -50,7 +50,7 @@ static void enable_color(const Colors colo)
 
     SetConsoleTextAttribute(
         hStdOutput,
-        colo
+        (unsigned short)colo
         );
 #else
     const char *colors[] = {
@@ -314,7 +314,7 @@ static void coloshell(const T t, const Colors colo)
     disable_color();                                                                                      \
     std::cout << ": ";                                                                                    \
     enable_color(COLO_GREEN);                                                                             \
-    for(unsigned int i = 0, b = 0; i < size; ++i)                                                         \
+    for(unsigned int i = 0; i < size; ++i)                                                                \
     {                                                                                                     \
         if(isprint(hex_val[i]))                                                                           \
             std::cout << hex_val[i];                                                                      \

@@ -196,6 +196,9 @@ struct Elf_Shdr_Abstraction
 
     void display(VerbosityLevel lvl = VERBOSE_LEVEL_1) const
     {
+        /* remove the warning C4100 with /W4 */
+        lvl = VERBOSE_LEVEL_1;
+
         std::cout << std::setw(15) << std::setfill(' ') << std::left << header.sh_addr;
         std::cout << std::setw(15) << std::setfill(' ') << std::left << header.sh_size;
         std::cout << std::setw(30) << std::setfill(' ') << std::left << name << std::endl;

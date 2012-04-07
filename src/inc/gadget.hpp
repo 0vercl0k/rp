@@ -59,7 +59,7 @@ class Gadget
          *  \brief Get the first va section of this gadget (first offset because a gadget instance stores other offset with the same disassembly in memory)
          *  \return the va section
          */
-        unsigned long long Gadget::get_first_va_section(void) const;
+        unsigned long long get_first_va_section(void) const;
 
         /*!
          *  \brief Get the first absolute address of this gadget
@@ -84,7 +84,7 @@ class Gadget
          *  \brief Get the ending instruction of this gadget
          *  \return a pointer on the ending instruction
          */
-        Instruction* Gadget::get_ending_instruction(void);
+        Instruction* get_ending_instruction(void);
 
     private:
 

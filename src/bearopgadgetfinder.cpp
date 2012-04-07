@@ -5,7 +5,7 @@
 #include <cstring>
 
 BeaRopGadgetFinder::BeaRopGadgetFinder(E_Arch arch, unsigned int depth)
-: m_depth(depth), m_opts(NasmSyntax + PrefixedNumeral), m_arch(arch)
+: m_opts(NasmSyntax + PrefixedNumeral), m_arch(arch), m_depth(depth)
 {
 }
 

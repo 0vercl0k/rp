@@ -118,7 +118,7 @@ unsigned char * string_to_hex(const char* hex, unsigned int * size)
             i++;
         }
         
-        bytes.push_back(byte);
+        bytes.push_back((unsigned char)byte);
     }
 
     *size = (unsigned int)bytes.size();

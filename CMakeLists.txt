@@ -1,6 +1,6 @@
 # unix => cd build/ && cmake .. && make
 cmake_minimum_required(VERSION 2.6)
-project(ROPGadget-pp)
+project(rp++)
 
 option (optX86BUILD "Generate an x86 executable" OFF)
 
