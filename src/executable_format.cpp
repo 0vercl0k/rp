@@ -31,7 +31,7 @@ ExecutableFormat* ExecutableFormat::GetExecutableFormat(unsigned int magic_dword
     }
 
     if(exe_format == NULL)
-        RAISE_EXCEPTION("Cannot allocate exe_format");
+        RAISE_EXCEPTION("Cannot allocate exe_format or cannot determine the executable format used by your file");
 
     return exe_format;
 }

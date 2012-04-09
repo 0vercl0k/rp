@@ -9,6 +9,7 @@
 #include "cpu.hpp"
 #include "toolbox.hpp"
 #include "section.hpp"
+#include "rpexception.hpp"
 
 /*! \class ExecutableFormat
  *
@@ -99,7 +100,11 @@ class ExecutableFormat
          *
          *  \return The CPU type used in your binary file
          */
-        virtual CPU::E_CPU extract_information_from_binary(std::ifstream &file) = 0;
+        virtual CPU::E_CPU extract_information_from_binary(std::ifstream &file)
+        {
+            RAISE_EXCEPTION("This method should not be called ; you're doing it wrong!");
+            return CPU::CPU_UNKNOWN;
+        }
 };
 
 #endif

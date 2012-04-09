@@ -5,12 +5,15 @@
 #include <sstream>
 
 #include "executable_format.hpp"
+#include "raw.hpp"
+#include "ia32.hpp"
+#include "ia64.hpp"
 #include "section.hpp"
 #include "coloshell.hpp"
 #include "rpexception.hpp"
 #include "toolbox.hpp"
 
-Program::Program(const std::string & program_path)
+Program::Program(const std::string & program_path, CPU::E_CPU arch)
 : m_cpu(NULL), m_exformat(NULL)
 {
     unsigned int magic_dword = 0;
@@ -20,13 +23,45 @@ Program::Program(const std::string & program_path)
     if(m_file.is_open() == false)
         RAISE_EXCEPTION("Cannot open the file");
 
-    m_file.read((char*)&magic_dword, sizeof(magic_dword));
+    /* If we know the CPU in the constructor, it is a raw file */
+    if(arch != CPU::CPU_UNKNOWN)
+    {
+        m_exformat = new (std::nothrow) Raw();
+        if(m_exformat == NULL)
+            RAISE_EXCEPTION("Cannot allocate raw");
+        
+        switch(arch)
+        {
+            case CPU::CPU_IA32:
+                m_cpu = new (std::nothrow) Ia32();
+                break;
 
-    m_exformat = ExecutableFormat::GetExecutableFormat(magic_dword);
-    if(m_exformat == NULL)
-        RAISE_EXCEPTION("GetExecutableFormat fails");
+            case CPU::CPU_IA64:
+                m_cpu = new (std::nothrow) Ia64();
+                break;
 
-    m_cpu = m_exformat->get_cpu(m_file);
+            default:
+                RAISE_EXCEPTION("Don't know your architecture");
+        }
+
+        if(m_cpu == NULL)
+            RAISE_EXCEPTION("Cannot allocate m_cpu");
+ 
+    }
+    /* This isn't a raw file, we have to determine the executable format and the cpu */
+    else
+    {
+        m_file.read((char*)&magic_dword, sizeof(magic_dword));
+
+        m_exformat = ExecutableFormat::GetExecutableFormat(magic_dword);
+        if(m_exformat == NULL)
+            RAISE_EXCEPTION("GetExecutableFormat fails");
+
+        m_cpu = m_exformat->get_cpu(m_file);
+        if(m_cpu == NULL)
+            RAISE_EXCEPTION("get_cpu fails");
+    }
+
 
     std::cout << "FileFormat: " << m_exformat->get_class_name() << ", Arch: " << m_cpu->get_class_name() << std::endl;
 }

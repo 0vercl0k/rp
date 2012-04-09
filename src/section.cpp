@@ -10,7 +10,7 @@ Section::Section(std::ifstream &file, const char *name, const unsigned long long
 {
     /* NB: std::streampos performs unsigned check */
     unsigned long long fsize = get_file_size(file);
-    if(SafeAddU64(offset, size) >= fsize)
+    if(SafeAddU64(offset, size) > fsize)
         RAISE_EXCEPTION("Your file seems to be fucked up");
 
     std::streampos backup = file.tellg();
@@ -58,19 +58,6 @@ std::list<unsigned long long> Section::search_in_memory(const unsigned char *val
     for(unsigned long long offset = 0; offset < m_size; ++offset)
         if(std::memcmp(m_section + offset, val, size) == 0)
             val_found.push_back(offset);
-
-    return val_found;
-}
-
-std::list<unsigned long long> Section::search_in_memory(const unsigned int val)
-{
-    std::list<unsigned long long> val_found;
-    for(unsigned long long offset = 0; offset < m_size; ++offset)
-    {
-        unsigned int tmp = *(unsigned int*)(m_section+offset);
-        if(tmp == val)
-            val_found.push_back(offset);
-    }
 
     return val_found;
 }

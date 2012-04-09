@@ -24,7 +24,7 @@ class Program
          *   
          *  \param program_path: The path of your binary
          */
-        explicit Program(const std::string & program_path);
+        explicit Program(const std::string & program_path, CPU::E_CPU arch = CPU::CPU_UNKNOWN);
 		
         ~Program(void);
 

@@ -8,7 +8,9 @@
 class PE : public ExecutableFormat
 {
     public:
+        
         explicit PE(void);
+        
         ~PE(void);
 
         CPU* get_cpu(std::ifstream &file);
@@ -22,6 +24,7 @@ class PE : public ExecutableFormat
         unsigned long long raw_offset_to_va(const unsigned long long absolute_raw_offset, const unsigned long long absolute_raw_offset_section) const;
 
     private:
+        
         CPU::E_CPU extract_information_from_binary(std::ifstream &file);
         
         template<class T>

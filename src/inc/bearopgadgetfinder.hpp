@@ -19,6 +19,7 @@ class BeaRopGadgetFinder
 {
     public:
 
+        /*! The different architectures BeaRopGadgetFinder handles */
         enum E_Arch
         {
             IA32 = 0,
