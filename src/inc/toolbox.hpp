@@ -44,7 +44,7 @@ std::streampos get_file_size(std::ifstream &file);
 unsigned char * string_to_hex(const char* hex, unsigned int * size);
 
 /**
- * \fn bool is_matching(std::string &disass, const char* p
+ * \fn bool is_matching(std::string &disass, const char* p)
  * \brief Try to match a string with a pattern: in this pattern you can use the special character '?' that represents anything
  *
  * \param str: the string
@@ -53,5 +53,15 @@ unsigned char * string_to_hex(const char* hex, unsigned int * size);
  * \return true if the pattern matches with str, else false
  */
 bool is_matching(std::string &str, const char* p);
+
+/**
+ * \fn bool is_hex_char(char c)
+ * \brief Is the character c is an hexadecimal character ?
+ *
+ * \param c: the character
+ *
+ * \return true if the character is an hexadecimal char, else false
+ */
+bool is_hex_char(char c);
 
 #endif

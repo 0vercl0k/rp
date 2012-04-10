@@ -72,6 +72,7 @@ bool is_matching(std::string &str, const char* p)
 
     return it_matches;
 }
+
 bool is_hex_char(char c)
 {
     return (
