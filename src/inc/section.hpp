@@ -5,9 +5,6 @@
 #include <list>
 #include <fstream>
 
-/*
-    
-*/
 /*! \class Section
  *
  *   Each binary is divided in section, actually it is a chunk of the binary of a specific size which contains code or data
