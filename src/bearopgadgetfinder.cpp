@@ -188,7 +188,7 @@ std::list<Gadget*> BeaRopGadgetFinder::find_rop_gadgets(const unsigned char* dat
     {
         dis.EIP = (UIntPtr)(data + offset);
         dis.VirtualAddr = SafeAddU64(vaddr, offset);
-        dis.SecurityBlock = (UInt32)(size - offset);
+        dis.SecurityBlock = (UInt32)(size - offset + 1);
         
         int len = Disasm(&dis);
         /* I guess we're done ! */
@@ -206,32 +206,30 @@ std::list<Gadget*> BeaRopGadgetFinder::find_rop_gadgets(const unsigned char* dat
             /* Okay I found a RET ; now I can build the gadget */
             memcpy(&ret_instr, &dis, sizeof(DISASM));
             
+            /* Do not forget to add the ending instruction only -- we give to the user all gadget with < depth instruction */
+            std::list<Instruction> only_ending_instr;
+
+            only_ending_instr.push_back(Instruction(
+                std::string(ret_instr.CompleteInstr),
+                std::string(ret_instr.Instruction.Mnemonic),
+                offset,
+                len
+                ));
+
+            Gadget *gadget_with_one_instr = new (std::nothrow) Gadget();
+            if(gadget_with_one_instr == NULL)
+                RAISE_EXCEPTION("Cannot allocate gadget_with_one_instr");
+
+            /* the gadget will only have 1 ending instruction */
+            gadget_with_one_instr->add_instructions(only_ending_instr, vaddr);
+            merged_gadgets.push_back(gadget_with_one_instr);
+
+            /* if we want to see gadget with more instructions */
             if(m_depth > 0)
             {
                 std::list<Gadget*> gadgets = find_all_gadget_from_ret(data, vaddr, &ret_instr, len);
                 for(std::list<Gadget*>::iterator it = gadgets.begin(); it != gadgets.end(); ++it)
                     merged_gadgets.push_back(*it);
-            }
-            /* If we only want to see the ending instruction ! */
-            else
-            {
-                std::list<Instruction> only_ending_instr;
-
-                only_ending_instr.push_back(Instruction(
-                    std::string(ret_instr.CompleteInstr),
-                    std::string(ret_instr.Instruction.Mnemonic),
-                    offset,
-                    len
-                ));
-                
-                Gadget *gadget_with_one_instr = new (std::nothrow) Gadget();
-                if(gadget_with_one_instr == NULL)
-                    RAISE_EXCEPTION("Cannot allocate gadget_with_one_instr");
-
-                /* the gadget will only have 1 ending instruction */
-                gadget_with_one_instr->add_instructions(only_ending_instr, vaddr);
-                
-                merged_gadgets.push_back(gadget_with_one_instr);
             }
         }
     }

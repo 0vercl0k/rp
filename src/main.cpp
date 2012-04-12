@@ -96,7 +96,8 @@ int main(int argc, char* argv[])
 
                 std::cout << std::endl << "Wait a few seconds, rp++ is looking for gadgets.." << std::endl;
                 std::map<std::string, Gadget*> unique_gadgets = p.find_gadgets(rop->ival[0]);
-                
+                std::cout << unique_gadgets.size() << " unique gadgets found." << std::endl;
+
                 /* Now we walk the gadgets found and set the VA */
                 for(std::map<std::string, Gadget*>::iterator it = unique_gadgets.begin(); it != unique_gadgets.end(); ++it)
                 {                
