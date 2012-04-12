@@ -443,7 +443,7 @@ struct PELayout : public PortableExecutableLayout
 
         for(unsigned int i = 0; i < imgNtHeaders.FileHeader.NumberOfSections; ++i)
         {
-            RP_IMAGE_SECTION_HEADER* pImgSectionHeader = new RP_IMAGE_SECTION_HEADER;
+            RP_IMAGE_SECTION_HEADER* pImgSectionHeader = new (std::nothrow) RP_IMAGE_SECTION_HEADER;
             if(pImgSectionHeader == NULL)
                 RAISE_EXCEPTION("Cannot allocate memory for pImgSectionHeader");
             
