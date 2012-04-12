@@ -83,7 +83,7 @@ void Program::display_information(VerbosityLevel lvl)
     m_exformat->display_information(lvl);
 }
 
-std::map<std::string, Gadget*> Program::find_gadgets(unsigned int depth)
+std::map<std::string, Gadget*> Program::find_gadgets(unsigned int depth, unsigned int engine_display_option)
 {
     std::map<std::string, Gadget*> gadgets_found;
 
@@ -103,7 +103,8 @@ std::map<std::string, Gadget*> Program::find_gadgets(unsigned int depth)
             (*it_sec)->get_section_buffer(),
             (*it_sec)->get_size(),
             va_section,
-            depth
+            depth,
+            engine_display_option
         );
 
         /* Now we have a list of gadget cool, but we want to keep only the unique! */

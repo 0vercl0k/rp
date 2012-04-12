@@ -4,8 +4,8 @@
 #include <iostream>
 #include <cstring>
 
-BeaRopGadgetFinder::BeaRopGadgetFinder(E_Arch arch, unsigned int depth)
-: m_opts(NasmSyntax + PrefixedNumeral), m_arch(arch), m_depth(depth)
+BeaRopGadgetFinder::BeaRopGadgetFinder(E_Arch arch, unsigned int depth, unsigned engine_display_option)
+: m_opts(PrefixedNumeral + engine_display_option), m_arch(arch), m_depth(depth)
 {
 }
 
