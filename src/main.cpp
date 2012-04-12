@@ -9,6 +9,7 @@
 #include <iostream>
 #include <exception>
 #include <cstdlib>
+#include <cstring>
 
 int main(int argc, char* argv[])
 {
@@ -69,9 +70,9 @@ int main(int argc, char* argv[])
             {
                 const char* architecture = raw->sval[0];
 
-                if(strcmp(architecture, "x86") == 0)
+                if(std::strcmp(architecture, "x86") == 0)
                     arch = CPU::CPU_IA32;
-                else if(strcmp(architecture, "x64") == 0)
+                else if(std::strcmp(architecture, "x64") == 0)
                     arch = CPU::CPU_IA64;
                 else
                     RAISE_EXCEPTION("You must use an architecture supported, read the help");
@@ -96,12 +97,12 @@ int main(int argc, char* argv[])
                 if(att->count > 0)
                 {
                     disass_engine_display_option += ATSyntax;
-                    std::cout << "Enabling the AT&T syntax.." << std::endl;
+                    std::cout << "Using the AT&T syntax.." << std::endl;
                 }
                 else
                 {
                     disass_engine_display_option += NasmSyntax;
-                    std::cout << "Enabling the Nasm syntax.." << std::endl;
+                    std::cout << "Using the Nasm syntax.." << std::endl;
                 }
 
                 if(rop->ival[0] < 0)
