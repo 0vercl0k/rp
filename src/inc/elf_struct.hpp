@@ -235,7 +235,6 @@ struct ExecutableLinkingFormatLayout
     virtual void fill_structures(std::ifstream &file) = 0;
     virtual void display(VerbosityLevel lvl = VERBOSE_LEVEL_1) const = 0;
     virtual std::vector<Section*> get_executable_section(std::ifstream &file) const = 0;
-    virtual unsigned long long raw_offset_to_va(const unsigned long long absolute_raw_offset, const unsigned long long absolute_raw_offset_section) const = 0;
 };
 
 #define SHT_SYMTAB      2
@@ -388,38 +387,23 @@ struct ELFLayout : public ExecutableLinkingFormatLayout
             if((*it)->p_flags & 1)
             {
                 Section *sec = new (std::nothrow) Section(
-                    file,
                     type_to_str((*it)->p_type).c_str(),
                     (*it)->p_offset,
-                    (*it)->p_filesz,
-                    Section::Executable
+                    (*it)->p_vaddr,
+                    (*it)->p_filesz
                 );
 
                 if(sec == NULL)
                     RAISE_EXCEPTION("Cannot alocate a section");
+                
+                sec->dump(file);
+                sec->set_props(Section::Executable);
 
                 exec_sections.push_back(sec);
             }
         }
 
         return exec_sections;
-    }
-
-    unsigned long long raw_offset_to_va(const unsigned long long absolute_raw_offset, const unsigned long long absolute_raw_offset_section) const
-    {
-        for(typename std::vector<Elf_Phdr<T>*>::const_iterator it = elfProgramHeaders.begin();
-            it != elfProgramHeaders.end();
-            ++it)
-        {
-            /* If the offset is contained in the start & end address of the section ; we have its pa */
-            if(absolute_raw_offset >= (*it)->p_offset && 
-                absolute_raw_offset <= ((*it)->p_offset + (*it)->p_filesz))
-            {
-                return (*it)->p_vaddr + (absolute_raw_offset - absolute_raw_offset_section);
-            }
-        }
-
-        return 0;
     }
 };
 

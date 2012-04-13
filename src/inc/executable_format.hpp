@@ -66,23 +66,6 @@ class ExecutableFormat
         virtual std::vector<Section*> get_executables_section(std::ifstream & file) = 0;
 
         /*!
-         *  \brief A very useful method to do the conversion raw_offset (relative to a section) to virtual address (which is absolute) 
-         *
-         *   Example:
-         *       offset = 0x10
-         *       raw_section_offset = 0x100
-         *
-         *       virtual_section_offset = 0x1000
-         *       raw_offset_to_va(offset, 0x100) will return 0x1010
-         *
-         *  \param absolute_raw_offset: It is the absolute raw offset you want to convert
-         *  \param absolute_raw_offset_section: It is the aboslute raw offset of the section
-         *
-         *  \return The VA associated
-         */
-        virtual unsigned long long raw_offset_to_va(const unsigned long long absolute_raw_offset, const unsigned long long absolute_raw_offset_section) const = 0;
-
-        /*!
          *  \brief Give you a PE/ELF instance (based mostly on the magic signature) 
          *
          *  \param magic_dword: It is a dword that allows to deduce which ExecutableFormat is used by the binary

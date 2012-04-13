@@ -22,16 +22,18 @@ std::vector<Section*> Raw::get_executables_section(std::ifstream & file)
     
     /* It is a raw file -> we have only one "virtual" section */
     Section *sect = new (std::nothrow) Section(
-        file,
         ".raw",
         0,
-        raw_file_size,
-        Section::Executable
+        0,
+        raw_file_size
     );
 
     if(sect == NULL)
         RAISE_EXCEPTION("Cannot allocate sect");
     
+    sect->dump(file);
+    sect->set_props(Section::Executable);
+
     executable_sections.push_back(sect);
     
     return executable_sections;

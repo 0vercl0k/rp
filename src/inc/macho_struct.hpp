@@ -283,17 +283,19 @@ struct MachoArchLayout : public MachoLayout
             if((*it)->flags & S_ATTR_PURE_INSTRUCTIONS || (*it)->flags & S_ATTR_SOME_INSTRUCTIONS)
             {
                 Section *s = new Section(
-                    file,
                     (char*)(*it)->sectname,
                     (*it)->offset,
-                    (*it)->size,
-                    Section::Executable
+                    (*it)->addr,
+                    (*it)->size
                 );
 
                 if(s == NULL)
                     RAISE_EXCEPTION("Cannot allocate s");
                 
-                std::cout << (*it)->sectname << " is executable" << std::endl;
+                s->dump(file);
+
+                s->set_props(Section::Executable);
+
                 exc_sect.push_back(s);
             }
         }

@@ -129,34 +129,22 @@ std::vector<Section*> PE::get_executables_section(std::ifstream & file)
         if((*it)->Characteristics & RP_IMAGE_SCN_MEM_EXECUTE)
         {
             Section *tmp = new (std::nothrow) Section(
-                file,
                 (const char*)(*it)->Name,
                 (*it)->PointerToRawData,
-                (*it)->SizeOfRawData,
-                Section::Executable
+                /* in the PE, this field is a RVA, so we need to add it the image base to have a VA */
+                m_pPELayout->get_image_base() + (*it)->VirtualAddress,
+                (*it)->SizeOfRawData
             );
 
             if(tmp == NULL)
                 RAISE_EXCEPTION("Cannot allocate a section");
+            
+            tmp->dump(file);
+
+            tmp->set_props(Section::Executable);
 
             exec_sections.push_back(tmp);
         }
     }
     return exec_sections;
-}
-
-unsigned long long PE::raw_offset_to_va(const unsigned long long absolute_raw_offset, const unsigned long long absolute_raw_offset_section) const
-{
-    for(std::vector<RP_IMAGE_SECTION_HEADER*>::iterator it = m_pPELayout->imgSectionHeaders.begin();
-        it != m_pPELayout->imgSectionHeaders.end();
-        ++it)
-    {
-        if(absolute_raw_offset >= (*it)->PointerToRawData && 
-            absolute_raw_offset <= ((*it)->PointerToRawData + (*it)->SizeOfRawData))
-        {
-            return m_pPELayout->get_image_base() + (*it)->VirtualAddress + (absolute_raw_offset - absolute_raw_offset_section);
-        }
-    }
-
-    return 0;
 }

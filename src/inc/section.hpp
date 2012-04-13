@@ -24,13 +24,12 @@ class Section
         /*!
          *  \brief The constructor will make a copy of the memory in its own buffer
          *   
-         *  \param file: The file to analyze (in order to dump the raw section)
          *  \param name: The name of the section
          *  \param offset: It is the offset in file where you can find the section
+         *  \param vaddr: Virtual address of the section
          *  \param size: It is the size of the section
-         *  \param props: It describes the rights you will have on this section in memory
          */
-        explicit Section(std::ifstream &file, const char *name, const unsigned long long offset, const unsigned long long size, const Properties props);
+        explicit Section(const char *name, const unsigned long long offset, const unsigned long long vaddr, const unsigned long long size);
         
         ~Section(void);
         
@@ -72,6 +71,22 @@ class Section
          */
         std::list<unsigned long long> search_in_memory(const unsigned char *val, const unsigned int size);
         
+        /*!
+         *  \brief Dump the raw section of your file
+         *   
+         *  \param file: The file
+         */
+        void dump(std::ifstream &file);
+
+        /*!
+         *  \brief Set the properties of the section
+         *   
+         *  \param props: The properties of the section
+         */
+        void set_props(Properties props);
+
+        unsigned long long get_vaddr(void) const;
+
     private:
 
         std::string m_name; /*!< the name of the section*/
@@ -80,9 +95,11 @@ class Section
         
         const unsigned long long m_size; /*!< the size of the section of the section*/
         
-        const Properties m_props; /*!< the properties of the section*/
+        Properties m_props; /*!< the properties of the section*/
         
         unsigned char *m_section; /*!< the pointer on the section content*/
+
+        unsigned long long m_vaddr; /* !< the virtual address of the section*/
 };
 
 #endif

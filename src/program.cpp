@@ -95,8 +95,8 @@ std::map<std::string, Gadget*> Program::find_gadgets(unsigned int depth, unsigne
     /* Walk the executable sections */
     for(std::vector<Section*>::iterator it_sec = executable_sections.begin(); it_sec != executable_sections.end(); ++it_sec)
     {
-        std::cout << "in " << (*it_sec)->get_name() << ".. ";
-        unsigned long long va_section = m_exformat->raw_offset_to_va((*it_sec)->get_offset(), (*it_sec)->get_offset());
+        std::cout << "in " << (*it_sec)->get_name() << " (vaddr: " << (*it_sec)->get_vaddr() << ")" << std::endl;
+        unsigned long long va_section = (*it_sec)->get_vaddr();
 
         /* Let the cpu do the research (BTW we use a std::map in order to keep only unique gadget) */
         std::list<Gadget*> gadgets = m_cpu->find_gadget_in_memory(
@@ -147,7 +147,7 @@ void Program::search_and_display(const unsigned char* hex_values, unsigned int s
         std::list<unsigned long long> ret = (*it)->search_in_memory(hex_values, size);
         for(std::list<unsigned long long>::iterator it2 = ret.begin(); it2 != ret.end(); ++it2)
         {
-            unsigned long long va_section = m_exformat->raw_offset_to_va((*it)->get_offset(), (*it)->get_offset());
+            unsigned long long va_section = (*it)->get_vaddr();
             unsigned long long va = va_section + *it2;
             
             display_offset_lf(va, hex_values, size);

@@ -5,24 +5,9 @@
 
 #include <cstring>
 
-Section::Section(std::ifstream &file, const char *name, const unsigned long long offset, const unsigned long long size, const Properties props)
-: m_name(name), m_offset(offset), m_size(size), m_props(props), m_section(NULL)
+Section::Section(const char *name, const unsigned long long offset, const unsigned long long vaddr, const unsigned long long size)
+: m_name(name), m_offset(offset), m_size(size), m_section(NULL), m_vaddr(vaddr)
 {
-    /* NB: std::streampos performs unsigned check */
-    unsigned long long fsize = get_file_size(file);
-    if(SafeAddU64(offset, size) > fsize)
-        RAISE_EXCEPTION("Your file seems to be fucked up");
-
-    std::streampos backup = file.tellg();
-
-    file.seekg((unsigned int)offset, std::ios::beg);
-    m_section = new (std::nothrow) unsigned char[(unsigned int)m_size];
-    if(m_section == NULL)
-        RAISE_EXCEPTION("Cannote allocate a section.");
-
-    file.read((char*)m_section, (unsigned int)m_size);
-
-    file.seekg(backup);
 }
 
 Section::~Section(void)
@@ -60,4 +45,33 @@ std::list<unsigned long long> Section::search_in_memory(const unsigned char *val
             val_found.push_back(offset);
 
     return val_found;
+}
+
+void Section::set_props(Properties props)
+{
+    m_props = props;
+}
+
+void Section::dump(std::ifstream &file)
+{
+    /* NB: std::streampos performs unsigned check */
+    unsigned long long fsize = get_file_size(file);
+    if(SafeAddU64(m_offset, m_size) > fsize)
+        RAISE_EXCEPTION("Your file seems to be fucked up");
+
+    std::streampos backup = file.tellg();
+
+    file.seekg((unsigned int)m_offset, std::ios::beg);
+    m_section = new (std::nothrow) unsigned char[(unsigned int)m_size];
+    if(m_section == NULL)
+        RAISE_EXCEPTION("Cannote allocate a section.");
+
+    file.read((char*)m_section, (unsigned int)m_size);
+
+    file.seekg(backup);
+}
+
+unsigned long long Section::get_vaddr(void) const
+{
+    return m_vaddr;
 }
