@@ -7,7 +7,7 @@
 
 #define MAXIMUM_INSTRUCTION_PER_GADGET 20  // it defines the maximum number of instruction per gadget
 
-#define NUM_V "0.2"
+#define NUM_V "0.3"
 
 #ifdef ARCH_X64
 #define VERSION_TMP NUM_V " x64 built the " __DATE__ " " __TIME__
