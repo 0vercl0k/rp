@@ -318,10 +318,6 @@ struct RP_IMAGE_SECTION_HEADER {
             display_hex_field_lf(Characteristics);
         }
 
-        if(lvl > VERBOSE_LEVEL_2)
-        {
-        }
-
         display_hex_2fields_lf(Misc.PhysicalAddress, VirtualAddress);
         display_hex_2fields_lf(SizeOfRawData, PointerToRawData);
     }
@@ -381,8 +377,13 @@ struct PortableExecutableLayout
     RP_IMAGE_DOS_HEADER                   imgDosHeader;
     std::vector<RP_IMAGE_SECTION_HEADER*> imgSectionHeaders;
 
+    typedef std::vector<RP_IMAGE_SECTION_HEADER*>::const_iterator iter_sect_header;
+
     virtual ~PortableExecutableLayout(void)
-    {}
+    {
+        for(iter_sect_header it = imgSectionHeaders.begin(); it != imgSectionHeaders.end(); ++it)
+            delete *it;
+    }
 
     virtual void display(VerbosityLevel lvl = VERBOSE_LEVEL_1) const
     {
@@ -422,7 +423,7 @@ struct PELayout : public PortableExecutableLayout
         imgNtHeaders.display(lvl);
         if(lvl > VERBOSE_LEVEL_1)
         {
-            for(std::vector<RP_IMAGE_SECTION_HEADER*>::const_iterator it = imgSectionHeaders.begin();
+            for(iter_sect_header it = imgSectionHeaders.begin();
                 it != imgSectionHeaders.end();
                 ++it)
                 (*it)->display();

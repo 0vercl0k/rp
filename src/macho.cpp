@@ -56,7 +56,7 @@ CPU* Macho::get_cpu(std::ifstream &file)
 
 std::string Macho::get_class_name(void) const
 {
-    return std::string("Macho");
+    return std::string("Mach-o");
 }
 
 std::vector<Section*> Macho::get_executables_section(std::ifstream & file)

@@ -39,6 +39,12 @@ ExecutableFormat* ExecutableFormat::GetExecutableFormat(unsigned int magic_dword
             break;
         }
 
+        case 0xBEBAFECA:
+        {
+            RAISE_EXCEPTION("Hmm, actually I don't handle OSX Universal binaries. You must extract them manually.");
+            break;
+        }
+
         default:
             RAISE_EXCEPTION("Cannot determine the executable format used");
     }

@@ -44,16 +44,6 @@ struct Elf_Ehdr
     void display(VerbosityLevel lvl = VERBOSE_LEVEL_1) const
     {
         w_yel_lf("-> ELF_Ehdr:");
-
-        if(lvl > VERBOSE_LEVEL_2)
-        {
-
-        }
-
-        if(lvl > VERBOSE_LEVEL_2)
-        {
-
-        }
         
         display_short_hex_2fields_lf(e_phoff, e_shoff);
         display_short_hex_2fields_lf(e_flags, e_ehsize);
@@ -226,9 +216,6 @@ typedef Elf_Shdr_Abstraction<x64Version> Elf_Shdr64_Abstraction;
 
 struct ExecutableLinkingFormatLayout
 {
-    explicit ExecutableLinkingFormatLayout(void)
-    {}
-
     virtual ~ExecutableLinkingFormatLayout(void)
     {}
     
@@ -248,18 +235,18 @@ struct ELFLayout : public ExecutableLinkingFormatLayout
     std::vector<Elf_Shdr_Abstraction<T>*> elfSectionHeaders;
     T offset_string_table, size_string_table;
 
+    typedef typename std::vector<Elf_Phdr<T>*>::const_iterator iter_elf_phdr;
+    typedef typename std::vector<Elf_Shdr_Abstraction<T>*>::const_iterator iter_shdr_abs;
 
-    explicit ELFLayout(void)
-    {}
 
     ~ELFLayout(void)
     {
-        for(typename std::vector<Elf_Phdr<T>*>::const_iterator it = elfProgramHeaders.begin();
+        for(iter_elf_phdr it = elfProgramHeaders.begin();
             it != elfProgramHeaders.end();
             ++it)
             delete *it;
 
-        for(typename std::vector<Elf_Shdr_Abstraction<T>*>::const_iterator it = elfSectionHeaders.begin();
+        for(iter_shdr_abs it = elfSectionHeaders.begin();
             it != elfSectionHeaders.end();
             ++it)
             delete *it;
@@ -270,7 +257,7 @@ struct ELFLayout : public ExecutableLinkingFormatLayout
         unsigned int i = 0;
         elfHeader.display(lvl);
 
-        for(typename std::vector<Elf_Phdr<T>*>::const_iterator it = elfProgramHeaders.begin();
+        for(iter_elf_phdr it = elfProgramHeaders.begin();
             it != elfProgramHeaders.end();
             ++it)
                 (*it)->display(lvl);
@@ -286,7 +273,7 @@ struct ELFLayout : public ExecutableLinkingFormatLayout
         w_gre("name");
         std::cout << std::endl << std::setw(70) << std::setfill('-') << "-" << std::endl;
 
-        for(typename std::vector<Elf_Shdr_Abstraction<T>*>::const_iterator it = elfSectionHeaders.begin();
+        for(iter_shdr_abs it = elfSectionHeaders.begin();
             it != elfSectionHeaders.end();
             ++it)
         {
@@ -376,13 +363,15 @@ struct ELFLayout : public ExecutableLinkingFormatLayout
 
         /* Set correctly the pointer */
         file.seekg(off);
+
+        delete[] string_table_section;
     }
 
     std::vector<Section*> get_executable_section(std::ifstream &file) const
     {
         std::vector<Section*> exec_sections;
 
-        for(typename std::vector<Elf_Phdr<T>*>::const_iterator it = elfProgramHeaders.begin(); it != elfProgramHeaders.end(); ++it)
+        for(iter_elf_phdr it = elfProgramHeaders.begin(); it != elfProgramHeaders.end(); ++it)
         {
             if((*it)->p_flags & 1)
             {
