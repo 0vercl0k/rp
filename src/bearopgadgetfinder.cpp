@@ -124,6 +124,8 @@ bool BeaRopGadgetFinder::is_valid_ending_instruction(DISASM* ending_instr_d)
     UInt64 addr_value = ending_instr_d->Instruction.AddrValue;
     char *mnemonic = ending_instr_d->Instruction.Mnemonic, *completeInstr = ending_instr_d->CompleteInstr;
 
+    //XXX: If you use the at&t syntax the following checks aren't going to work
+
     bool is_good_branch_type = (
         /* We accept all the ret type instructions (except retf/iret) */
         (branch_type == RetType && strncmp(mnemonic, "retf", 4) != 0 && strncmp(mnemonic, "iretd", 4) != 0) || 
@@ -214,7 +216,7 @@ std::list<Gadget*> BeaRopGadgetFinder::find_rop_gadgets(const unsigned char* dat
                 std::string(ret_instr.Instruction.Mnemonic),
                 offset,
                 len
-                ));
+            ));
 
             Gadget *gadget_with_one_instr = new (std::nothrow) Gadget();
             if(gadget_with_one_instr == NULL)

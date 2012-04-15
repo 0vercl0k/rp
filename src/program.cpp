@@ -95,10 +95,10 @@ std::map<std::string, Gadget*> Program::find_gadgets(unsigned int depth, unsigne
     /* Walk the executable sections */
     for(std::vector<Section*>::iterator it_sec = executable_sections.begin(); it_sec != executable_sections.end(); ++it_sec)
     {
-        std::cout << "in " << (*it_sec)->get_name() << " (vaddr: " << (*it_sec)->get_vaddr() << ")" << std::endl;
+        std::cout << "in " << (*it_sec)->get_name() << std::endl;
         unsigned long long va_section = (*it_sec)->get_vaddr();
 
-        /* Let the cpu do the research (BTW we use a std::map in order to keep only unique gadget) */
+        /* Let the cpu research */
         std::list<Gadget*> gadgets = m_cpu->find_gadget_in_memory(
             (*it_sec)->get_section_buffer(),
             (*it_sec)->get_size(),
@@ -107,7 +107,7 @@ std::map<std::string, Gadget*> Program::find_gadgets(unsigned int depth, unsigne
             engine_display_option
         );
 
-        /* Now we have a list of gadget cool, but we want to keep only the unique! */
+        /* Now we have a list of gadget, cool, but we want to keep only the unique! */
         for(std::list<Gadget*>::const_iterator it_g = gadgets.begin(); it_g != gadgets.end(); ++it_g)
         {
             /* If a gadget, with the same disassembly, has already been found ; just add its offset in the existing one */
@@ -117,7 +117,8 @@ std::map<std::string, Gadget*> Program::find_gadgets(unsigned int depth, unsigne
                 
                 /*
                     we have found the same gadget in memory, so we just store its offset & its va section 
-                    Why we store its va section ? Because you can find the same gadget in another executable sections!
+                    maybe you can ask yourself 'Why do we store its va section ?' and the answer is:
+                    because you can find the same gadget in another executable sections!
                 */
                 g->second->add_new_one((*it_g)->get_first_offset(),
                     va_section
