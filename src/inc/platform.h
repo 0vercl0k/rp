@@ -17,7 +17,7 @@
 	#elif defined ARCH_X64
 		#define WINDOWS_X64
 	#endif
-#elif defined (linux) || defined (__linux)
+#elif defined (linux) || defined (__linux) || defined(__FreeBSD__) || defined(__FreeBSD_kernel__)
 	#define LINUX
 
 	#if defined ARCH_X86
