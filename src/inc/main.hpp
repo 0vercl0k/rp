@@ -1,6 +1,8 @@
 #ifndef MAIN_HPP
 #define MAIN_HPP
 
+#include "platform.h"
+
 /*
     If you don't want any colors if your shell, you can disable it in coloshell.hpp -- just comment the #define
 */

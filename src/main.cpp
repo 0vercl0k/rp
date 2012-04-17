@@ -1,6 +1,5 @@
 #include "main.hpp"
 #include "coloshell.hpp"
-#include "platform.h"
 #include "program.hpp"
 #include "toolbox.hpp"
 #include "argtable2.h"
