@@ -1,6 +1,12 @@
 #ifndef PLATFORM_H
 #define PLATFORM_H
 
+/*
+    Wanna check the macro defined by your compiler on a specific platform ?
+    $ touch dummy
+    $ cpp -dM dummy
+*/
+
 #if defined (__i386__) || defined (_M_IX86)
 	#define ARCH_X86
 #elif defined (__ia64__) || defined(__amd64__) || defined (_M_IA64) || defined(_M_X64)
@@ -17,7 +23,7 @@
 	#elif defined ARCH_X64
 		#define WINDOWS_X64
 	#endif
-#elif defined (linux) || defined (__linux) || defined(__FreeBSD__) || defined(__FreeBSD_kernel__)
+#elif defined (linux) || defined (__linux) || defined(__FreeBSD__) || defined(__FreeBSD_kernel__) || defined(__MACH__)
 	#define LINUX
 
 	#if defined ARCH_X86
