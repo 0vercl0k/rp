@@ -44,12 +44,15 @@ struct Elf_Ehdr
     void display(VerbosityLevel lvl = VERBOSE_LEVEL_1) const
     {
         w_yel_lf("-> ELF_Ehdr:");
-        
-        display_short_hex_2fields_lf(e_phoff, e_shoff);
-        display_short_hex_2fields_lf(e_flags, e_ehsize);
+
+        display_short_hex_field_lf(e_phoff);
+        display_short_hex_field_lf(e_shoff);
+
+        display_short_hex_field_lf(e_flags);
+
         display_short_hex_2fields_lf(e_phentsize, e_phnum);
         display_short_hex_2fields_lf(e_shentsize, e_shnum);
-        display_short_hex_field_lf(e_shstrndx);
+        display_short_hex_2fields_lf(e_shstrndx, e_ehsize);
     }
 }
 #ifdef LINUX
@@ -189,9 +192,10 @@ struct Elf_Shdr_Abstraction
         /* remove the warning C4100 with /W4 */
         lvl = VERBOSE_LEVEL_1;
 
-        std::cout << std::setw(15) << std::setfill(' ') << std::left << header.sh_addr;
-        std::cout << std::setw(15) << std::setfill(' ') << std::left << header.sh_size;
+        std::cout << "0x" << std::setw(15) << std::setfill(' ') << std::left << header.sh_addr;
+        std::cout << "0x" << std::setw(15) << std::setfill(' ') << std::left << header.sh_size;
         std::cout << std::setw(30) << std::setfill(' ') << std::left << name << std::endl;
+        
         /* 
         if(lvl > VERBOSE_LEVEL_1)
         {
@@ -207,7 +211,7 @@ struct Elf_Shdr_Abstraction
             std::cout << std::hex << "\t sh_addralign: " << header.sh_addralign << std::endl;
             std::cout << std::hex << "\t sh_entsize: " << header.sh_entsize << std::endl;
         }
-*/
+        */
     }
 };
 
@@ -263,13 +267,13 @@ struct ELFLayout : public ExecutableLinkingFormatLayout
                 (*it)->display(lvl);
 
         w_yel_lf("-> Elf Headers:");
-        std::cout << std::setw(10) << std::setfill(' ') << std::left;
+        std::cout << std::setw(12) << std::setfill(' ') << std::left;
         w_gre("id");
-        std::cout << std::setw(15) << std::setfill(' ') << std::left;
+        std::cout << std::setw(17) << std::setfill(' ') << std::left;
         w_gre("addr");
-        std::cout << std::setw(15) << std::setfill(' ') << std::left;
+        std::cout << std::setw(17) << std::setfill(' ') << std::left;
         w_gre("size");
-        std::cout << std::setw(30) << std::setfill(' ') << std::left;
+        std::cout << std::setw(32) << std::setfill(' ') << std::left;
         w_gre("name");
         std::cout << std::endl << std::setw(70) << std::setfill('-') << "-" << std::endl;
 
@@ -277,7 +281,7 @@ struct ELFLayout : public ExecutableLinkingFormatLayout
             it != elfSectionHeaders.end();
             ++it)
         {
-            std::cout << std::setw(10) << std::setfill(' ') << std::left << i++;
+            std::cout << "0x" << std::setw(10) << std::setfill(' ') << std::left << i++;
             (*it)->display(lvl);
         }
     }

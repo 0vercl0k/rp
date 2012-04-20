@@ -23,7 +23,7 @@ if(UNIX)
         set(RP_PLAT "osx")
     else()
         set(RP_PLAT "lin")
-    endif ()
+    endif()
     set(EXTENSION_LIBRARY a)
 endif(UNIX)
 

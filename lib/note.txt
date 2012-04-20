@@ -1,0 +1,7 @@
+-> if cmake doesn't work you can build beaengine manually:
+ $ cd beaengineSources
+ $ gcc -c BeaEngine.c -I ../include/ -DBEA_ENGINE_STATIC -O3 -DNDEBUG -o BeaEngine.o -m32 && ar rcs BeaEngine.x86.osx.a BeaEngine.o
+
+-> same thing for argtable2
+ $ mkdir build
+ $ gcc -c ../*.c -O2 -m32 && ar rcs argtable2.x86.osx.a *.o

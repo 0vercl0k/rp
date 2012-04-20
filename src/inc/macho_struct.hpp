@@ -91,7 +91,7 @@ __attribute__((packed))
 ;
 
 #define LC_SEGMENT    1
-#define LC_SEGMENT_64 19
+#define LC_SEGMENT_64 0x19
 
 struct RP_LOAD_COMMAND
 {
@@ -125,8 +125,10 @@ struct RP_SEGMENT_COMMAND
 
         if(lvl > VERBOSE_LEVEL_1)
         {
-            display_hex_2fields_lf(vmaddr, vmsize);
-            display_hex_2fields_lf(fileoff, filesize);
+            display_hex_field_lf(vmaddr);
+            display_hex_field_lf(vmsize);
+            display_hex_field_lf(fileoff);
+            display_hex_field_lf(filesize);
         }
 
         if(lvl > VERBOSE_LEVEL_2)
@@ -150,10 +152,15 @@ typedef RP_SEGMENT_COMMAND<x64Version> SegmentCommand64;
 template<class T>
 struct RP_SECTION
 {
+};
+
+template<>
+struct RP_SECTION<x86Version>
+{
     unsigned char sectname[16];
     unsigned char segname[16];
-    T             addr;
-    T             size;
+    unsigned int  addr;
+    unsigned int  size;
     unsigned int  offset;
     unsigned int  align;
     unsigned int  reloff;
@@ -164,7 +171,7 @@ struct RP_SECTION
 
     void display(VerbosityLevel lvl) const
     {
-        w_yel_lf("-> section");
+        w_yel_lf("-> section32");
         std::cout << "    " << segname << "." << sectname << std::endl;
 
         if(lvl > VERBOSE_LEVEL_1)
@@ -185,8 +192,46 @@ __attribute__((packed))
 #endif
 ;
 
-typedef RP_SECTION<x86Version> Section32;
-typedef RP_SECTION<x64Version> Section64;
+template<>
+struct RP_SECTION<x64Version>
+{
+    unsigned char      sectname[16];
+    unsigned char      segname[16];
+    unsigned long long addr;
+    unsigned long long size;
+    unsigned int       offset;
+    unsigned int       align;
+    unsigned int       reloff;
+    unsigned int       nreloc;
+    unsigned int       flags;
+    unsigned int       reserved1;
+    unsigned int       reserved2;
+    unsigned int       reserved3;
+
+    void display(VerbosityLevel lvl) const
+    {
+        w_yel_lf("-> section64");
+        std::cout << "    " << segname << "." << sectname << std::endl;
+
+        if(lvl > VERBOSE_LEVEL_1)
+        {
+            display_hex_field_lf(addr);
+            display_hex_field_lf(size);
+            display_hex_2fields_lf(offset, align);
+        }
+
+        if(lvl > VERBOSE_LEVEL_2)
+        {
+            display_hex_2fields_lf(reloff, nreloc);
+            display_hex_2fields_lf(flags, reserved1);
+            display_hex_2fields_lf(reserved2, reserved3);
+        }
+    }
+}
+#ifdef LINUX
+__attribute__((packed))
+#endif
+;
 
 #ifdef WINDOWS
 #pragma pack(pop)
@@ -229,6 +274,7 @@ struct MachoArchLayout : public MachoLayout
 
     void fill_structures(std::ifstream &file)
     {
+        bool is_all_section_walked = false;
         std::streampos off = file.tellg();
 
         /* 1] Fill the header structure */
@@ -269,8 +315,21 @@ struct MachoArchLayout : public MachoLayout
                     }
 
                     break;
-                }                    
+                }
+
+                default:
+                {
+                    /* 
+                        XXX: We assume that all SEGMENT_HEADER[_64] are in first, and they are all contiguous
+                        The proper way should be add cases for each COMMAND possible, and increment the file pointer of the size of the COMMAND read
+                    */ 
+                    is_all_section_walked = true;
+                    break;
+                }
             }
+
+            if(is_all_section_walked)
+                break;
         }
     }
 

@@ -110,8 +110,8 @@ struct RP_IMAGE_FILE_HEADER {
 
         if(lvl > VERBOSE_LEVEL_1)
         {
-            display_hex_2fields_lf(Machine, PointerToSymbolTable);
-            display_hex_field_lf(SizeOfOptionalHeader);
+            display_hex_2fields_lf(Machine, SizeOfOptionalHeader);
+            display_hex_field_lf(PointerToSymbolTable);
         }
 
         if(lvl > VERBOSE_LEVEL_2)
