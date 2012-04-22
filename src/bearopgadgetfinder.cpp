@@ -4,7 +4,7 @@
 #include <iostream>
 #include <cstring>
 
-BeaRopGadgetFinder::BeaRopGadgetFinder(E_Arch arch, unsigned int depth, unsigned engine_display_option)
+BeaRopGadgetFinder::BeaRopGadgetFinder(E_Arch arch, unsigned int depth, unsigned int engine_display_option)
 : m_opts(PrefixedNumeral + engine_display_option), m_arch(arch), m_depth(depth)
 {
 }
@@ -118,13 +118,11 @@ std::list<Gadget*> BeaRopGadgetFinder::find_all_gadget_from_ret(const unsigned c
     return gadgets;
 }
 
-bool BeaRopGadgetFinder::is_valid_ending_instruction(DISASM* ending_instr_d)
+bool BeaRopGadgetFinder::is_valid_ending_instruction_nasm(DISASM* ending_instr_d)
 {
     Int32 branch_type = ending_instr_d->Instruction.BranchType;
     UInt64 addr_value = ending_instr_d->Instruction.AddrValue;
     char *mnemonic = ending_instr_d->Instruction.Mnemonic, *completeInstr = ending_instr_d->CompleteInstr;
-
-    //XXX: If you use the at&t syntax the following checks aren't going to work
 
     bool is_good_branch_type = (
         /* We accept all the ret type instructions (except retf/iret) */
@@ -148,35 +146,76 @@ bool BeaRopGadgetFinder::is_valid_ending_instruction(DISASM* ending_instr_d)
     );
 }
 
+bool BeaRopGadgetFinder::is_valid_ending_instruction_att(DISASM* ending_instr_d)
+{
+    Int32 branch_type = ending_instr_d->Instruction.BranchType;
+    UInt64 addr_value = ending_instr_d->Instruction.AddrValue;
+    char *mnemonic = ending_instr_d->Instruction.Mnemonic, *completeInstr = ending_instr_d->CompleteInstr;
+
+    bool is_good_branch_type = (
+        /* We accept all the ret type instructions (except retf/iret) */
+        (branch_type == RetType && strncmp(mnemonic, "lret", 4) != 0 && strncmp(mnemonic, "retf", 4) != 0 && strncmp(mnemonic, "iret", 4) != 0) || 
+
+        /* call reg32 / call [reg32] */
+        (branch_type == CallType && addr_value == 0) ||
+
+        /* jmp reg32 / jmp [reg32] */
+        (branch_type == JmpType && addr_value == 0) ||
+
+        /* int 0x80 & int 0x2e */
+        (strncmp(completeInstr, "intb $0x80", 10) == 0 || strncmp(completeInstr, "intb $0x2e", 10) == 0 || strncmp(completeInstr, "syscall", 7) == 0)
+    );
+
+    return (
+        is_good_branch_type && 
+
+        /* Yeah, entrance isn't allowed to the jmp far/call far */
+        (strncmp(completeInstr, "lcall", 5) != 0 && strncmp(completeInstr, "ljmp", 4) != 0)
+    );
+}
+
+bool BeaRopGadgetFinder::is_valid_ending_instruction(DISASM* ending_instr_d)
+{
+    bool isAllowed;
+
+    if(m_opts & NasmSyntax)
+        isAllowed = is_valid_ending_instruction_nasm(ending_instr_d);
+    else
+        isAllowed = is_valid_ending_instruction_att(ending_instr_d);
+
+    return isAllowed;
+}
+
 bool BeaRopGadgetFinder::is_valid_instruction(DISASM *ending_instr_d)
 {
     Int32 branch_type = ending_instr_d->Instruction.BranchType;
-        return (
-            branch_type != RetType && 
-            branch_type != JmpType &&
-            branch_type != CallType &&
-            branch_type != JE &&
-            branch_type != JB &&
-            branch_type != JC &&
-            branch_type != JO &&
-            branch_type != JA &&
-            branch_type != JS &&
-            branch_type != JP &&
-            branch_type != JL &&
-            branch_type != JG &&
-            branch_type != JNE &&
-            branch_type != JNB &&
-            branch_type != JNC &&
-            branch_type != JNO &&
-            branch_type != JECXZ &&
-            branch_type != JNA &&
-            branch_type != JNS &&
-            branch_type != JNP &&
-            branch_type != JNL &&
-            branch_type != JNG &&
-            branch_type != JNB &&
-            strstr(ending_instr_d->CompleteInstr, "far") == NULL
-        );
+
+    return (
+        branch_type != RetType && 
+        branch_type != JmpType &&
+        branch_type != CallType &&
+        branch_type != JE &&
+        branch_type != JB &&
+        branch_type != JC &&
+        branch_type != JO &&
+        branch_type != JA &&
+        branch_type != JS &&
+        branch_type != JP &&
+        branch_type != JL &&
+        branch_type != JG &&
+        branch_type != JNE &&
+        branch_type != JNB &&
+        branch_type != JNC &&
+        branch_type != JNO &&
+        branch_type != JECXZ &&
+        branch_type != JNA &&
+        branch_type != JNS &&
+        branch_type != JNP &&
+        branch_type != JNL &&
+        branch_type != JNG &&
+        branch_type != JNB &&
+        strstr(ending_instr_d->CompleteInstr, "far") == NULL
+    );
 }
 
 std::list<Gadget*> BeaRopGadgetFinder::find_rop_gadgets(const unsigned char* data, unsigned long long size, unsigned long long vaddr)

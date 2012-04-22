@@ -107,11 +107,24 @@ std::map<std::string, Gadget*> Program::find_gadgets(unsigned int depth, unsigne
             engine_display_option
         );
 
+        /* 
+            XXX: 
+                If at&t syntax is enabled, BeaEngine seems to not handle the prefix:
+                \xf0\x00\x00 => addb %al, (%eax) ; -- and in intel -- lock add byte [eax], al ; ret  ;
+
+                It will introduce differences between the number of unique gadgets found!
+        */
+
         /* Now we have a list of gadget, cool, but we want to keep only the unique! */
         for(std::list<Gadget*>::const_iterator it_g = gadgets.begin(); it_g != gadgets.end(); ++it_g)
         {
+            if((*it_g)->get_first_absolute_address() == 0x4ad05cf0)
+            {
+                std::cout << "theeere" << std::endl;
+            }
+
             /* If a gadget, with the same disassembly, has already been found ; just add its offset in the existing one */
-            if(gadgets_found.count((*it_g)->get_disassembly()) > 0)
+            if(gadgets_found.count((*it_g)->get_disassembly()))
             {
                 std::map<std::string, Gadget*>::iterator g = gadgets_found.find((*it_g)->get_disassembly());
                 
@@ -123,6 +136,9 @@ std::map<std::string, Gadget*> Program::find_gadgets(unsigned int depth, unsigne
                 g->second->add_new_one((*it_g)->get_first_offset(),
                     va_section
                 );
+
+                /* in this case the gadget must be freed */
+                //delete *it_g;
             }
             else
             {
