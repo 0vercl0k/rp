@@ -10,6 +10,7 @@
 #include <iostream>
 #include <iomanip>
 #include <vector>
+#include <cstring>
 
 /* Information extracted from winnt.h ; a bit of template-kung-fu and here it goes ! */
 
