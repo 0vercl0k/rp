@@ -3,6 +3,9 @@
 
 #include <string>
 #include <fstream>
+#include <map>
+#include <string>
+#include "gadget.hpp"
 
 /* Choose your verbosity level */
 enum VerbosityLevel
@@ -63,5 +66,16 @@ bool is_matching(std::string &str, const char* p);
  * \return true if the character is an hexadecimal char, else false
  */
 bool is_hex_char(char c);
+
+
+/**
+ * \fn std::map<std::string, Gadget*> only_unique_gadgets(std::list<Gadget*> &list_gadgets)
+ * \brief It keeps only the unique gadgets
+ *
+ * \param list_gadgets: It is the gadget list with duplicates
+ *
+ * \return The list of unique gadgets
+ */
+std::map<std::string, Gadget*> only_unique_gadgets(std::list<Gadget*> &list_gadgets);
 
 #endif

@@ -275,6 +275,5 @@ std::list<Gadget*> BeaRopGadgetFinder::find_rop_gadgets(const unsigned char* dat
         }
     }
 
-    std::cout << "A total of " << merged_gadgets.size() << " gadgets." << std::endl;
     return merged_gadgets;
 }

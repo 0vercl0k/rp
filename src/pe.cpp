@@ -129,7 +129,7 @@ std::vector<Section*> PE::get_executables_section(std::ifstream & file)
         if((*it)->Characteristics & RP_IMAGE_SCN_MEM_EXECUTE)
         {
             Section *tmp = new (std::nothrow) Section(
-                (const char*)(*it)->Name,
+                (*it)->get_name().c_str(),
                 (*it)->PointerToRawData,
                 /* in the PE, this field is a RVA, so we need to add it the image base to have a VA */
                 m_pPELayout->get_image_base() + (*it)->VirtualAddress,

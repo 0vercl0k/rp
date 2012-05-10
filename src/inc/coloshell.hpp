@@ -288,15 +288,15 @@ static void coloshell(const T t, const Colors colo)
  * \param va: It is the gadget VA
  * \param gadget: It is the gadget you want to output
  */
-#define display_gadget_lf(va, gadget) {                                                                         \
-    enable_color(COLO_RED);                                                                                     \
-    std::cout << "0x" << std::setw(sizeof(va)) << std::right << std::setfill('0');                              \
-    std::cout << std::hex << va;                                                                                \
-    disable_color();                                                                                            \
-    std::cout << ": ";                                                                                          \
-    enable_color(COLO_GREEN);                                                                                   \
-    std::cout << (gadget)->first << " (" << std::dec << (gadget)->second->get_nb() << " found)" << std::endl;   \
-    disable_color();                                                                                            \
+#define display_gadget_lf(va, gadget) {                                                                             \
+    enable_color(COLO_RED);                                                                                         \
+    std::cout << "0x" << std::setw(sizeof(va)) << std::right << std::setfill('0');                                  \
+    std::cout << std::hex << va;                                                                                    \
+    disable_color();                                                                                                \
+    std::cout << ": ";                                                                                              \
+    enable_color(COLO_GREEN);                                                                                       \
+    std::cout << (gadget)->get_disassembly() << " (" << std::dec << (gadget)->get_nb() << " found)" << std::endl;   \
+    disable_color();                                                                                                \
 }
 
 /**

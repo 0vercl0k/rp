@@ -4,7 +4,6 @@
 #include <string>
 #include <fstream>
 #include <list>
-#include <map>
 #include <string>
 
 #include "cpu.hpp"
@@ -36,14 +35,14 @@ class Program
         void display_information(VerbosityLevel lvl = VERBOSE_LEVEL_1);
 
         /*!
-         *  \brief Find all the unique rop gadgets
+         *  \brief Find all the rop gadgets
          *   
          *  \param depth: Set the depth of the research (don't forget the ending instruction doesn't count -- so if you want only ending instruction, depth = 0)
          *  \param engine_display_option: You can give several display options passed directly to the disassembly engine (enable at&t syntax on beaegine for example)
          *
-         *  \return The unique gadgets found
+         *  \return The gadgets found
          */
-        std::map<std::string, Gadget*> find_gadgets(unsigned int depth, unsigned int engine_display_option = 0);
+        std::list<Gadget*> find_gadgets(unsigned int depth, unsigned int engine_display_option = 0);
 
         /*!
          *  \brief Find hex values in the section of the program

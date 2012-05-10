@@ -134,3 +134,39 @@ unsigned char * string_to_hex(const char* hex, unsigned int * size)
 
     return buffer;
 }
+
+std::map<std::string, Gadget*> only_unique_gadgets(std::list<Gadget*> &list_gadgets)
+{
+	std::map<std::string, Gadget*> ret;
+
+	 /* Now we have a list of gadget, cool, but we want to keep only the unique! */
+        for(std::list<Gadget*>::const_iterator it_g = list_gadgets.begin(); it_g != list_gadgets.end(); ++it_g)
+        {
+            /* If a gadget, with the same disassembly, has already been found ; just add its offset in the existing one */
+            if(ret.count((*it_g)->get_disassembly()))
+            {
+                std::map<std::string, Gadget*>::iterator g = ret.find((*it_g)->get_disassembly());
+                
+                /*
+                    we have found the same gadget in memory, so we just store its offset & its va section 
+                    maybe you can ask yourself 'Why do we store its va section ?' and the answer is:
+                    because you can find the same gadget in another executable sections!
+                */
+                g->second->add_new_one((*it_g)->get_first_offset(),
+                    (*it_g)->get_first_va_section()
+                );
+
+                /* in this case the gadget must be freed */
+                delete *it_g;
+            }
+            else
+            {
+                ret.insert(std::make_pair(
+                    (*it_g)->get_disassembly(),
+                    (*it_g)
+                ));
+            }
+        }
+
+	return ret;
+}

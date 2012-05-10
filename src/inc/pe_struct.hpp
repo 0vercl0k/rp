@@ -308,10 +308,20 @@ struct RP_IMAGE_SECTION_HEADER {
     unsigned short NumberOfLinenumbers;
     unsigned int   Characteristics;
 
+	std::string get_name(void) const
+	{
+		unsigned char name_null_terminated[RP_IMAGE_SIZEOF_SHORT_NAME + 1] = {0};
+		/* Yeah sometimes you don't have null byte after the name -- I try to be clean */
+		memcpy(name_null_terminated, Name, RP_IMAGE_SIZEOF_SHORT_NAME * sizeof(unsigned char));
+
+		return std::string((char*)name_null_terminated);
+	}
+
     void display(VerbosityLevel lvl = VERBOSE_LEVEL_1) const
     {
         w_yel_lf("-> IMAGE_SECTION_HEADER");
-        std::cout << "    " << Name << std::endl;
+		
+        std::cout << "    " << get_name() << std::endl;
 
         if(lvl > VERBOSE_LEVEL_1)
         {

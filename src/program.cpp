@@ -83,9 +83,9 @@ void Program::display_information(VerbosityLevel lvl)
     m_exformat->display_information(lvl);
 }
 
-std::map<std::string, Gadget*> Program::find_gadgets(unsigned int depth, unsigned int engine_display_option)
+std::list<Gadget*> Program::find_gadgets(unsigned int depth, unsigned int engine_display_option)
 {
-    std::map<std::string, Gadget*> gadgets_found;
+    std::list<Gadget*> gadgets_found;
 
     /* To do a ROP gadget research, we need to know the executable section */
     std::vector<Section*> executable_sections = m_exformat->get_executables_section(m_file);
@@ -107,47 +107,20 @@ std::map<std::string, Gadget*> Program::find_gadgets(unsigned int depth, unsigne
             engine_display_option
         );
 
+		std::cout << gadgets.size() << " found." << std::endl << std::endl;
+
         /* 
             XXX: 
-                If at&t syntax is enabled, BeaEngine seems to not handle the prefix:
+                If at&t syntax is enabled, BeaEngine doesn't seem to handle the prefix:
                 \xf0\x00\x00 => addb %al, (%eax) ; -- and in intel -- lock add byte [eax], al ; ret  ;
 
                 It will introduce differences between the number of unique gadgets found!
         */
 
-        /* Now we have a list of gadget, cool, but we want to keep only the unique! */
-        for(std::list<Gadget*>::const_iterator it_g = gadgets.begin(); it_g != gadgets.end(); ++it_g)
-        {
-            if((*it_g)->get_first_absolute_address() == 0x4ad05cf0)
-            {
-                std::cout << "theeere" << std::endl;
-            }
-
-            /* If a gadget, with the same disassembly, has already been found ; just add its offset in the existing one */
-            if(gadgets_found.count((*it_g)->get_disassembly()))
-            {
-                std::map<std::string, Gadget*>::iterator g = gadgets_found.find((*it_g)->get_disassembly());
-                
-                /*
-                    we have found the same gadget in memory, so we just store its offset & its va section 
-                    maybe you can ask yourself 'Why do we store its va section ?' and the answer is:
-                    because you can find the same gadget in another executable sections!
-                */
-                g->second->add_new_one((*it_g)->get_first_offset(),
-                    va_section
-                );
-
-                /* in this case the gadget must be freed */
-                //delete *it_g;
-            }
-            else
-            {
-                gadgets_found.insert(std::make_pair(
-                    (*it_g)->get_disassembly(),
-                    (*it_g)
-                ));
-            }
-        }
+		/* Mergin'! */
+		/* XXX: It won't be sorted :( */
+		for(std::list<Gadget*>::iterator it_g = gadgets.begin(); it_g != gadgets.end(); ++it_g)
+			gadgets_found.push_back(*it_g);
     }
 
     return gadgets_found;
