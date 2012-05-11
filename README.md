@@ -4,7 +4,7 @@ What is rp++ ?
 rp++ is a full-cpp written tool that aims to find ROP sequences in PE/Elf/Mach-O x86/x64 binaries.
 It is open-source and has been tested on several OS: Debian / Windows 7 / FreeBSD / Mac OSX Lion (10.7.3). Moreover, it is x64 compatible.
 I almost forgot, it handles Intel and AT&T syntax (beloved BeaEngine).
-By the way, the tool is a standalone executable, very handy.
+By the way, the tool is a standalone executable ; I will upload compiled binaries for each OS.
 
 You can build very easily rp++ with CMake, it will generate a project file for your prefered IDE.
 There are some other things you will be able with rp++, like finding hexadecimal value, or strings, etc.
