@@ -2,7 +2,7 @@ What is rp++ ?
 ==============
 
 rp++ is a full-cpp written tool that aims to find ROP sequences in PE/Elf/Mach-O x86/x64 binaries.
-It is open-source and has been tested on several OS: Debian / Windows 7 / FreeBSD / Mac OSX Snow Leopard. Moreover, it is x64 compatible.
+It is open-source and has been tested on several OS: Debian / Windows 7 / FreeBSD / Mac OSX Lion (10.7.3). Moreover, it is x64 compatible.
 I almost forgot, it handles Intel and AT&T syntax (beloved BeaEngine).
 By the way, the tool is a standalone executable, very handy.
 
@@ -16,6 +16,7 @@ Benchmark: Is it efficient ?
 =================
 
 Yeah, here are some benchmarks I have done on my personal laptop:
+
 	- Target: ntoskrnl.exe x64 version 6.1.7601.17790
 		D:\rp-win-x64.exe --file=ntoskrnl.exe --rop=8 > n
 		~80s for a total of 267356 gadgets found.
@@ -39,5 +40,10 @@ Yeah, here are some benchmarks I have done on my personal laptop:
 Screenshots
 ============
 
+rp++ on Win7 x64 / Debian Squeeze x64 / FreeBSD x64 / Mac OSX Lion x64:
+<img src="http://img194.imageshack.us/img194/7567/ropmosaic.png">
+
+Contact
+=======
 
 Actually, I really want to improve this project, so really, if you have any remarks regarding this tool (it includes: feature request, bug report or buying me beers), feel free to contact me -- I'm reachable on IRC/twitter/email!
