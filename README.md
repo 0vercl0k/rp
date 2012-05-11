@@ -2,7 +2,7 @@ What is rp++ ?
 ==============
 
 rp++ is a full-cpp written tool that aims to find ROP sequences in PE/Elf/Mach-O x86/x64 binaries.
-It is open-source and has been tested on several OS: Debian / Windows 7 / FreeBSD / Mac OSX Lion (10.7.3). Moreover, it is x64 compatible.
+It is open-source, documented with Doxygen (well, I'm trying to..) and has been tested on several OS: Debian / Windows 7 / FreeBSD / Mac OSX Lion (10.7.3). Moreover, it is x64 compatible.
 I almost forgot, it handles both Intel and AT&T syntax (beloved BeaEngine).
 By the way, the tool is a standalone executable ; I will upload static-compiled binaries for each OS.
 
@@ -10,7 +10,6 @@ You can build very easily rp++ with CMake, it will generate a project file for y
 There are some other things you will be able to do with rp++, like finding hexadecimal values, or strings, etc.
 
 Also, the cool thing I really enjoy with rp++ is that I can find ROP gadgets on ELF/Mach-O on my Windows desktop -- I don't have to boot my VM and setup a ropeme installation, or to install ImmunityDbg.
-The other cool thing is, well, I'm trying to comment my code with Doxygen.
 
 Benchmark: Is it efficient ?
 =================
@@ -47,20 +46,21 @@ How to use it ?
 ===============
 
 ####USAGE:
-./rp++ [-hv] [-f <binary path>] [-i <1,2,3>] [-r <positive int>] [--raw=<archi>]
- [--atsyntax] [--unique] [--search-hexa=<\x90A\x90>] [--search-int=<int in hex>]
-
+<pre>
+./rp++ [-hv] [-f &lt;binary path&gt;] [-i &lt;1,2,3&gt;] [-r &lt;positive int&gt;] [--raw=&lt;archi&gt;]
+ [--atsyntax] [--unique] [--search-hexa=&lt;\x90A\x90&gt;] [--search-int=&lt;int in hex&gt;]
+</pre>
 
 ####OPTIONS:
 <pre>
-  -f, --file=<binary path>  give binary path
-  -i, --info=<1,2,3>        display information about the binary header
-  -r, --rop=<positive int>  find useful gadget for your future exploits, arg is the gadget maximum size in instructions
-  --raw=<archi>             find gadgets in a raw file, 'archi' must be in the following list: x86, x64
+  -f, --file= &lt;binary path&gt;  give binary path
+  -i, --info=&lt;1,2,3&gt;        display information about the binary header
+  -r, --rop=&lt;positive int&gt;  find useful gadget for your future exploits, arg is the gadget maximum size in instructions
+  --raw=&lt;archi&gt;             find gadgets in a raw file, 'archi' must be in the following list: x86, x64
   --atsyntax                enable the at&t syntax
   --unique                  display only unique gadget
-  --search-hexa=<\x90A\x90> try to find hex values
-  --search-int=<int in hex> try to find a pointer on a specific integer value
+  --search-hexa=&lt;\x90A\x90&gt; try to find hex values
+  --search-int=&lt;int in hex&gt; try to find a pointer on a specific integer value
   -h, --help                print this help and exit
   -v, --version             print version information and exit
 </pre>
