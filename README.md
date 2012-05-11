@@ -53,7 +53,7 @@ How to use it ?
 
 ####OPTIONS:
 <pre>
-  -f, --file= &lt;binary path&gt;  give binary path
+  -f, --file=&lt;binary path&gt;  give binary path
   -i, --info=&lt;1,2,3&gt;        display information about the binary header
   -r, --rop=&lt;positive int&gt;  find useful gadget for your future exploits, arg is the gadget maximum size in instructions
   --raw=&lt;archi&gt;             find gadgets in a raw file, 'archi' must be in the following list: x86, x64
