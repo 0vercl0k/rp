@@ -3,19 +3,19 @@ What is rp++ ?
 
 rp++ is a full-cpp written tool that aims to find ROP sequences in PE/Elf/Mach-O x86/x64 binaries.
 It is open-source and has been tested on several OS: Debian / Windows 7 / FreeBSD / Mac OSX Lion (10.7.3). Moreover, it is x64 compatible.
-I almost forgot, it handles Intel and AT&T syntax (beloved BeaEngine).
+I almost forgot, it handles both Intel and AT&T syntax (beloved BeaEngine).
 By the way, the tool is a standalone executable ; I will upload static-compiled binaries for each OS.
 
 You can build very easily rp++ with CMake, it will generate a project file for your prefered IDE.
-There are some other things you will be able with rp++, like finding hexadecimal value, or strings, etc.
+There are some other things you will be able to do with rp++, like finding hexadecimal values, or strings, etc.
 
-Also, the cool thing I really enjoy with rp++ is that I can find ROP gadgets on ELF/Mach-O on my Windows desktop -- I haven't to boot my VM and setup a ropeme installation, or to install ImmunityDbg.
+Also, the cool thing I really enjoy with rp++ is that I can find ROP gadgets on ELF/Mach-O on my Windows desktop -- I don't have to boot my VM and setup a ropeme installation, or to install ImmunityDbg.
 The other cool thing is, well, I'm trying to comment my code with Doxygen.
 
 Benchmark: Is it efficient ?
 =================
 
-Yeah, here are some benchmarks I have done on my personal laptop:
+Yeah, here are some benchmarks I have done on my personal laptop (Win7 x64, Intel i7 Q720 @ 1.6GHz, 4GB RAM):
 
 	- Target: ntoskrnl.exe x64 version 6.1.7601.17790
 		D:\rp-win-x64.exe --file=ntoskrnl.exe --rop=8 > n
@@ -46,12 +46,13 @@ rp++ on Win7 x64 / Debian Squeeze x64 / FreeBSD x64 / Mac OSX Lion x64:
 How to use it ?
 ===============
 
-USAGE:
+####USAGE:
 ./rp++ [-hv] [-f <binary path>] [-i <1,2,3>] [-r <positive int>] [--raw=<archi>]
  [--atsyntax] [--unique] [--search-hexa=<\x90A\x90>] [--search-int=<int in hex>]
 
 
-OPTIONS:
+####OPTIONS:
+<pre>
   -f, --file=<binary path>  give binary path
   -i, --info=<1,2,3>        display information about the binary header
   -r, --rop=<positive int>  find useful gadget for your future exploits, arg is the gadget maximum size in instructions
@@ -62,10 +63,11 @@ OPTIONS:
   --search-int=<int in hex> try to find a pointer on a specific integer value
   -h, --help                print this help and exit
   -v, --version             print version information and exit
+</pre>
 
 Contact
 =======
 
-Actually, I really want to improve this project, so really, if you have any remarks regarding this tool (it includes: feature request, bug report or buying me beers), feel free to contact me -- I'm reachable on IRC/twitter/email!
+Actually, I really want to improve this project, so really, if you have any remark regarding this tool (it includes: feature request, bug report or buying me beers), feel free to contact me -- You can contact me via IRC/twitter/email!
 
-Special thanks to the beta-testers: Ivanlef0u, Heurs & Ufox.
+Thanks to the beta-testers: Ivanlef0u, Heurs & Ufox.
