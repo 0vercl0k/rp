@@ -8,7 +8,7 @@
 #include "instruction.hpp"
 #include "gadget.hpp"
 
-#include <list>
+#include <set>
 
 /*! \class BeaRopGadgetFinder
  *
@@ -47,7 +47,7 @@ class BeaRopGadgetFinder
          *
          *  \return the whole gadgets found in [data, data+size] ; it tries to find gadget with depth instruction (less or equal to depth to be exact)
          */
-        std::list<Gadget*> find_rop_gadgets(const unsigned char* data, unsigned long long size, unsigned long long vaddr);
+        std::multiset<Gadget*> find_rop_gadgets(const unsigned char* data, unsigned long long size, unsigned long long vaddr);
 
     private:
 
@@ -61,7 +61,7 @@ class BeaRopGadgetFinder
          *
          *  \return the whole gadgets found in [data, data+size] ; it tries to find gadget with depth instruction (less or equal to depth to be exact)
          */
-        std::list<Gadget*> find_all_gadget_from_ret(const unsigned char* data, unsigned long long vaddr, const DISASM* ending_instr, unsigned int len_ending_instr);
+        std::multiset<Gadget*> find_all_gadget_from_ret(const unsigned char* data, unsigned long long vaddr, const DISASM* ending_instr, unsigned int len_ending_instr);
         
          /*!
          *  \brief Is it a valid ending instruction ?

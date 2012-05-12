@@ -20,9 +20,6 @@ Yeah, here are some benchmarks I have done on my personal laptop (Win7 x64, Inte
 		D:\rp-win-x64.exe --file=ntoskrnl.exe --rop=8 > n
 		~80s for a total of 267356 gadgets found.
 
-		D:\rp-win-x64.exe --file=ntoskrnl.exe --rop=8 --unique > n
-		~40s for a total of 101450 unique gadgets found.
-
 	- Target: chrome.exe x86 version 18.0.1025.168
 		D:\rp-win-x64.exe --file=chrome.exe --rop=8 > n
 		~13s for a total of 75459 gadgets found.

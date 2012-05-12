@@ -4,6 +4,7 @@
 #include <string>
 #include <fstream>
 #include <map>
+#include <set>
 #include <string>
 #include "gadget.hpp"
 
@@ -76,6 +77,6 @@ bool is_hex_char(char c);
  *
  * \return The list of unique gadgets
  */
-std::map<std::string, Gadget*> only_unique_gadgets(std::list<Gadget*> &list_gadgets);
+std::map<std::string, Gadget*> only_unique_gadgets(std::multiset<Gadget*, Gadget::Sort> &list_gadgets);
 
 #endif

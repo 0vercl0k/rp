@@ -86,6 +86,18 @@ class Gadget
          */
         Instruction* get_ending_instruction(void);
 
+		/*!
+		 * \brief This structure can be used for sorting Gadgets instance
+		 * \return
+		 */
+		struct Sort
+		{
+			bool operator()(const Gadget *g, const Gadget *d) const
+			{
+				return g->get_disassembly() < d->get_disassembly();
+			}
+		};
+
     private:
 
         std::string m_disassembly; /*!< the disassembly of the gadget*/

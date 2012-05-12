@@ -135,12 +135,12 @@ unsigned char * string_to_hex(const char* hex, unsigned int * size)
     return buffer;
 }
 
-std::map<std::string, Gadget*> only_unique_gadgets(std::list<Gadget*> &list_gadgets)
+std::map<std::string, Gadget*> only_unique_gadgets(std::multiset<Gadget*, Gadget::Sort> &list_gadgets)
 {
 	std::map<std::string, Gadget*> ret;
 
 	 /* Now we have a list of gadget, cool, but we want to keep only the unique! */
-        for(std::list<Gadget*>::const_iterator it_g = list_gadgets.begin(); it_g != list_gadgets.end(); ++it_g)
+        for(std::multiset<Gadget*, Gadget::Sort>::const_iterator it_g = list_gadgets.begin(); it_g != list_gadgets.end(); ++it_g)
         {
             /* If a gadget, with the same disassembly, has already been found ; just add its offset in the existing one */
             if(ret.count((*it_g)->get_disassembly()))

@@ -112,7 +112,7 @@ int main(int argc, char* argv[])
                     RAISE_EXCEPTION("You specified a maximum number of instruction too important for the --rop option");
 
                 std::cout << std::endl << "Wait a few seconds, rp++ is looking for gadgets.." << std::endl;
-				std::list<Gadget*> all_gadgets = p.find_gadgets(rop->ival[0], disass_engine_display_option);
+				std::multiset<Gadget*, Gadget::Sort> all_gadgets = p.find_gadgets(rop->ival[0], disass_engine_display_option);
 				std::cout << "A total of " << all_gadgets.size() << " gadgets found." << std::endl;
 				if(unique->count > 0)
 				{
@@ -133,7 +133,7 @@ int main(int argc, char* argv[])
 				}
 				else
 				{
-					for(std::list<Gadget*>::iterator it = all_gadgets.begin(); it != all_gadgets.end(); ++it)
+					for(std::multiset<Gadget*, Gadget::Sort>::iterator it = all_gadgets.begin(); it != all_gadgets.end(); ++it)
 					{
 						display_gadget_lf((*it)->get_first_absolute_address(), *it);
 					}

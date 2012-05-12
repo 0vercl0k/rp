@@ -24,9 +24,9 @@ void BeaRopGadgetFinder::init_disasm_struct(DISASM* d)
     d->Archi = m_arch;
 }
 
-std::list<Gadget*> BeaRopGadgetFinder::find_all_gadget_from_ret(const unsigned char* data, unsigned long long vaddr, const DISASM* ending_instr_disasm, unsigned int len_ending_instr)
+std::multiset<Gadget*> BeaRopGadgetFinder::find_all_gadget_from_ret(const unsigned char* data, unsigned long long vaddr, const DISASM* ending_instr_disasm, unsigned int len_ending_instr)
 {
-    std::list<Gadget*> gadgets;
+    std::multiset<Gadget*> gadgets;
     DISASM dis;
 
     init_disasm_struct(&dis);
@@ -107,7 +107,7 @@ std::list<Gadget*> BeaRopGadgetFinder::find_all_gadget_from_ret(const unsigned c
             /* Now we populate our gadget with the instructions previously found.. */
             gadget->add_instructions(list_of_instr, vaddr);
 
-            gadgets.push_back(gadget);
+            gadgets.insert(gadget);
         }
 
         /* goto the next byte */
@@ -176,12 +176,19 @@ bool BeaRopGadgetFinder::is_valid_ending_instruction_att(DISASM* ending_instr_d)
 
 bool BeaRopGadgetFinder::is_valid_ending_instruction(DISASM* ending_instr_d)
 {
-    bool isAllowed;
+    bool isAllowed = false;
 
-    if(m_opts & NasmSyntax)
-        isAllowed = is_valid_ending_instruction_nasm(ending_instr_d);
-    else
-        isAllowed = is_valid_ending_instruction_att(ending_instr_d);
+	/*
+		Work Around, BeaEngine in x64 mode disassemble "\xDE\xDB" as an instruction without disassembly
+		Btw, this is not the only case!
+	*/
+	if(ending_instr_d->CompleteInstr[0] != 0)
+	{
+		if(m_opts & NasmSyntax)
+			isAllowed = is_valid_ending_instruction_nasm(ending_instr_d);
+		else
+			isAllowed = is_valid_ending_instruction_att(ending_instr_d);
+	}
 
     return isAllowed;
 }
@@ -191,6 +198,11 @@ bool BeaRopGadgetFinder::is_valid_instruction(DISASM *ending_instr_d)
     Int32 branch_type = ending_instr_d->Instruction.BranchType;
 
     return (
+		/*
+			Work Around, BeaEngine in x64 mode disassemble "\xDE\xDB" as an instruction without disassembly
+			Btw, this is not the only case!
+		*/
+		ending_instr_d->CompleteInstr[0] != 0 &&
         branch_type != RetType && 
         branch_type != JmpType &&
         branch_type != CallType &&
@@ -218,9 +230,9 @@ bool BeaRopGadgetFinder::is_valid_instruction(DISASM *ending_instr_d)
     );
 }
 
-std::list<Gadget*> BeaRopGadgetFinder::find_rop_gadgets(const unsigned char* data, unsigned long long size, unsigned long long vaddr)
+std::multiset<Gadget*> BeaRopGadgetFinder::find_rop_gadgets(const unsigned char* data, unsigned long long size, unsigned long long vaddr)
 {
-    std::list<Gadget*> merged_gadgets;
+    std::multiset<Gadget*> merged_gadgets;
     DISASM dis;
 
     init_disasm_struct(&dis);
@@ -263,14 +275,14 @@ std::list<Gadget*> BeaRopGadgetFinder::find_rop_gadgets(const unsigned char* dat
 
             /* the gadget will only have 1 ending instruction */
             gadget_with_one_instr->add_instructions(only_ending_instr, vaddr);
-            merged_gadgets.push_back(gadget_with_one_instr);
+            merged_gadgets.insert(gadget_with_one_instr);
 
             /* if we want to see gadget with more instructions */
             if(m_depth > 0)
             {
-                std::list<Gadget*> gadgets = find_all_gadget_from_ret(data, vaddr, &ret_instr, len);
-                for(std::list<Gadget*>::iterator it = gadgets.begin(); it != gadgets.end(); ++it)
-                    merged_gadgets.push_back(*it);
+                std::multiset<Gadget*> gadgets = find_all_gadget_from_ret(data, vaddr, &ret_instr, len);
+                for(std::multiset<Gadget*>::iterator it = gadgets.begin(); it != gadgets.end(); ++it)
+                    merged_gadgets.insert(*it);
             }
         }
     }

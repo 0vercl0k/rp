@@ -3,8 +3,8 @@
 
 #include <string>
 #include <fstream>
-#include <list>
 #include <string>
+#include <set>
 
 #include "cpu.hpp"
 #include "executable_format.hpp"
@@ -42,7 +42,7 @@ class Program
          *
          *  \return The gadgets found
          */
-        std::list<Gadget*> find_gadgets(unsigned int depth, unsigned int engine_display_option = 0);
+        std::multiset<Gadget*, Gadget::Sort> find_gadgets(unsigned int depth, unsigned int engine_display_option = 0);
 
         /*!
          *  \brief Find hex values in the section of the program
