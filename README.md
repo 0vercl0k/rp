@@ -1,7 +1,7 @@
 What is rp++ ?
 ==============
 
-rp++ is a full-cpp written tool that aims to find ROP sequences in PE/Elf/Mach-O x86/x64 binaries.
+rp++ is a full-cpp written tool that aims to find ROP sequences in PE/Elf/Mach-O (doesn't support the FAT binaries) x86/x64 binaries.
 It is open-source, documented with Doxygen (well, I'm trying to..) and has been tested on several OS: Debian / Windows 7 / FreeBSD / Mac OSX Lion (10.7.3). Moreover, it is x64 compatible.
 I almost forgot, it handles both Intel and AT&T syntax (beloved BeaEngine).
 By the way, the tool is a standalone executable ; I will upload static-compiled binaries for each OS.
