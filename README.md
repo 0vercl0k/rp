@@ -68,6 +68,7 @@ I've generated an x86 and an x64 versions for Windows (compiled with VS 2010 on 
 https://github.com/0vercl0k/rp/tree/master/standalone-binaries
 
 Here are the sha1sums:
+<pre>
 a2e71e88a5c14c81ae184258184e5d83082f184d *rp-fbsd-x64
 29c2d5462865d28042bffe9e723d25c19f0da1f7 *rp-fbsd-x86
 57e23ef42954a08c9833099d87544e2166c58b94 *rp-lin-x64
@@ -76,6 +77,7 @@ efcaf2a9584a23559e3e5b109eb37cbde89f8b29 *rp-lin-x86
 2e32273b657b44d6b9a56e89ec2e2c2731713d87 *rp-osx-x86
 e5e6930eb469e92f79b59941330f23daf62800be *rp-win-x64.exe
 8ad1c08054dce761f2b69977c3eb201cb84d3430 *rp-win-x86.exe
+</pre>
 
 Contact
 =======
