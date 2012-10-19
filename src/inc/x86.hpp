@@ -17,19 +17,19 @@
     You should have received a copy of the GNU General Public License
     along with rp++.  If not, see <http://www.gnu.org/licenses/>.
 */
-#ifndef IA32_H
-#define IA32_H
+#ifndef x86_H
+#define x86_H
 
 #include <vector>
 #include "cpu.hpp"
 
-class Ia32 : public CPU
+class x86 : public CPU
 {
     public:
 
-        explicit Ia32(void);
+        explicit x86(void);
         
-        ~Ia32(void);
+        ~x86(void);
 
         std::string get_class_name(void) const;
         

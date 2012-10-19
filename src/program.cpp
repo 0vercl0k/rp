@@ -25,8 +25,8 @@
 
 #include "executable_format.hpp"
 #include "raw.hpp"
-#include "ia32.hpp"
-#include "ia64.hpp"
+#include "x86.hpp"
+#include "x64.hpp"
 #include "section.hpp"
 #include "coloshell.hpp"
 #include "rpexception.hpp"
@@ -51,12 +51,12 @@ Program::Program(const std::string & program_path, CPU::E_CPU arch)
         
         switch(arch)
         {
-            case CPU::CPU_IA32:
-                m_cpu = new (std::nothrow) Ia32();
+            case CPU::CPU_x86:
+                m_cpu = new (std::nothrow) x86();
                 break;
 
-            case CPU::CPU_IA64:
-                m_cpu = new (std::nothrow) Ia64();
+            case CPU::CPU_x64:
+                m_cpu = new (std::nothrow) x64();
                 break;
 
             default:

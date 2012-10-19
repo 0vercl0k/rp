@@ -19,8 +19,8 @@
 */
 #include "elf.hpp"
 
-#include "ia32.hpp"
-#include "ia64.hpp"
+#include "x86.hpp"
+#include "x64.hpp"
 
 #include <iostream>
 
@@ -62,14 +62,14 @@ CPU::E_CPU Elf::extract_information_from_binary(std::ifstream &file)
     {
         case ELFCLASS32:
         {
-            cpu = CPU::CPU_IA32;
+            cpu = CPU::CPU_x86;
             init_properly_ELFLayout<x86Version>();
             break;
         }
 
         case ELFCLASS64:
         {
-            cpu = CPU::CPU_IA64;
+            cpu = CPU::CPU_x64;
             init_properly_ELFLayout<x64Version>();
             break;
         }
@@ -95,15 +95,15 @@ CPU* Elf::get_cpu(std::ifstream &file)
 
     switch(cpu_type)
     {
-        case CPU::CPU_IA32:
+        case CPU::CPU_x86:
         {
-            cpu = new (std::nothrow) Ia32();
+            cpu = new (std::nothrow) x86();
             break;
         }
 
-        case CPU::CPU_IA64:
+        case CPU::CPU_x64:
         {
-            cpu = new (std::nothrow) Ia64();
+            cpu = new (std::nothrow) x64();
             break;
         }
 

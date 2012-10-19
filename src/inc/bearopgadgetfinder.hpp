@@ -41,8 +41,8 @@ class BeaRopGadgetFinder
         /*! The different architectures BeaRopGadgetFinder handles */
         enum E_Arch
         {
-            IA32 = 0,
-            IA64 = 64
+            x86 = 0,
+            x64 = 64
         };
 
         /*!

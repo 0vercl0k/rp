@@ -28,7 +28,7 @@
 
 #if defined (__i386__) || defined (_M_IX86)
 	#define ARCH_X86
-#elif defined (__ia64__) || defined(__amd64__) || defined (_M_IA64) || defined(_M_X64)
+#elif defined(__amd64__) || defined(_M_X64)
 	#define ARCH_X64
 #else
 	#error Platform not supported.

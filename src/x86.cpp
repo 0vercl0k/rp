@@ -17,29 +17,29 @@
     You should have received a copy of the GNU General Public License
     along with rp++.  If not, see <http://www.gnu.org/licenses/>.
 */
-#include "ia32.hpp"
+#include "x86.hpp"
 #include "rpexception.hpp"
 #include "bearopgadgetfinder.hpp"
 
 #include <cstring>
 #include <list>
 
-Ia32::Ia32(void)
+x86::x86(void)
 {
 }
 
-Ia32::~Ia32(void)
+x86::~x86(void)
 {
 }
 
-std::string Ia32::get_class_name(void) const
+std::string x86::get_class_name(void) const
 {
-    return std::string("Ia32");
+    return std::string("x86");
 }
 
-std::multiset<Gadget*> Ia32::find_gadget_in_memory(const unsigned char *p_memory, const unsigned long long size, const unsigned long long vaddr, const unsigned int depth, unsigned int engine_display_option)
+std::multiset<Gadget*> x86::find_gadget_in_memory(const unsigned char *p_memory, const unsigned long long size, const unsigned long long vaddr, const unsigned int depth, unsigned int engine_display_option)
 {  
-    BeaRopGadgetFinder bea(BeaRopGadgetFinder::IA32, depth, engine_display_option);
+    BeaRopGadgetFinder bea(BeaRopGadgetFinder::x86, depth, engine_display_option);
     std::multiset<Gadget*> gadgets = bea.find_rop_gadgets(p_memory, size, vaddr);
     return gadgets;
 }

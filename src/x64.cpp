@@ -17,25 +17,25 @@
     You should have received a copy of the GNU General Public License
     along with rp++.  If not, see <http://www.gnu.org/licenses/>.
 */
-#include "ia64.hpp"
+#include "x64.hpp"
 #include "bearopgadgetfinder.hpp"
 
-Ia64::Ia64(void)
+x64::x64(void)
 {
 }
 
-Ia64::~Ia64(void)
+x64::~x64(void)
 {
 }
 
-std::string Ia64::get_class_name(void) const
+std::string x64::get_class_name(void) const
 {
-    return std::string("Ia64");
+    return std::string("x64");
 }
 
-std::multiset<Gadget*> Ia64::find_gadget_in_memory(const unsigned char *p_memory, const unsigned long long size, const unsigned long long vaddr, const unsigned int depth, unsigned int engine_display_option)
+std::multiset<Gadget*> x64::find_gadget_in_memory(const unsigned char *p_memory, const unsigned long long size, const unsigned long long vaddr, const unsigned int depth, unsigned int engine_display_option)
 {
-    BeaRopGadgetFinder bea(BeaRopGadgetFinder::IA64, depth, engine_display_option);
+    BeaRopGadgetFinder bea(BeaRopGadgetFinder::x64, depth, engine_display_option);
     std::multiset<Gadget*> gadgets = bea.find_rop_gadgets(p_memory, size, vaddr);
     return gadgets;
 }

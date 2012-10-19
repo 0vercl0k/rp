@@ -63,8 +63,8 @@ class CPU
         /*! The different architectures RP++ handles */
         enum E_CPU
         {
-            CPU_IA32, /*!< Ia32 */
-            CPU_IA64, /*!< Ia64 */
+            CPU_x86, /*!< x86 */
+            CPU_x64, /*!< x64 */
             CPU_UNKNOWN /*!< unknown cpu */
         };
 };

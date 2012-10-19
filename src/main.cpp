@@ -90,9 +90,9 @@ int main(int argc, char* argv[])
                 const char* architecture = raw->sval[0];
 
                 if(std::strcmp(architecture, "x86") == 0)
-                    arch = CPU::CPU_IA32;
+                    arch = CPU::CPU_x86;
                 else if(std::strcmp(architecture, "x64") == 0)
-                    arch = CPU::CPU_IA64;
+                    arch = CPU::CPU_x64;
                 else
                     RAISE_EXCEPTION("You must use an architecture supported, read the help");
                 

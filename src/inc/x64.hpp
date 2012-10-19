@@ -17,18 +17,18 @@
     You should have received a copy of the GNU General Public License
     along with rp++.  If not, see <http://www.gnu.org/licenses/>.
 */
-#ifndef IA64_H
-#define IA64_H
+#ifndef x64_H
+#define x64_H
 
 #include "cpu.hpp"
 
-class Ia64 : public CPU
+class x64 : public CPU
 {
     public:
         
-        explicit Ia64(void);
+        explicit x64(void);
         
-        ~Ia64(void);
+        ~x64(void);
 
         std::string get_class_name(void) const;
 

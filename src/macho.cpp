@@ -18,8 +18,8 @@
     along with rp++.  If not, see <http://www.gnu.org/licenses/>.
 */
 #include "macho.hpp"
-#include "ia32.hpp"
-#include "ia64.hpp"
+#include "x86.hpp"
+#include "x64.hpp"
 
 Macho::Macho(void)
 {
@@ -46,14 +46,14 @@ CPU* Macho::get_cpu(std::ifstream &file)
     {
         case CPU_TYPE_x86_64:
         {
-            cpu = new (std::nothrow) Ia64();
+            cpu = new (std::nothrow) x64();
             init_properly_macho_layout<x64Version>();
             break;
         }
 
         case CPU_TYPE_I386:
         {
-            cpu = new (std::nothrow) Ia32();
+            cpu = new (std::nothrow) x86();
             init_properly_macho_layout<x86Version>();
             break;
         }

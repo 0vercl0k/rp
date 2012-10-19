@@ -19,8 +19,8 @@
 */
 #include "pe.hpp"
 
-#include "ia32.hpp"
-#include "ia64.hpp"
+#include "x86.hpp"
+#include "x64.hpp"
 
 #include <iostream>
 #include <cstring>
@@ -82,7 +82,7 @@ CPU::E_CPU PE::extract_information_from_binary(std::ifstream &file)
     {
         case RP_IMAGE_NT_OPTIONAL_HDR32_MAGIC:
         {
-            cpu = CPU::CPU_IA32;
+            cpu = CPU::CPU_x86;
             /* Ok, now we can allocate the good version of the PE Layout */
             /* The 32bits version there! */
             init_properly_PELayout<x86Version>();
@@ -91,7 +91,7 @@ CPU::E_CPU PE::extract_information_from_binary(std::ifstream &file)
 
         case RP_IMAGE_NT_OPTIONAL_HDR64_MAGIC:
         {
-            cpu = CPU::CPU_IA64;
+            cpu = CPU::CPU_x64;
             init_properly_PELayout<x64Version>();
             break;
         }
@@ -118,15 +118,15 @@ CPU* PE::get_cpu(std::ifstream &file)
 
     switch(cpu_type)
     {
-        case CPU::CPU_IA32:
+        case CPU::CPU_x86:
         {
-            cpu = new (std::nothrow) Ia32();
+            cpu = new (std::nothrow) x86();
             break;
         }
 
-        case CPU::CPU_IA64:
+        case CPU::CPU_x64:
         {
-            cpu = new (std::nothrow) Ia64();
+            cpu = new (std::nothrow) x64();
             break;
         }
 
