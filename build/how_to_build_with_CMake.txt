@@ -1,7 +1,0 @@
-=== LINUX ===
-cd build/
-cmake .. && make
-
-
-=== WIN ===
-use cmake-gui.exe :))

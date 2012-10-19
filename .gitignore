@@ -1,4 +1,4 @@
-./buildx86/
-./buildx64
-./build/
-./doc/
+buildx86/
+buildx64
+doc/
+bin/Release/
