@@ -65,7 +65,7 @@ How to use it ?
 Where I can download standalone binaries ?
 =========================================
 I've generated an x86 and an x64 versions for Windows (compiled with VS 2010 on Win7 x64), Linux (compiled with gcc 4.4.5 on Debian x64 6.0.1), FreeBSD (compiled with gcc 4.2.1 on FreeBSD 8.2) and Mac OSX (compiled with gcc 4.2.1 on OSX 10.7.3 ; not statically linked): 
-https://github.com/0vercl0k/rp/tree/master/standalone-binaries
+https://github.com/0vercl0k/rp/downloads
 
 Here are the sha1sums:
 <pre>
