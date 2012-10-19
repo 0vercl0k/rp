@@ -76,7 +76,7 @@ efcaf2a9584a23559e3e5b109eb37cbde89f8b29 *rp-lin-x86
 5c612b3eff470b613ea06ebbbb882f0aaef8e3b4 *rp-osx-x64
 2e32273b657b44d6b9a56e89ec2e2c2731713d87 *rp-osx-x86
 e5e6930eb469e92f79b59941330f23daf62800be *rp-win-x64.exe
-8ad1c08054dce761f2b69977c3eb201cb84d3430 *rp-win-x86.exe
+f83d4d9f9e73a60a31e495e2fbd2404c560f1a27 *rp-win-x86.exe
 </pre>
 
 Contact
