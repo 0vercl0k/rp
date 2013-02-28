@@ -87,4 +87,4 @@ Actually, I really want to improve this project, so really, if you have any rema
 If you have coded cool features and you want to share them, send me merge queries, if I like them I'll merge them.
 
 Thanks to the beta-testers: Ivanlef0u, Heurs, Ufox & Dad`.
-Thanks to : Alexander Huemer for pointing me out the IA64 mistake.
+Thanks to : Alexander Huemer for pointing me out the IA64 mistake, Baboon (for the MZ signature).
