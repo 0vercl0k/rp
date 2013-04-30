@@ -158,7 +158,7 @@ void Program::search_and_display(const unsigned char* hex_values, unsigned int s
             unsigned long long va_section = (*it)->get_vaddr();
             unsigned long long va = va_section + *it2;
             
-            display_offset_lf(va, hex_values, size);
+            display_offset_lf(va, hex_values, size); 
         }
     }
 }

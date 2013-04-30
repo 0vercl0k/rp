@@ -340,7 +340,7 @@ static void coloshell(const T t, const Colors colo)
         else                                                                                              \
         {                                                                                                 \
             unsigned int b = hex_val[i];                                                                  \
-            std::cout << "\\x" << std::setw(2) << std::left << std::setfill('0') << std::hex << b;        \
+            std::cout << "\\x" << std::setw(2) << std::right << std::setfill('0') << std::hex << b;        \
         }                                                                                                 \
     }                                                                                                     \
     std::cout << std::endl;                                                                               \
