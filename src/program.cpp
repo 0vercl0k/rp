@@ -1,7 +1,7 @@
 /*
     This file is part of rp++.
 
-    Copyright (C) 2012, Axel "0vercl0k" Souchet <0vercl0k at tuxfamily.org>
+    Copyright (C) 2013, Axel "0vercl0k" Souchet <0vercl0k at tuxfamily.org>
     All rights reserved.
 
     rp++ is free software: you can redistribute it and/or modify
@@ -126,7 +126,7 @@ std::multiset<Gadget*, Gadget::Sort> Program::find_gadgets(unsigned int depth, u
             engine_display_option
         );
 
-		std::cout << gadgets.size() << " found." << std::endl << std::endl;
+        std::cout << gadgets.size() << " found." << std::endl << std::endl;
 
         /* 
             XXX: 
@@ -136,9 +136,9 @@ std::multiset<Gadget*, Gadget::Sort> Program::find_gadgets(unsigned int depth, u
                 It will introduce differences between the number of unique gadgets found!
         */
 
-		/* Mergin'! */
-		for(std::multiset<Gadget*>::iterator it_g = gadgets.begin(); it_g != gadgets.end(); ++it_g)
-			gadgets_found.insert(*it_g);
+        /* Mergin'! */
+        for(std::multiset<Gadget*>::iterator it_g = gadgets.begin(); it_g != gadgets.end(); ++it_g)
+            gadgets_found.insert(*it_g);
     }
 
     return gadgets_found;

@@ -1,7 +1,7 @@
 /*
     This file is part of rp++.
 
-    Copyright (C) 2012, Axel "0vercl0k" Souchet <0vercl0k at tuxfamily.org>
+    Copyright (C) 2013, Axel "0vercl0k" Souchet <0vercl0k at tuxfamily.org>
     All rights reserved.
 
     rp++ is free software: you can redistribute it and/or modify
@@ -105,17 +105,17 @@ class Gadget
          */
         Instruction* get_ending_instruction(void);
 
-		/*!
-		 * \brief This structure can be used for sorting Gadgets instance
-		 * \return
-		 */
-		struct Sort
-		{
-			bool operator()(const Gadget *g, const Gadget *d) const
-			{
-				return g->get_disassembly() < d->get_disassembly();
-			}
-		};
+        /*!
+         * \brief This structure can be used for sorting Gadgets instance
+         * \return
+         */
+        struct Sort
+        {
+            bool operator()(const Gadget *g, const Gadget *d) const
+            {
+                return g->get_disassembly() < d->get_disassembly();
+            }
+        };
 
     private:
 

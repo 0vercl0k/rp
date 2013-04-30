@@ -1,7 +1,7 @@
 /*
     This file is part of rp++.
 
-    Copyright (C) 2012, Axel "0vercl0k" Souchet <0vercl0k at tuxfamily.org>
+    Copyright (C) 2013, Axel "0vercl0k" Souchet <0vercl0k at tuxfamily.org>
     All rights reserved.
 
     rp++ is free software: you can redistribute it and/or modify
@@ -29,7 +29,7 @@ Elf::Elf(void)
 }
 
 Elf::~Elf(void)
-{	
+{   
     if(m_ELFLayout != NULL)
         delete m_ELFLayout;
 }

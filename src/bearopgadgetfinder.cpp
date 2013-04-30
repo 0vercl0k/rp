@@ -1,7 +1,7 @@
 /*
     This file is part of rp++.
 
-    Copyright (C) 2012, Axel "0vercl0k" Souchet <0vercl0k at tuxfamily.org>
+    Copyright (C) 2013, Axel "0vercl0k" Souchet <0vercl0k at tuxfamily.org>
     All rights reserved.
 
     rp++ is free software: you can redistribute it and/or modify
@@ -197,17 +197,17 @@ bool BeaRopGadgetFinder::is_valid_ending_instruction(DISASM* ending_instr_d)
 {
     bool isAllowed = false;
 
-	/*
-		Work Around, BeaEngine in x64 mode disassemble "\xDE\xDB" as an instruction without disassembly
-		Btw, this is not the only case!
-	*/
-	if(ending_instr_d->CompleteInstr[0] != 0)
-	{
-		if(m_opts & NasmSyntax)
-			isAllowed = is_valid_ending_instruction_nasm(ending_instr_d);
-		else
-			isAllowed = is_valid_ending_instruction_att(ending_instr_d);
-	}
+    /*
+        Work Around, BeaEngine in x64 mode disassemble "\xDE\xDB" as an instruction without disassembly
+        Btw, this is not the only case!
+    */
+    if(ending_instr_d->CompleteInstr[0] != 0)
+    {
+        if(m_opts & NasmSyntax)
+            isAllowed = is_valid_ending_instruction_nasm(ending_instr_d);
+        else
+            isAllowed = is_valid_ending_instruction_att(ending_instr_d);
+    }
 
     return isAllowed;
 }
@@ -217,11 +217,11 @@ bool BeaRopGadgetFinder::is_valid_instruction(DISASM *ending_instr_d)
     Int32 branch_type = ending_instr_d->Instruction.BranchType;
 
     return (
-		/*
-			Work Around, BeaEngine in x64 mode disassemble "\xDE\xDB" as an instruction without disassembly
-			Btw, this is not the only case!
-		*/
-		ending_instr_d->CompleteInstr[0] != 0 &&
+        /*
+            Work Around, BeaEngine in x64 mode disassemble "\xDE\xDB" as an instruction without disassembly
+            Btw, this is not the only case!
+        */
+        ending_instr_d->CompleteInstr[0] != 0 &&
         branch_type != RetType && 
         branch_type != JmpType &&
         branch_type != CallType &&

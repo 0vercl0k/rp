@@ -1,7 +1,7 @@
 /*
     This file is part of rp++.
 
-    Copyright (C) 2012, Axel "0vercl0k" Souchet <0vercl0k at tuxfamily.org>
+    Copyright (C) 2013, Axel "0vercl0k" Souchet <0vercl0k at tuxfamily.org>
     All rights reserved.
 
     rp++ is free software: you can redistribute it and/or modify
@@ -156,9 +156,9 @@ unsigned char * string_to_hex(const char* hex, unsigned int * size)
 
 std::map<std::string, Gadget*> only_unique_gadgets(std::multiset<Gadget*, Gadget::Sort> &list_gadgets)
 {
-	std::map<std::string, Gadget*> ret;
+    std::map<std::string, Gadget*> ret;
 
-	 /* Now we have a list of gadget, cool, but we want to keep only the unique! */
+     /* Now we have a list of gadget, cool, but we want to keep only the unique! */
         for(std::multiset<Gadget*, Gadget::Sort>::const_iterator it_g = list_gadgets.begin(); it_g != list_gadgets.end(); ++it_g)
         {
             /* If a gadget, with the same disassembly, has already been found ; just add its offset in the existing one */
@@ -187,5 +187,5 @@ std::map<std::string, Gadget*> only_unique_gadgets(std::multiset<Gadget*, Gadget
             }
         }
 
-	return ret;
+    return ret;
 }

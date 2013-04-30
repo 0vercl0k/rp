@@ -1,7 +1,7 @@
 /*
     This file is part of rp++.
 
-    Copyright (C) 2012, Axel "0vercl0k" Souchet <0vercl0k at tuxfamily.org>
+    Copyright (C) 2013, Axel "0vercl0k" Souchet <0vercl0k at tuxfamily.org>
     All rights reserved.
 
     rp++ is free software: you can redistribute it and/or modify
@@ -37,7 +37,7 @@ int main(int argc, char* argv[])
     struct arg_str  *raw     = arg_str0(NULL, "raw", "<archi>", "find gadgets in a raw file, 'archi' must be in the following list: x86, x64");
     struct arg_lit  *att     = arg_lit0(NULL, "atsyntax", "enable the at&t syntax");
     struct arg_lit  *unique  = arg_lit0(NULL, "unique", "display only unique gadget");
-	struct arg_str  *shexa   = arg_str0(NULL, "search-hexa", "<\\x90A\\x90>", "try to find hex values");
+    struct arg_str  *shexa   = arg_str0(NULL, "search-hexa", "<\\x90A\\x90>", "try to find hex values");
     struct arg_str  *sint    = arg_str0(NULL, "search-int", "<int in hex>", "try to find a pointer on a specific integer value");
     struct arg_lit  *help    = arg_lit0("h", "help", "print this help and exit");
     struct arg_lit  *version = arg_lit0("v", "version", "print version information and exit");
@@ -131,32 +131,32 @@ int main(int argc, char* argv[])
                     RAISE_EXCEPTION("You specified a maximum number of instruction too important for the --rop option");
 
                 std::cout << std::endl << "Wait a few seconds, rp++ is looking for gadgets.." << std::endl;
-				std::multiset<Gadget*, Gadget::Sort> all_gadgets = p.find_gadgets(rop->ival[0], disass_engine_display_option);
-				std::cout << "A total of " << all_gadgets.size() << " gadgets found." << std::endl;
-				if(unique->count > 0)
-				{
-					std::map<std::string, Gadget*> unique_gadgets = only_unique_gadgets(all_gadgets);
+                std::multiset<Gadget*, Gadget::Sort> all_gadgets = p.find_gadgets(rop->ival[0], disass_engine_display_option);
+                std::cout << "A total of " << all_gadgets.size() << " gadgets found." << std::endl;
+                if(unique->count > 0)
+                {
+                    std::map<std::string, Gadget*> unique_gadgets = only_unique_gadgets(all_gadgets);
 
-					std::cout << "You decided to keep only the unique ones, " << unique_gadgets.size() << " unique gadgets found." << std::endl;
+                    std::cout << "You decided to keep only the unique ones, " << unique_gadgets.size() << " unique gadgets found." << std::endl;
 
-					/* Now we walk the gadgets found and set the VA */
-					for(std::map<std::string, Gadget*>::iterator it = unique_gadgets.begin(); it != unique_gadgets.end(); ++it)
-					{                
-						display_gadget_lf(it->second->get_first_absolute_address(), it->second);
+                    /* Now we walk the gadgets found and set the VA */
+                    for(std::map<std::string, Gadget*>::iterator it = unique_gadgets.begin(); it != unique_gadgets.end(); ++it)
+                    {                
+                        display_gadget_lf(it->second->get_first_absolute_address(), it->second);
 
-						/* Avoid mem leaks */
-						delete it->second;
-					}
+                        /* Avoid mem leaks */
+                        delete it->second;
+                    }
 
-					unique_gadgets.clear();
-				}
-				else
-				{
-					for(std::multiset<Gadget*, Gadget::Sort>::iterator it = all_gadgets.begin(); it != all_gadgets.end(); ++it)
-					{
-						display_gadget_lf((*it)->get_first_absolute_address(), *it);
-					}
-				}
+                    unique_gadgets.clear();
+                }
+                else
+                {
+                    for(std::multiset<Gadget*, Gadget::Sort>::iterator it = all_gadgets.begin(); it != all_gadgets.end(); ++it)
+                    {
+                        display_gadget_lf((*it)->get_first_absolute_address(), *it);
+                    }
+                }
             }
 
             if(shexa->count > 0)

@@ -1,7 +1,7 @@
 /*
     This file is part of rp++.
 
-    Copyright (C) 2012, Axel "0vercl0k" Souchet <0vercl0k at tuxfamily.org>
+    Copyright (C) 2013, Axel "0vercl0k" Souchet <0vercl0k at tuxfamily.org>
     All rights reserved.
 
     rp++ is free software: you can redistribute it and/or modify
@@ -35,7 +35,7 @@
  */
 class Program
 {
-	public:
+    public:
 
        /*!
          *  \brief Program instanciation requires a path where it can find your binary
@@ -43,7 +43,7 @@ class Program
          *  \param program_path: The path of your binary
          */
         explicit Program(const std::string & program_path, CPU::E_CPU arch = CPU::CPU_UNKNOWN);
-		
+        
         ~Program(void);
 
         /*!
