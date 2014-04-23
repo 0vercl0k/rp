@@ -78,7 +78,7 @@ std::string Macho::get_class_name(void) const
     return std::string("Mach-o");
 }
 
-std::vector<Section*> Macho::get_executables_section(std::ifstream & file)
+std::vector<std::shared_ptr<Section>> Macho::get_executables_section(std::ifstream & file)
 {
     return m_MachoLayout->get_executable_section(file);
 }

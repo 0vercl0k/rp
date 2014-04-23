@@ -24,6 +24,7 @@
 #include <fstream>
 #include <iostream>
 #include <vector>
+#include <memory>
 
 #include "cpu.hpp"
 #include "toolbox.hpp"
@@ -82,7 +83,7 @@ class ExecutableFormat
          *
          *  \return A vector of Section instances
          */
-        virtual std::vector<Section*> get_executables_section(std::ifstream & file) = 0;
+        virtual std::vector<std::shared_ptr<Section>> get_executables_section(std::ifstream & file) = 0;
 
         /*!
          *  \brief Give you a PE/ELF instance (based mostly on the magic signature) 

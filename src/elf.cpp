@@ -30,8 +30,6 @@ Elf::Elf(void)
 
 Elf::~Elf(void)
 {   
-    if(m_ELFLayout != NULL)
-        delete m_ELFLayout;
 }
 
 std::string Elf::get_class_name(void) const
@@ -117,7 +115,7 @@ CPU* Elf::get_cpu(std::ifstream &file)
     return cpu;
 }
 
-std::vector<Section*> Elf::get_executables_section(std::ifstream & file)
+std::vector<std::shared_ptr<Section>> Elf::get_executables_section(std::ifstream & file)
 {
     return m_ELFLayout->get_executable_section(file);
 }

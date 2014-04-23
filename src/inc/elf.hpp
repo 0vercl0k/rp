@@ -38,7 +38,7 @@ class Elf : public ExecutableFormat
 
         std::string get_class_name(void) const;
 
-        std::vector<Section*> get_executables_section(std::ifstream & file);
+        std::vector<std::shared_ptr<Section>> get_executables_section(std::ifstream & file);
 
     private:
 
@@ -47,12 +47,12 @@ class Elf : public ExecutableFormat
         template<class T>
         void init_properly_ELFLayout(void)
         {
-            m_ELFLayout = new (std::nothrow) ELFLayout<T>;
+            m_ELFLayout = std::make_shared<ELFLayout<T>>();
             if(m_ELFLayout == NULL)
                 RAISE_EXCEPTION("m_ELFLayout allocation failed");
         }
 
-        ExecutableLinkingFormatLayout* m_ELFLayout;
+        std::shared_ptr<ExecutableLinkingFormatLayout> m_ELFLayout;
         CPU::E_CPU m_CPU;
 };
 

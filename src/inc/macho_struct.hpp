@@ -264,7 +264,7 @@ struct MachoLayout
     virtual void fill_structures(std::ifstream &file)  = 0;
     virtual unsigned int get_size_mach_header(void) const = 0;
     virtual void display(VerbosityLevel lvl = VERBOSE_LEVEL_1) const = 0;
-    virtual std::vector<Section*> get_executable_section(std::ifstream &file) = 0;
+    virtual std::vector<std::shared_ptr<Section>> get_executable_section(std::ifstream &file) = 0;
 };
 
 template<class T>
@@ -352,15 +352,15 @@ struct MachoArchLayout : public MachoLayout
         }
     }
 
-    std::vector<Section*> get_executable_section(std::ifstream &file)
+    std::vector<std::shared_ptr<Section>> get_executable_section(std::ifstream &file)
     {
-        std::vector<Section*> exc_sect;
+        std::vector<std::shared_ptr<Section>> exc_sect;
 
         for(iter_rp_section it = sections.begin(); it != sections.end(); ++it)
         {
             if((*it)->flags & S_ATTR_PURE_INSTRUCTIONS || (*it)->flags & S_ATTR_SOME_INSTRUCTIONS)
             {
-                Section *s = new Section(
+                std::shared_ptr<Section> s = std::make_shared<Section>(
                     (char*)(*it)->sectname,
                     (*it)->offset,
                     (*it)->addr,

@@ -33,14 +33,14 @@ std::string Raw::get_class_name(void) const
     return std::string("raw");
 }
 
-std::vector<Section*> Raw::get_executables_section(std::ifstream & file)
+std::vector<std::shared_ptr<Section>> Raw::get_executables_section(std::ifstream & file)
 {
-    std::vector<Section*> executable_sections;
+    std::vector<std::shared_ptr<Section>> executable_sections;
 
     unsigned long long raw_file_size = get_file_size(file);
     
     /* It is a raw file -> we have only one "virtual" section */
-    Section *sect = new (std::nothrow) Section(
+    std::shared_ptr<Section> sect = std::make_shared<Section>(
         ".raw",
         0,
         0,

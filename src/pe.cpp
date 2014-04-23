@@ -31,15 +31,6 @@ PE::PE(void)
 
 PE::~PE(void)
 {
-    for(std::vector<RP_IMAGE_SECTION_HEADER*>::iterator it = m_pPELayout->imgSectionHeaders.begin();
-        it != m_pPELayout->imgSectionHeaders.end();
-        ++it)
-        delete *it;
-
-    m_pPELayout->imgSectionHeaders.clear();
-
-    if(m_pPELayout != NULL)
-        delete m_pPELayout;
 }
 
 std::string PE::get_class_name(void) const
@@ -137,9 +128,9 @@ CPU* PE::get_cpu(std::ifstream &file)
     return cpu;
 }
 
-std::vector<Section*> PE::get_executables_section(std::ifstream & file)
+std::vector<std::shared_ptr<Section>> PE::get_executables_section(std::ifstream & file)
 {
-    std::vector<Section*> exec_sections;
+    std::vector<std::shared_ptr<Section>> exec_sections;
 
     for(std::vector<RP_IMAGE_SECTION_HEADER*>::iterator it = m_pPELayout->imgSectionHeaders.begin();
         it != m_pPELayout->imgSectionHeaders.end();
@@ -147,7 +138,7 @@ std::vector<Section*> PE::get_executables_section(std::ifstream & file)
     {
         if((*it)->Characteristics & RP_IMAGE_SCN_MEM_EXECUTE)
         {
-            Section *tmp = new (std::nothrow) Section(
+            std::shared_ptr<Section> tmp = std::make_shared<Section>(
                 (*it)->get_name().c_str(),
                 (*it)->PointerToRawData,
                 /* in the PE, this field is a RVA, so we need to add it the image base to have a VA */

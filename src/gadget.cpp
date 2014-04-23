@@ -28,11 +28,6 @@ Gadget::Gadget()
 
 Gadget::~Gadget(void)
 {
-    /* Avoid memory leaks */
-    for(std::list<Instruction*>::iterator it = m_instructions.begin();
-        it != m_instructions.end();
-        ++it)
-            delete *it;
 }
 
 std::string Gadget::get_disassembly(void) const
@@ -61,7 +56,7 @@ void Gadget::add_instructions(std::list<Instruction> &instrs, unsigned long long
             m_va_sections.push_back(va_section);
         }
         
-        Instruction *instr_copy = new (std::nothrow) Instruction(*it);
+        std::shared_ptr<Instruction> instr_copy = std::make_shared<Instruction>(*it);
         if(instr_copy == NULL)
             RAISE_EXCEPTION("Cannot allocate instr_copy");
 
@@ -102,16 +97,16 @@ void Gadget::add_new_one(unsigned long long offset, unsigned long long va_sectio
     m_va_sections.push_back(va_section);
 }
 
-std::list<Instruction*> Gadget::get_instructions(void)
+std::list<std::shared_ptr<Instruction>> Gadget::get_instructions(void)
 {
-    std::list<Instruction*> instrs(m_instructions);
+    std::list<std::shared_ptr<Instruction>> instrs(m_instructions);
     /* We don't want the ending instruction in the list */
     instrs.pop_back();
 
     return instrs;
 }
 
-Instruction* Gadget::get_ending_instruction(void)
+std::shared_ptr<Instruction> Gadget::get_ending_instruction(void)
 {
     return m_instructions.back();
 }

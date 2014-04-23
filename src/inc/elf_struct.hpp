@@ -244,7 +244,7 @@ struct ExecutableLinkingFormatLayout
     
     virtual void fill_structures(std::ifstream &file) = 0;
     virtual void display(VerbosityLevel lvl = VERBOSE_LEVEL_1) const = 0;
-    virtual std::vector<Section*> get_executable_section(std::ifstream &file) const = 0;
+    virtual std::vector<std::shared_ptr<Section>> get_executable_section(std::ifstream &file) const = 0;
 };
 
 #define SHT_SYMTAB      2
@@ -390,15 +390,15 @@ struct ELFLayout : public ExecutableLinkingFormatLayout
         delete[] string_table_section;
     }
 
-    std::vector<Section*> get_executable_section(std::ifstream &file) const
+    std::vector<std::shared_ptr<Section>> get_executable_section(std::ifstream &file) const
     {
-        std::vector<Section*> exec_sections;
+        std::vector<std::shared_ptr<Section>> exec_sections;
 
         for(iter_elf_phdr it = elfProgramHeaders.begin(); it != elfProgramHeaders.end(); ++it)
         {
             if((*it)->p_flags & 1)
             {
-                Section *sec = new (std::nothrow) Section(
+                std::shared_ptr<Section> sec = std::make_shared<Section>(
                     type_to_str((*it)->p_type).c_str(),
                     (*it)->p_offset,
                     (*it)->p_vaddr,

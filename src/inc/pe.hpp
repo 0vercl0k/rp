@@ -38,7 +38,7 @@ class PE : public ExecutableFormat
 
         std::string get_class_name(void) const;
 
-        std::vector<Section*> get_executables_section(std::ifstream & file);
+        std::vector<std::shared_ptr<Section>> get_executables_section(std::ifstream & file);
 
     private:
         
@@ -47,12 +47,12 @@ class PE : public ExecutableFormat
         template<class T>
         void init_properly_PELayout()
         {
-            m_pPELayout = new (std::nothrow) PELayout<T>;
+            m_pPELayout = std::make_shared<PELayout<T>>();
             if(m_pPELayout == NULL)
                 RAISE_EXCEPTION("m_PELayout allocation failed");
         }
 
-        PortableExecutableLayout* m_pPELayout;
+        std::shared_ptr<PortableExecutableLayout> m_pPELayout;
 };
 
 #endif

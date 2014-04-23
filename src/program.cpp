@@ -107,12 +107,12 @@ std::multiset<Gadget*, Gadget::Sort> Program::find_gadgets(unsigned int depth, u
     std::multiset<Gadget*, Gadget::Sort> gadgets_found;
 
     /* To do a ROP gadget research, we need to know the executable section */
-    std::vector<Section*> executable_sections = m_exformat->get_executables_section(m_file);
+    std::vector<std::shared_ptr<Section>> executable_sections = m_exformat->get_executables_section(m_file);
     if(executable_sections.size() == 0)
         std::cout << "It seems your binary haven't executable sections." << std::endl;
 
     /* Walk the executable sections */
-    for(std::vector<Section*>::iterator it_sec = executable_sections.begin(); it_sec != executable_sections.end(); ++it_sec)
+    for(std::vector<std::shared_ptr<Section>>::iterator it_sec = executable_sections.begin(); it_sec != executable_sections.end(); ++it_sec)
     {
         std::cout << "in " << (*it_sec)->get_name() << std::endl;
         unsigned long long va_section = (*it_sec)->get_vaddr();
@@ -146,11 +146,11 @@ std::multiset<Gadget*, Gadget::Sort> Program::find_gadgets(unsigned int depth, u
 
 void Program::search_and_display(const unsigned char* hex_values, unsigned int size)
 {
-    std::vector<Section*> executable_sections = m_exformat->get_executables_section(m_file);
+    std::vector<std::shared_ptr<Section>> executable_sections = m_exformat->get_executables_section(m_file);
     if(executable_sections.size() == 0)
         std::cout << "It seems your binary haven't executable sections." << std::endl;
 
-    for(std::vector<Section*>::iterator it = executable_sections.begin(); it != executable_sections.end(); ++it)
+    for(std::vector<std::shared_ptr<Section>>::iterator it = executable_sections.begin(); it != executable_sections.end(); ++it)
     {
         std::list<unsigned long long> ret = (*it)->search_in_memory(hex_values, size);
         for(std::list<unsigned long long>::iterator it2 = ret.begin(); it2 != ret.end(); ++it2)
