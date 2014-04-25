@@ -20,6 +20,8 @@
 #ifndef MAIN_HPP
 #define MAIN_HPP
 
+// Using Visual Leak Detector (https://vld.codeplex.com/releases) to track memory leaks
+// #include "vld.h"
 #include "platform.h"
 
 /*

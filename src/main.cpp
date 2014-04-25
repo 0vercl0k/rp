@@ -182,5 +182,6 @@ int main(int argc, char* argv[])
         disable_color();
     }
 
+    arg_freetable(argtable, sizeof(argtable) / sizeof(argtable[0]));
     return 0;
 }
