@@ -43,9 +43,9 @@ void BeaRopGadgetFinder::init_disasm_struct(DISASM* d)
     d->Archi = m_arch;
 }
 
-std::multiset<Gadget*> BeaRopGadgetFinder::find_all_gadget_from_ret(const unsigned char* data, unsigned long long vaddr, const DISASM* ending_instr_disasm, unsigned int len_ending_instr)
+std::multiset<std::shared_ptr<Gadget>> BeaRopGadgetFinder::find_all_gadget_from_ret(const unsigned char* data, unsigned long long vaddr, const DISASM* ending_instr_disasm, unsigned int len_ending_instr)
 {
-    std::multiset<Gadget*> gadgets;
+    std::multiset<std::shared_ptr<Gadget>> gadgets;
     DISASM dis;
 
     init_disasm_struct(&dis);
@@ -119,7 +119,7 @@ std::multiset<Gadget*> BeaRopGadgetFinder::find_all_gadget_from_ret(const unsign
             ));
 
 
-            Gadget *gadget = new (std::nothrow) Gadget();
+            std::shared_ptr<Gadget> gadget = std::make_shared<Gadget>();
             if(gadget == NULL)
                 RAISE_EXCEPTION("Cannot allocate gadget");
 
@@ -249,9 +249,9 @@ bool BeaRopGadgetFinder::is_valid_instruction(DISASM *ending_instr_d)
     );
 }
 
-std::multiset<Gadget*> BeaRopGadgetFinder::find_rop_gadgets(const unsigned char* data, unsigned long long size, unsigned long long vaddr)
+std::multiset<std::shared_ptr<Gadget>> BeaRopGadgetFinder::find_rop_gadgets(const unsigned char* data, unsigned long long size, unsigned long long vaddr)
 {
-    std::multiset<Gadget*> merged_gadgets;
+    std::multiset<std::shared_ptr<Gadget>> merged_gadgets;
     DISASM dis;
 
     init_disasm_struct(&dis);
@@ -288,7 +288,7 @@ std::multiset<Gadget*> BeaRopGadgetFinder::find_rop_gadgets(const unsigned char*
                 len
             ));
 
-            Gadget *gadget_with_one_instr = new (std::nothrow) Gadget();
+            std::shared_ptr<Gadget> gadget_with_one_instr = std::make_shared<Gadget>();
             if(gadget_with_one_instr == NULL)
                 RAISE_EXCEPTION("Cannot allocate gadget_with_one_instr");
 
@@ -299,8 +299,8 @@ std::multiset<Gadget*> BeaRopGadgetFinder::find_rop_gadgets(const unsigned char*
             /* if we want to see gadget with more instructions */
             if(m_depth > 0)
             {
-                std::multiset<Gadget*> gadgets = find_all_gadget_from_ret(data, vaddr, &ret_instr, len);
-                for(std::multiset<Gadget*>::iterator it = gadgets.begin(); it != gadgets.end(); ++it)
+                std::multiset<std::shared_ptr<Gadget>> gadgets = find_all_gadget_from_ret(data, vaddr, &ret_instr, len);
+                for(std::multiset<std::shared_ptr<Gadget>>::iterator it = gadgets.begin(); it != gadgets.end(); ++it)
                     merged_gadgets.insert(*it);
             }
         }

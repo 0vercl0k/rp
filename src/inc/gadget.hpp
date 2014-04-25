@@ -112,7 +112,7 @@ class Gadget
          */
         struct Sort
         {
-            bool operator()(const Gadget *g, const Gadget *d) const
+            bool operator()(const std::shared_ptr<Gadget> g, const std::shared_ptr<Gadget> d) const
             {
                 return g->get_disassembly() < d->get_disassembly();
             }

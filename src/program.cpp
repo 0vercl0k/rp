@@ -102,9 +102,9 @@ void Program::display_information(VerbosityLevel lvl)
     m_exformat->display_information(lvl);
 }
 
-std::multiset<Gadget*, Gadget::Sort> Program::find_gadgets(unsigned int depth, unsigned int engine_display_option)
+std::multiset<std::shared_ptr<Gadget>, Gadget::Sort> Program::find_gadgets(unsigned int depth, unsigned int engine_display_option)
 {
-    std::multiset<Gadget*, Gadget::Sort> gadgets_found;
+    std::multiset<std::shared_ptr<Gadget>, Gadget::Sort> gadgets_found;
 
     /* To do a ROP gadget research, we need to know the executable section */
     std::vector<std::shared_ptr<Section>> executable_sections = m_exformat->get_executables_section(m_file);
@@ -118,7 +118,7 @@ std::multiset<Gadget*, Gadget::Sort> Program::find_gadgets(unsigned int depth, u
         unsigned long long va_section = (*it_sec)->get_vaddr();
 
         /* Let the cpu research */
-        std::multiset<Gadget*> gadgets = m_cpu->find_gadget_in_memory(
+        std::multiset<std::shared_ptr<Gadget>> gadgets = m_cpu->find_gadget_in_memory(
             (*it_sec)->get_section_buffer(),
             (*it_sec)->get_size(),
             va_section,
@@ -137,7 +137,7 @@ std::multiset<Gadget*, Gadget::Sort> Program::find_gadgets(unsigned int depth, u
         */
 
         /* Mergin'! */
-        for(std::multiset<Gadget*>::iterator it_g = gadgets.begin(); it_g != gadgets.end(); ++it_g)
+        for(std::multiset<std::shared_ptr<Gadget>>::iterator it_g = gadgets.begin(); it_g != gadgets.end(); ++it_g)
             gadgets_found.insert(*it_g);
     }
 

@@ -131,28 +131,25 @@ int main(int argc, char* argv[])
                     RAISE_EXCEPTION("You specified a maximum number of instruction too important for the --rop option");
 
                 std::cout << std::endl << "Wait a few seconds, rp++ is looking for gadgets.." << std::endl;
-                std::multiset<Gadget*, Gadget::Sort> all_gadgets = p.find_gadgets(rop->ival[0], disass_engine_display_option);
+                std::multiset<std::shared_ptr<Gadget>, Gadget::Sort> all_gadgets = p.find_gadgets(rop->ival[0], disass_engine_display_option);
                 std::cout << "A total of " << all_gadgets.size() << " gadgets found." << std::endl;
                 if(unique->count > 0)
                 {
-                    std::map<std::string, Gadget*> unique_gadgets = only_unique_gadgets(all_gadgets);
+                    std::map<std::string, std::shared_ptr<Gadget>> unique_gadgets = only_unique_gadgets(all_gadgets);
 
                     std::cout << "You decided to keep only the unique ones, " << unique_gadgets.size() << " unique gadgets found." << std::endl;
 
                     /* Now we walk the gadgets found and set the VA */
-                    for(std::map<std::string, Gadget*>::iterator it = unique_gadgets.begin(); it != unique_gadgets.end(); ++it)
+                    for(std::map<std::string, std::shared_ptr<Gadget>>::iterator it = unique_gadgets.begin(); it != unique_gadgets.end(); ++it)
                     {                
                         display_gadget_lf(it->second->get_first_absolute_address(), it->second);
-
-                        /* Avoid mem leaks */
-                        delete it->second;
                     }
 
                     unique_gadgets.clear();
                 }
                 else
                 {
-                    for(std::multiset<Gadget*, Gadget::Sort>::iterator it = all_gadgets.begin(); it != all_gadgets.end(); ++it)
+                    for(std::multiset<std::shared_ptr<Gadget>, Gadget::Sort>::iterator it = all_gadgets.begin(); it != all_gadgets.end(); ++it)
                     {
                         display_gadget_lf((*it)->get_first_absolute_address(), *it);
                     }

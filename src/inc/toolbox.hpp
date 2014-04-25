@@ -96,6 +96,6 @@ bool is_hex_char(char c);
  *
  * \return The list of unique gadgets
  */
-std::map<std::string, Gadget*> only_unique_gadgets(std::multiset<Gadget*, Gadget::Sort> &list_gadgets);
+std::map<std::string, std::shared_ptr<Gadget>> only_unique_gadgets(std::multiset<std::shared_ptr<Gadget>, Gadget::Sort> &list_gadgets);
 
 #endif

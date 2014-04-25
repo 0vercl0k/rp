@@ -61,7 +61,7 @@ class Program
          *
          *  \return The gadgets found
          */
-        std::multiset<Gadget*, Gadget::Sort> find_gadgets(unsigned int depth, unsigned int engine_display_option = 0);
+        std::multiset<std::shared_ptr<Gadget>, Gadget::Sort> find_gadgets(unsigned int depth, unsigned int engine_display_option = 0);
 
         /*!
          *  \brief Find hex values in the section of the program

@@ -58,7 +58,7 @@ class CPU
          *
          *  \return A list of the Gadget instance
          */
-        virtual std::multiset<Gadget*> find_gadget_in_memory(const unsigned char *p_memory, const unsigned long long size, const unsigned long long vaddr, const unsigned int depth, unsigned int engine_display_option = 0) = 0;
+        virtual std::multiset<std::shared_ptr<Gadget>> find_gadget_in_memory(const unsigned char *p_memory, const unsigned long long size, const unsigned long long vaddr, const unsigned int depth, unsigned int engine_display_option = 0) = 0;
 
         /*! The different architectures RP++ handles */
         enum E_CPU
