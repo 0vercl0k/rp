@@ -57,8 +57,6 @@ void Gadget::add_instructions(std::list<Instruction> &instrs, unsigned long long
         }
         
         std::shared_ptr<Instruction> instr_copy = std::make_shared<Instruction>(*it);
-        if(instr_copy == NULL)
-            RAISE_EXCEPTION("Cannot allocate instr_copy");
 
         /* We build our gadget instruction per instruction */
         m_instructions.push_back(instr_copy);

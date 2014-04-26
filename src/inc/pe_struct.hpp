@@ -473,8 +473,6 @@ struct PELayout : public PortableExecutableLayout
         for(unsigned int i = 0; i < imgNtHeaders.FileHeader.NumberOfSections; ++i)
         {
             std::shared_ptr<RP_IMAGE_SECTION_HEADER> pImgSectionHeader = std::make_shared<RP_IMAGE_SECTION_HEADER>();
-            if(pImgSectionHeader == NULL)
-                RAISE_EXCEPTION("Cannot allocate memory for pImgSectionHeader");
             
             file.read((char*)pImgSectionHeader.get(), get_image_section_header_size());
             imgSectionHeaders.push_back(pImgSectionHeader);

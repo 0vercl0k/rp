@@ -307,8 +307,6 @@ struct MachoArchLayout : public MachoLayout
                 case LC_SEGMENT_64:
                 {
                     std::shared_ptr<RP_SEGMENT_COMMAND<T>> seg_cmd = std::make_shared<RP_SEGMENT_COMMAND<T>>();
-                    if(seg_cmd == NULL)
-                        RAISE_EXCEPTION("Cannot allocate seg_cmd");
 
                     file.read((char*)seg_cmd.get(), sizeof(RP_SEGMENT_COMMAND<T>));
                     seg_commands.push_back(seg_cmd);
@@ -321,8 +319,6 @@ struct MachoArchLayout : public MachoLayout
                     for(unsigned int j = 0; j < seg_cmd->nsects; ++j)
                     {
                         std::shared_ptr<RP_SECTION<T>> sect = std::make_shared<RP_SECTION<T>>();
-                        if(sect == NULL)
-                            RAISE_EXCEPTION("Cannot allocate sect");
 
                         file.read((char*)sect.get(), sizeof(RP_SECTION<T>));
                         sections.push_back(sect);
@@ -362,9 +358,6 @@ struct MachoArchLayout : public MachoLayout
                     (*it)->size
                 );
 
-                if(s == NULL)
-                    RAISE_EXCEPTION("Cannot allocate s");
-                
                 s->dump(file);
 
                 s->set_props(Section::Executable);

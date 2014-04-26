@@ -120,8 +120,6 @@ std::multiset<std::shared_ptr<Gadget>> BeaRopGadgetFinder::find_all_gadget_from_
 
 
             std::shared_ptr<Gadget> gadget = std::make_shared<Gadget>();
-            if(gadget == NULL)
-                RAISE_EXCEPTION("Cannot allocate gadget");
 
             /* Now we populate our gadget with the instructions previously found.. */
             gadget->add_instructions(list_of_instr, vaddr);
@@ -289,8 +287,6 @@ std::multiset<std::shared_ptr<Gadget>> BeaRopGadgetFinder::find_rop_gadgets(cons
             ));
 
             std::shared_ptr<Gadget> gadget_with_one_instr = std::make_shared<Gadget>();
-            if(gadget_with_one_instr == NULL)
-                RAISE_EXCEPTION("Cannot allocate gadget_with_one_instr");
 
             /* the gadget will only have 1 ending instruction */
             gadget_with_one_instr->add_instructions(only_ending_instr, vaddr);

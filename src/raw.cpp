@@ -46,9 +46,6 @@ std::vector<std::shared_ptr<Section>> Raw::get_executables_section(std::ifstream
         0,
         raw_file_size
     );
-
-    if(sect == NULL)
-        RAISE_EXCEPTION("Cannot allocate sect");
     
     sect->dump(file);
     sect->set_props(Section::Executable);

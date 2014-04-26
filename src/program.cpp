@@ -46,8 +46,6 @@ Program::Program(const std::string & program_path, CPU::E_CPU arch)
     if(arch != CPU::CPU_UNKNOWN)
     {
         m_exformat = std::make_shared<Raw>();
-        if(m_exformat == NULL)
-            RAISE_EXCEPTION("Cannot allocate raw");
         
         switch(arch)
         {
@@ -62,10 +60,6 @@ Program::Program(const std::string & program_path, CPU::E_CPU arch)
             default:
                 RAISE_EXCEPTION("Don't know your architecture");
         }
-
-        if(m_cpu == NULL)
-            RAISE_EXCEPTION("Cannot allocate m_cpu");
- 
     }
     /* This isn't a raw file, we have to determine the executable format and the cpu */
     else

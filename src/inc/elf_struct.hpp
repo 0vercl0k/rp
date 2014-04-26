@@ -333,8 +333,6 @@ struct ELFLayout : public ExecutableLinkingFormatLayout
         for(unsigned int i = 0; i < elfHeader.e_phnum; ++i)
         {
             std::shared_ptr<Elf_Phdr<T>> pElfProgramHeader = std::make_shared<Elf_Phdr<T>>();
-            if(pElfProgramHeader == NULL)
-                RAISE_EXCEPTION("Cannot allocate pElfProgramHeader");
 
             file.read((char*)pElfProgramHeader.get(), sizeof(Elf_Phdr<T>));
             elfProgramHeaders.push_back(pElfProgramHeader);
@@ -357,8 +355,6 @@ struct ELFLayout : public ExecutableLinkingFormatLayout
         for(unsigned int i = 0; i < elfHeader.e_shnum; ++i)
         {
             std::shared_ptr<Elf_Shdr_Abstraction<T>> pElfSectionHeader = std::make_shared<Elf_Shdr_Abstraction<T>>();
-            if(pElfSectionHeader == NULL)
-                RAISE_EXCEPTION("Cannot allocate pElfSectionHeader");
             
             file.read((char*)&pElfSectionHeader->header, sizeof(Elf_Shdr<T>));
 

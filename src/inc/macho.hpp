@@ -47,8 +47,6 @@ class Macho : public ExecutableFormat
         void init_properly_macho_layout()
         {
             m_MachoLayout = std::make_shared<MachoArchLayout<T>>();
-            if(m_MachoLayout == NULL)
-                RAISE_EXCEPTION("Cannot allocate m_MachoLayout");
         }
 
         std::shared_ptr<MachoLayout> m_MachoLayout;

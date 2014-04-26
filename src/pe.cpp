@@ -145,9 +145,6 @@ std::vector<std::shared_ptr<Section>> PE::get_executables_section(std::ifstream 
                 m_pPELayout->get_image_base() + (*it)->VirtualAddress,
                 (*it)->SizeOfRawData
             );
-
-            if(tmp == NULL)
-                RAISE_EXCEPTION("Cannot allocate a section");
             
             tmp->dump(file);
 
