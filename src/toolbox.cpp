@@ -101,16 +101,13 @@ bool is_hex_char(char c)
     );
 }
 
-unsigned char * string_to_hex(const char* hex, unsigned int * size)
+std::vector<unsigned char> string_to_hex(const char* hex)
 {
     unsigned int len = (unsigned int)std::strlen(hex), i = 0, byte = 0;
     std::vector<unsigned char> bytes;
 
     if(len == 0)
-    {
-        *size = 0;
-        return NULL;
-    }
+        return bytes;
 
     while(i < len)
     {
@@ -141,17 +138,7 @@ unsigned char * string_to_hex(const char* hex, unsigned int * size)
         bytes.push_back((unsigned char)byte);
     }
 
-    *size = (unsigned int)bytes.size();
-
-    unsigned char *buffer = new (std::nothrow) unsigned char[*size];
-    if(buffer == NULL)
-        RAISE_EXCEPTION("Cannot allocate buffer");
-
-    unsigned int j = 0;
-    for(std::vector<unsigned char>::iterator it = bytes.begin(); it != bytes.end(); ++it, j++)
-        buffer[j] = *it;
-
-    return buffer;
+    return bytes;
 }
 
 std::map<std::string, std::shared_ptr<Gadget>> only_unique_gadgets(std::multiset<std::shared_ptr<Gadget>, Gadget::Sort> &list_gadgets)

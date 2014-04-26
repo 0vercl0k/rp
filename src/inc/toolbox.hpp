@@ -25,6 +25,7 @@
 #include <map>
 #include <set>
 #include <string>
+#include <vector>
 #include "gadget.hpp"
 
 /* Choose your verbosity level */
@@ -56,15 +57,14 @@ std::string verbosity_to_string(VerbosityLevel lvl);
 std::streampos get_file_size(std::ifstream &file);
 
 /**
- * \fn unsigned char * string_to_hex(const char* hex, unsigned int * size)
+ * \fn std::vector<unsigned char> string_to_hex(const char* hex)
  * \brief Enable a color in your shell
  *
  * \param hex: The string that represents your raw hex values -- for example \x41BC\x90 => we want [0x41, 0x42, 0x43, 0x90] in memory
- * \param size: A pointer on a variable that will hold the number of bytes composing your buffer
  *
- * \return a pointer on a buffer that contains size bytes
+ * \return a vector that contains the converted bytes
  */
-unsigned char * string_to_hex(const char* hex, unsigned int * size);
+std::vector<unsigned char> string_to_hex(const char* hex);
 
 /**
  * \fn bool is_matching(std::string &disass, const char* p)

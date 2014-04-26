@@ -34,7 +34,7 @@ std::shared_ptr<ExecutableFormat> ExecutableFormat::GetExecutableFormat(unsigned
 {
     std::shared_ptr<ExecutableFormat> exe_format = NULL;
     if((magic_dword & 0xffff) == 0x5A4D)
-        exe_format = std::shared_ptr<PE>();
+        exe_format = std::make_shared<PE>();
     else
     {
         /* Yeah, I told you it was basic. */

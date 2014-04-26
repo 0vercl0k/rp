@@ -23,6 +23,7 @@
 #include <string>
 #include <list>
 #include <fstream>
+#include <vector>
 
 /*! \class Section
  *
@@ -71,7 +72,7 @@ class Section
          *   
          *  \return a pointer on the buffer
          */
-        unsigned char *get_section_buffer(void) const;
+        const unsigned char *get_section_buffer(void) const;
 
         /*!
          *  \brief Get the (raw) offset of the section ; in other word, where it was found in the binary
@@ -116,7 +117,7 @@ class Section
         
         Properties m_props; /*!< the properties of the section*/
         
-        unsigned char *m_section; /*!< the pointer on the section content*/
+        std::vector<unsigned char> m_section; /*!< the section content*/
 
         unsigned long long m_vaddr; /* !< the virtual address of the section*/
 };

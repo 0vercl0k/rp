@@ -159,13 +159,8 @@ int main(int argc, char* argv[])
             if(shexa->count > 0)
             {
                 unsigned int size = 0;
-                unsigned char* hex_values = string_to_hex(shexa->sval[0], &size);
-             
-                if(hex_values == NULL)
-                    RAISE_EXCEPTION("Cannot allocate hex_values");
-
-                p.search_and_display(hex_values, size);
-                delete[] hex_values;
+                std::vector<unsigned char> hex_values = string_to_hex(shexa->sval[0], &size);
+                p.search_and_display(hex_values.data(), size);
             }
             
             if(sint->count > 0)
