@@ -84,9 +84,9 @@ CPU::E_CPU Elf::extract_information_from_binary(std::ifstream &file)
     return cpu;
 }
 
-CPU* Elf::get_cpu(std::ifstream &file)
+std::shared_ptr<CPU> Elf::get_cpu(std::ifstream &file)
 {
-    CPU* cpu(NULL);
+    std::shared_ptr<CPU> cpu(NULL);
     CPU::E_CPU cpu_type = CPU::CPU_UNKNOWN;
 
     cpu_type = extract_information_from_binary(file);
@@ -95,13 +95,13 @@ CPU* Elf::get_cpu(std::ifstream &file)
     {
         case CPU::CPU_x86:
         {
-            cpu = new (std::nothrow) x86();
+            cpu = std::make_shared<x86>();
             break;
         }
 
         case CPU::CPU_x64:
         {
-            cpu = new (std::nothrow) x64();
+            cpu = std::make_shared<x64>();
             break;
         }
 

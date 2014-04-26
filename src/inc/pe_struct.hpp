@@ -405,14 +405,12 @@ typedef RP_IMAGE_NT_HEADERS<x64Version> RP_IMAGE_NT_HEADERS64;
 struct PortableExecutableLayout
 {
     RP_IMAGE_DOS_HEADER                   imgDosHeader;
-    std::vector<RP_IMAGE_SECTION_HEADER*> imgSectionHeaders;
+    std::vector<std::shared_ptr<RP_IMAGE_SECTION_HEADER>> imgSectionHeaders;
 
-    typedef std::vector<RP_IMAGE_SECTION_HEADER*>::const_iterator iter_sect_header;
+    typedef std::vector<std::shared_ptr<RP_IMAGE_SECTION_HEADER>>::const_iterator iter_sect_header;
 
     virtual ~PortableExecutableLayout(void)
     {
-        for(iter_sect_header it = imgSectionHeaders.begin(); it != imgSectionHeaders.end(); ++it)
-            delete *it;
     }
 
     virtual void display(VerbosityLevel lvl = VERBOSE_LEVEL_1) const
@@ -474,11 +472,11 @@ struct PELayout : public PortableExecutableLayout
 
         for(unsigned int i = 0; i < imgNtHeaders.FileHeader.NumberOfSections; ++i)
         {
-            RP_IMAGE_SECTION_HEADER* pImgSectionHeader = new (std::nothrow) RP_IMAGE_SECTION_HEADER;
+            std::shared_ptr<RP_IMAGE_SECTION_HEADER> pImgSectionHeader = std::make_shared<RP_IMAGE_SECTION_HEADER>();
             if(pImgSectionHeader == NULL)
                 RAISE_EXCEPTION("Cannot allocate memory for pImgSectionHeader");
             
-            file.read((char*)pImgSectionHeader, get_image_section_header_size());
+            file.read((char*)pImgSectionHeader.get(), get_image_section_header_size());
             imgSectionHeaders.push_back(pImgSectionHeader);
         }
 

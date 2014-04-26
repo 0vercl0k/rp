@@ -45,18 +45,18 @@ Program::Program(const std::string & program_path, CPU::E_CPU arch)
     /* If we know the CPU in the constructor, it is a raw file */
     if(arch != CPU::CPU_UNKNOWN)
     {
-        m_exformat = new (std::nothrow) Raw();
+        m_exformat = std::make_shared<Raw>();
         if(m_exformat == NULL)
             RAISE_EXCEPTION("Cannot allocate raw");
         
         switch(arch)
         {
             case CPU::CPU_x86:
-                m_cpu = new (std::nothrow) x86();
+                m_cpu = std::make_shared<x86>();
                 break;
 
             case CPU::CPU_x64:
-                m_cpu = new (std::nothrow) x64();
+                m_cpu = std::make_shared<x64>();
                 break;
 
             default:
@@ -89,12 +89,6 @@ Program::~Program(void)
 {
     if(m_file.is_open())
         m_file.close();
-    
-    if(m_exformat != NULL)
-        delete m_exformat;
-
-    if(m_cpu != NULL)
-        delete m_cpu;
 }
 
 void Program::display_information(VerbosityLevel lvl)

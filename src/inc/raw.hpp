@@ -30,7 +30,7 @@ class Raw : public ExecutableFormat
 
         ~Raw(void);
 
-        CPU* get_cpu(std::ifstream &file)
+        std::shared_ptr<CPU> get_cpu(std::ifstream &file)
         {
             /* Don't need this method */
             return NULL;

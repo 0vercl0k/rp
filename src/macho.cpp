@@ -29,9 +29,9 @@ Macho::~Macho(void)
 {
 }
 
-CPU* Macho::get_cpu(std::ifstream &file)
+std::shared_ptr<CPU> Macho::get_cpu(std::ifstream &file)
 {
-    CPU *cpu(NULL);
+    std::shared_ptr<CPU> cpu(NULL);
     RP_MACH_HEADER<x86Version> header32;
 
     std::cout << "Loading Mach-O information.." << std::endl;
@@ -46,14 +46,14 @@ CPU* Macho::get_cpu(std::ifstream &file)
     {
         case CPU_TYPE_x86_64:
         {
-            cpu = new (std::nothrow) x64();
+            cpu = std::make_shared<x64>();
             init_properly_macho_layout<x64Version>();
             break;
         }
 
         case CPU_TYPE_I386:
         {
-            cpu = new (std::nothrow) x86();
+            cpu = std::make_shared<x86>();
             init_properly_macho_layout<x86Version>();
             break;
         }

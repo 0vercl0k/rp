@@ -73,9 +73,9 @@ class Program
 
     private:
         
-        CPU* m_cpu; /*!< a pointer on the CPU used by your program*/
+        std::shared_ptr<CPU> m_cpu; /*!< a pointer on the CPU used by your program*/
         
-        ExecutableFormat* m_exformat; /*!< a pointer on the ExecutableFormat used by your program*/
+        std::shared_ptr<ExecutableFormat> m_exformat; /*!< a pointer on the ExecutableFormat used by your program*/
         
         std::ifstream m_file; /*!< the file descriptor*/
 };

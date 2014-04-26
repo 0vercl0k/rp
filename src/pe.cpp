@@ -100,9 +100,9 @@ CPU::E_CPU PE::extract_information_from_binary(std::ifstream &file)
     return cpu;
 }
 
-CPU* PE::get_cpu(std::ifstream &file)
+std::shared_ptr<CPU> PE::get_cpu(std::ifstream &file)
 {
-    CPU* cpu(NULL);
+    std::shared_ptr<CPU> cpu(NULL);
     CPU::E_CPU cpu_type = CPU::CPU_UNKNOWN;
 
     cpu_type = extract_information_from_binary(file);
@@ -111,13 +111,13 @@ CPU* PE::get_cpu(std::ifstream &file)
     {
         case CPU::CPU_x86:
         {
-            cpu = new (std::nothrow) x86();
+            cpu = std::make_shared<x86>();
             break;
         }
 
         case CPU::CPU_x64:
         {
-            cpu = new (std::nothrow) x64();
+            cpu = std::make_shared<x64>();
             break;
         }
 
@@ -132,7 +132,7 @@ std::vector<std::shared_ptr<Section>> PE::get_executables_section(std::ifstream 
 {
     std::vector<std::shared_ptr<Section>> exec_sections;
 
-    for(std::vector<RP_IMAGE_SECTION_HEADER*>::iterator it = m_pPELayout->imgSectionHeaders.begin();
+    for(std::vector<std::shared_ptr<RP_IMAGE_SECTION_HEADER>>::iterator it = m_pPELayout->imgSectionHeaders.begin();
         it != m_pPELayout->imgSectionHeaders.end();
         ++it)
     {

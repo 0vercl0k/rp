@@ -57,7 +57,7 @@ class ExecutableFormat
          *   
          *  \return a pointer on the correct CPU
          */
-        virtual CPU* get_cpu(std::ifstream &file) = 0;
+        virtual std::shared_ptr<CPU> get_cpu(std::ifstream &file) = 0;
 
         /*!
          *  \brief Display information concerning the executable format: where sections begin, entry point, etc.
@@ -92,7 +92,7 @@ class ExecutableFormat
          *
          *  \return A pointer on the correct ExecutableFormat deduced thanks to the magic_dword argument
          */
-        static ExecutableFormat* GetExecutableFormat(unsigned int magic_dword);
+        static std::shared_ptr<ExecutableFormat> GetExecutableFormat(unsigned int magic_dword);
 
     private:
 

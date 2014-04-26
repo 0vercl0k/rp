@@ -271,19 +271,14 @@ template<class T>
 struct MachoArchLayout : public MachoLayout
 {
     RP_MACH_HEADER<T> header;
-    std::vector<RP_SEGMENT_COMMAND<T>*> seg_commands;
-    std::vector<RP_SECTION<T>*> sections;
+    std::vector<std::shared_ptr<RP_SEGMENT_COMMAND<T>>> seg_commands;
+    std::vector<std::shared_ptr<RP_SECTION<T>>> sections;
 
-    typedef typename std::vector<RP_SECTION<T>*>::const_iterator iter_rp_section;
-    typedef typename std::vector<RP_SEGMENT_COMMAND<T>*>::const_iterator iter_rp_segment;
+    typedef typename std::vector<std::shared_ptr<RP_SECTION<T>>>::const_iterator iter_rp_section;
+    typedef typename std::vector<std::shared_ptr<RP_SEGMENT_COMMAND<T>>>::const_iterator iter_rp_segment;
 
     ~MachoArchLayout(void)
     {
-        for(iter_rp_segment it = seg_commands.begin(); it != seg_commands.end(); ++it)
-            delete *it;
-
-        for(iter_rp_section it = sections.begin(); it != sections.end(); ++it)
-            delete *it;
     }
 
     unsigned int get_size_mach_header(void) const
@@ -311,11 +306,11 @@ struct MachoArchLayout : public MachoLayout
                 case LC_SEGMENT:
                 case LC_SEGMENT_64:
                 {
-                    RP_SEGMENT_COMMAND<T>* seg_cmd = new (std::nothrow) RP_SEGMENT_COMMAND<T>;
+                    std::shared_ptr<RP_SEGMENT_COMMAND<T>> seg_cmd = std::make_shared<RP_SEGMENT_COMMAND<T>>();
                     if(seg_cmd == NULL)
                         RAISE_EXCEPTION("Cannot allocate seg_cmd");
 
-                    file.read((char*)seg_cmd, sizeof(RP_SEGMENT_COMMAND<T>));
+                    file.read((char*)seg_cmd.get(), sizeof(RP_SEGMENT_COMMAND<T>));
                     seg_commands.push_back(seg_cmd);
 
                     /* 
@@ -325,11 +320,11 @@ struct MachoArchLayout : public MachoLayout
                     */
                     for(unsigned int j = 0; j < seg_cmd->nsects; ++j)
                     {
-                        RP_SECTION<T>* sect = new (std::nothrow) RP_SECTION<T>;
+                        std::shared_ptr<RP_SECTION<T>> sect = std::make_shared<RP_SECTION<T>>();
                         if(sect == NULL)
                             RAISE_EXCEPTION("Cannot allocate sect");
 
-                        file.read((char*)sect, sizeof(RP_SECTION<T>));
+                        file.read((char*)sect.get(), sizeof(RP_SECTION<T>));
                         sections.push_back(sect);
                     }
 

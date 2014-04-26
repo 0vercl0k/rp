@@ -32,7 +32,7 @@ class PE : public ExecutableFormat
         
         ~PE(void);
 
-        CPU* get_cpu(std::ifstream &file);
+        std::shared_ptr<CPU> get_cpu(std::ifstream &file);
 
         void display_information(const VerbosityLevel lvl) const;
 

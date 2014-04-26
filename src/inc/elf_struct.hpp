@@ -32,6 +32,7 @@
 #include <vector>
 #include <string>
 #include <cstring>
+#include <array>
 
 /* Information extracted from winnt.h ; a bit of template-kung-fu and here it goes ! */
 
@@ -254,25 +255,16 @@ template<class T>
 struct ELFLayout : public ExecutableLinkingFormatLayout
 {
     Elf_Ehdr<T> elfHeader;
-    std::vector<Elf_Phdr<T>*> elfProgramHeaders;
-    std::vector<Elf_Shdr_Abstraction<T>*> elfSectionHeaders;
+    std::vector<std::shared_ptr<Elf_Phdr<T>>> elfProgramHeaders;
+    std::vector<std::shared_ptr<Elf_Shdr_Abstraction<T>>> elfSectionHeaders;
     T offset_string_table, size_string_table;
 
-    typedef typename std::vector<Elf_Phdr<T>*>::const_iterator iter_elf_phdr;
-    typedef typename std::vector<Elf_Shdr_Abstraction<T>*>::const_iterator iter_shdr_abs;
+    typedef typename std::vector<std::shared_ptr<Elf_Phdr<T>>>::const_iterator iter_elf_phdr;
+    typedef typename std::vector<std::shared_ptr<Elf_Shdr_Abstraction<T>>>::const_iterator iter_shdr_abs;
 
 
     ~ELFLayout(void)
     {
-        for(iter_elf_phdr it = elfProgramHeaders.begin();
-            it != elfProgramHeaders.end();
-            ++it)
-            delete *it;
-
-        for(iter_shdr_abs it = elfSectionHeaders.begin();
-            it != elfSectionHeaders.end();
-            ++it)
-            delete *it;
     }
 
     void display(VerbosityLevel lvl = VERBOSE_LEVEL_1) const
@@ -307,7 +299,6 @@ struct ELFLayout : public ExecutableLinkingFormatLayout
 
     T find_string_table(std::ifstream &file)
     {
-        
         Elf_Shdr<T> elf_shdr;
         std::streampos off = file.tellg();
 
@@ -341,11 +332,11 @@ struct ELFLayout : public ExecutableLinkingFormatLayout
         file.seekg((std::streamoff)elfHeader.e_phoff, std::ios::beg);
         for(unsigned int i = 0; i < elfHeader.e_phnum; ++i)
         {
-            Elf_Phdr<T>* pElfProgramHeader = new (std::nothrow) Elf_Phdr<T>;
+            std::shared_ptr<Elf_Phdr<T>> pElfProgramHeader = std::make_shared<Elf_Phdr<T>>();
             if(pElfProgramHeader == NULL)
                 RAISE_EXCEPTION("Cannot allocate pElfProgramHeader");
 
-            file.read((char*)pElfProgramHeader, sizeof(Elf_Phdr<T>));
+            file.read((char*)pElfProgramHeader.get(), sizeof(Elf_Phdr<T>));
             elfProgramHeaders.push_back(pElfProgramHeader);
         }
 
@@ -356,17 +347,16 @@ struct ELFLayout : public ExecutableLinkingFormatLayout
 
         /* 3.2] Keep the string table in memory */
         file.seekg((std::streamoff)offset_string_table, std::ios::beg);
-        char* string_table_section = new (std::nothrow) char[(unsigned int)size_string_table];
-        if(string_table_section == NULL)
-            RAISE_EXCEPTION("Cannot allocate string_table_section");
+        
+        std::vector<char> string_table_section(size_string_table);
 
-        file.read(string_table_section, (std::streamsize)size_string_table);
+        file.read(string_table_section.data(), (std::streamsize)size_string_table);
 
         /* 3.3] Goto the first Section Header, and dump them !*/
         file.seekg((std::streamoff)elfHeader.e_shoff, std::ios::beg);
         for(unsigned int i = 0; i < elfHeader.e_shnum; ++i)
         {
-            Elf_Shdr_Abstraction<T>* pElfSectionHeader = new (std::nothrow) Elf_Shdr_Abstraction<T>;
+            std::shared_ptr<Elf_Shdr_Abstraction<T>> pElfSectionHeader = std::make_shared<Elf_Shdr_Abstraction<T>>();
             if(pElfSectionHeader == NULL)
                 RAISE_EXCEPTION("Cannot allocate pElfSectionHeader");
             
@@ -376,7 +366,7 @@ struct ELFLayout : public ExecutableLinkingFormatLayout
             if(pElfSectionHeader->header.sh_name < size_string_table)
             {
                 /* Yeah we know where is the string */
-                char *name_section = string_table_section + pElfSectionHeader->header.sh_name;
+                char *name_section = string_table_section.data() + pElfSectionHeader->header.sh_name;
                 std::string s(name_section, std::strlen(name_section));
                 pElfSectionHeader->name = (s == "") ? std::string("unknown section") : s;
             }
@@ -386,8 +376,6 @@ struct ELFLayout : public ExecutableLinkingFormatLayout
 
         /* Set correctly the pointer */
         file.seekg(off);
-
-        delete[] string_table_section;
     }
 
     std::vector<std::shared_ptr<Section>> get_executable_section(std::ifstream &file) const

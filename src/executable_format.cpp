@@ -30,11 +30,11 @@ ExecutableFormat::~ExecutableFormat(void)
 {   
 }
 
-ExecutableFormat* ExecutableFormat::GetExecutableFormat(unsigned int magic_dword)
+std::shared_ptr<ExecutableFormat> ExecutableFormat::GetExecutableFormat(unsigned int magic_dword)
 {
-    ExecutableFormat *exe_format = NULL;
+    std::shared_ptr<ExecutableFormat> exe_format = NULL;
     if((magic_dword & 0xffff) == 0x5A4D)
-        exe_format = new (std::nothrow) PE();
+        exe_format = std::shared_ptr<PE>();
     else
     {
         /* Yeah, I told you it was basic. */
@@ -42,7 +42,7 @@ ExecutableFormat* ExecutableFormat::GetExecutableFormat(unsigned int magic_dword
         {
             case 0x464C457F:
             {
-                exe_format = new (std::nothrow) Elf();
+                exe_format = std::make_shared<Elf>();
                 break;
             }
         
@@ -51,7 +51,7 @@ ExecutableFormat* ExecutableFormat::GetExecutableFormat(unsigned int magic_dword
             /* this one for x86 */
             case 0xFEEDFACE:
             {
-                exe_format = new (std::nothrow) Macho();
+                exe_format = std::make_shared<Macho>();
                 break;
             }
 
