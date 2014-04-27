@@ -160,7 +160,7 @@ int main(int argc, char* argv[])
             if(shexa->count > 0)
             {
                 std::vector<unsigned char> hex_values = string_to_hex(shexa->sval[0]);
-                p.search_and_display(hex_values.data(), hex_values.size());
+                p.search_and_display(hex_values.data(), (unsigned int)hex_values.size());
             }
             
             if(sint->count > 0)
