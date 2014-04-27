@@ -29,7 +29,7 @@
 #include <windows.h>
 #endif
 
-#define COLORS_ENABLED                     // remove this define if you don't want color in your shell
+extern bool g_are_colors_enabled;
 
 /* Here you will find all you need to display the data in a cute way on a windows/unix terminal */
 
@@ -54,14 +54,13 @@
 #endif
 
 /**
- * \fn static void enable_color(const Colors colo)
+ * \fn static void enable_color_(const Colors colo)
  * \brief Enable a color in your shell
  *
  * \param colo: the color you want to activate
  */
-static void enable_color(const Colors colo)
+static void enable_color_(const Colors colo)
 {
-#ifdef COLORS_ENABLED
 #ifdef WINDOWS
     HANDLE hStdOutput = GetStdHandle(STD_OUTPUT_HANDLE);
     if(hStdOutput == INVALID_HANDLE_VALUE)
@@ -78,18 +77,26 @@ static void enable_color(const Colors colo)
     };
     std::cout << colors[colo];
 #endif
-
-#else
-#endif
 }
 
 /**
- * \fn static void disable_color(const Colors colo)
+ * \fn static void enable_color(const Colors colo)
+ * \brief Enable a color in your shell
+ *
+ * \param colo: the color you want to activate
+ */
+static void enable_color(const Colors colo)
+{
+    if(g_are_colors_enabled)
+        enable_color_(colo);
+}
+
+/**
+ * \fn static void disable_color_(const Colors colo)
  * \brief Unset the color you have previously set
  */
-static void disable_color(void)
+static void disable_color_(void)
 {
-#ifdef COLORS_ENABLED
 #ifdef WINDOWS
     HANDLE hStdOutput = GetStdHandle(STD_OUTPUT_HANDLE);
     if(hStdOutput == INVALID_HANDLE_VALUE)
@@ -106,8 +113,16 @@ static void disable_color(void)
     };
     std::cout << colors[COLO_DEFAULT];
 #endif
-#else
-#endif
+}
+
+/**
+ * \fn static void disable_color_(const Colors colo)
+ * \brief Unset the color you have previously set
+ */
+static void disable_color(void)
+{
+    if(g_are_colors_enabled)
+        disable_color_();
 }
 
 /**

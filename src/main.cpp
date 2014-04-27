@@ -41,8 +41,9 @@ int main(int argc, char* argv[])
     struct arg_str  *sint    = arg_str0(NULL, "search-int", "<int in hex>", "try to find a pointer on a specific integer value");
     struct arg_lit  *help    = arg_lit0("h", "help", "print this help and exit");
     struct arg_lit  *version = arg_lit0("v", "version", "print version information and exit");
+    struct arg_lit  *colors  = arg_lit0(NULL, "colors", "enable colors");
     struct arg_end  *end     = arg_end(20);
-    void* argtable[] = {file, display, rop, raw, att, unique, shexa, sint, help, version, end};
+    void* argtable[] = {file, display, rop, raw, att, unique, shexa, sint, help, version, colors, end};
 
     if(arg_nullcheck(argtable) != 0)
         RAISE_EXCEPTION("Cannot allocate long option structures");
@@ -54,6 +55,9 @@ int main(int argc, char* argv[])
         std::cout << "Try './rp++ --help' for more information." << std::endl;
         return -1;
     }
+
+    if(colors->count > 0)
+        g_are_colors_enabled = true;
 
     try
     {
