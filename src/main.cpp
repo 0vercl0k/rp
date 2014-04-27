@@ -137,14 +137,14 @@ int main(int argc, char* argv[])
                 std::cout << "A total of " << all_gadgets.size() << " gadgets found." << std::endl;
                 if(unique->count > 0)
                 {
-                    std::map<std::string, std::shared_ptr<Gadget>> unique_gadgets;
+                    std::set<std::shared_ptr<Gadget>, Gadget::Sort> unique_gadgets;
                     only_unique_gadgets(all_gadgets, unique_gadgets);
 
                     std::cout << "You decided to keep only the unique ones, " << unique_gadgets.size() << " unique gadgets found." << std::endl;
 
                     /* Now we walk the gadgets found and set the VA */
-                    for(std::map<std::string, std::shared_ptr<Gadget>>::iterator it = unique_gadgets.begin(); it != unique_gadgets.end(); ++it)
-                        display_gadget_lf(it->second->get_first_absolute_address(), it->second);
+                    for(std::set<std::shared_ptr<Gadget>, Gadget::Sort>::const_iterator it = unique_gadgets.begin(); it != unique_gadgets.end(); ++it)
+                        display_gadget_lf((*it)->get_first_absolute_address(), *it);
                 }
                 else
                 {

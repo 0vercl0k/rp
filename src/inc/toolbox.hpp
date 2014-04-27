@@ -22,7 +22,6 @@
 
 #include <string>
 #include <fstream>
-#include <map>
 #include <set>
 #include <string>
 #include <vector>
@@ -89,13 +88,13 @@ bool is_hex_char(char c);
 
 
 /**
- * \fn std::map<std::string, Gadget*> only_unique_gadgets(std::list<Gadget*> &list_gadgets)
+ * \fn void only_unique_gadgets(std::multiset<std::shared_ptr<Gadget>, Gadget::Sort> &list_gadgets, std::set<std::shared_ptr<Gadget>, Gadget::Sort> &unique_gadgets)
  * \brief It keeps only the unique gadgets
  *
  * \param list_gadgets: It is the gadget list with duplicates
  * \param unique_gadgets: The list of unique gadgets
  *
  */
-void only_unique_gadgets(std::multiset<std::shared_ptr<Gadget>, Gadget::Sort> &list_gadgets, std::map<std::string, std::shared_ptr<Gadget>> &unique_gadgets);
+void only_unique_gadgets(std::multiset<std::shared_ptr<Gadget>, Gadget::Sort> &list_gadgets, std::set<std::shared_ptr<Gadget>, Gadget::Sort> &unique_gadgets);
 
 #endif

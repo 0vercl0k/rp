@@ -141,31 +141,23 @@ std::vector<unsigned char> string_to_hex(const char* hex)
     return bytes;
 }
 
-void only_unique_gadgets(std::multiset<std::shared_ptr<Gadget>, Gadget::Sort> &list_gadgets, std::map<std::string, std::shared_ptr<Gadget>> &unique_gadgets)
+void only_unique_gadgets(std::multiset<std::shared_ptr<Gadget>, Gadget::Sort> &list_gadgets, std::set<std::shared_ptr<Gadget>, Gadget::Sort> &unique_gadgets)
 {
      /* Now we have a list of gadget, cool, but we want to keep only the unique! */
     for(std::multiset<std::shared_ptr<Gadget>, Gadget::Sort>::const_iterator it_g = list_gadgets.begin(); it_g != list_gadgets.end(); ++it_g)
     {
+        std::pair<std::set<std::shared_ptr<Gadget>, Gadget::Sort>::iterator, bool> g = unique_gadgets.insert(*it_g);
         /* If a gadget, with the same disassembly, has already been found ; just add its offset in the existing one */
-        if(unique_gadgets.count((*it_g)->get_disassembly()))
-        {
-            std::map<std::string, std::shared_ptr<Gadget>>::iterator g = unique_gadgets.find((*it_g)->get_disassembly());
-                
+        if(g.second == false)
+        {               
             /*
                 we have found the same gadget in memory, so we just store its offset & its va section 
                 maybe you can ask yourself 'Why do we store its va section ?' and the answer is:
                 because you can find the same gadget in another executable sections!
             */
-            g->second->add_new_one((*it_g)->get_first_offset(),
+            (*g.first)->add_new_one((*it_g)->get_first_offset(),
                 (*it_g)->get_first_va_section()
             );
-        }
-        else
-        {
-            unique_gadgets.insert(std::make_pair(
-                (*it_g)->get_disassembly(),
-                (*it_g)
-            ));
         }
     }
 }
