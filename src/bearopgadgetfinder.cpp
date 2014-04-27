@@ -43,9 +43,8 @@ void BeaRopGadgetFinder::init_disasm_struct(DISASM* d)
     d->Archi = m_arch;
 }
 
-std::multiset<std::shared_ptr<Gadget>> BeaRopGadgetFinder::find_all_gadget_from_ret(const unsigned char* data, unsigned long long vaddr, const DISASM* ending_instr_disasm, unsigned int len_ending_instr)
+void BeaRopGadgetFinder::find_all_gadget_from_ret(const unsigned char* data, unsigned long long vaddr, const DISASM* ending_instr_disasm, unsigned int len_ending_instr, std::multiset<std::shared_ptr<Gadget>, Gadget::Sort> &gadgets)
 {
-    std::multiset<std::shared_ptr<Gadget>> gadgets;
     DISASM dis;
 
     init_disasm_struct(&dis);
@@ -131,8 +130,6 @@ std::multiset<std::shared_ptr<Gadget>> BeaRopGadgetFinder::find_all_gadget_from_
         dis.EIP = saved_eip + 1;
         dis.VirtualAddr = saved_vaddr + 1;
     }
-
-    return gadgets;
 }
 
 bool BeaRopGadgetFinder::is_valid_ending_instruction_nasm(DISASM* ending_instr_d)
@@ -247,9 +244,8 @@ bool BeaRopGadgetFinder::is_valid_instruction(DISASM *ending_instr_d)
     );
 }
 
-std::multiset<std::shared_ptr<Gadget>> BeaRopGadgetFinder::find_rop_gadgets(const unsigned char* data, unsigned long long size, unsigned long long vaddr)
+void BeaRopGadgetFinder::find_rop_gadgets(const unsigned char* data, unsigned long long size, unsigned long long vaddr, std::multiset<std::shared_ptr<Gadget>, Gadget::Sort> &merged_gadgets)
 {
-    std::multiset<std::shared_ptr<Gadget>> merged_gadgets;
     DISASM dis;
 
     init_disasm_struct(&dis);
@@ -295,12 +291,12 @@ std::multiset<std::shared_ptr<Gadget>> BeaRopGadgetFinder::find_rop_gadgets(cons
             /* if we want to see gadget with more instructions */
             if(m_depth > 0)
             {
-                std::multiset<std::shared_ptr<Gadget>> gadgets = find_all_gadget_from_ret(data, vaddr, &ret_instr, len);
-                for(std::multiset<std::shared_ptr<Gadget>>::iterator it = gadgets.begin(); it != gadgets.end(); ++it)
-                    merged_gadgets.insert(*it);
+                find_all_gadget_from_ret(
+                    data, vaddr,
+                    &ret_instr,
+                    len, merged_gadgets
+                );
             }
         }
     }
-
-    return merged_gadgets;
 }

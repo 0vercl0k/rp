@@ -54,11 +54,18 @@ class CPU
          *  \param size: It is the size of the p_memory
          *  \param vaddr: It is the real virtual address of the memory which will be disassembled (see the previous remark)
          *  \param depth: It is the number of maximum instructions contained by a gadget
+         *  \param gadgets: A list of the Gadget instance
          *  \param engine_display_option: Pass display options to the dissassembly engine
          *
-         *  \return A list of the Gadget instance
          */
-        virtual std::multiset<std::shared_ptr<Gadget>> find_gadget_in_memory(const unsigned char *p_memory, const unsigned long long size, const unsigned long long vaddr, const unsigned int depth, unsigned int engine_display_option = 0) = 0;
+        virtual void find_gadget_in_memory(
+            const unsigned char *p_memory,
+            const unsigned long long size,
+            const unsigned long long vaddr,
+            const unsigned int depth,
+            std::multiset<std::shared_ptr<Gadget>, Gadget::Sort> &gadgets,
+            unsigned int engine_display_option = 0
+        ) = 0;
 
         /*! The different architectures RP++ handles */
         enum E_CPU

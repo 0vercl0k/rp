@@ -346,7 +346,7 @@ struct ELFLayout : public ExecutableLinkingFormatLayout
         /* 3.2] Keep the string table in memory */
         file.seekg((std::streamoff)offset_string_table, std::ios::beg);
         
-        std::vector<char> string_table_section(size_string_table);
+        std::vector<char> string_table_section((unsigned int)size_string_table);
 
         file.read(string_table_section.data(), (std::streamsize)size_string_table);
 

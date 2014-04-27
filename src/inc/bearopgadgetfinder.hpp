@@ -63,10 +63,10 @@ class BeaRopGadgetFinder
          *  \param data: It is the where the code is in memory
          *  \param size: It is the size of the code
          *  \param vaddr: It's the *real* virtual address of the data (BeaEngine needs it to disassemble correctly instruction with relative offset, like jmp)
+         *  \param gadgets: The whole gadgets found in [data, data+size] ; it tries to find gadget with depth instruction (less or equal to depth to be exact)
          *
-         *  \return the whole gadgets found in [data, data+size] ; it tries to find gadget with depth instruction (less or equal to depth to be exact)
          */
-        std::multiset<std::shared_ptr<Gadget>> find_rop_gadgets(const unsigned char* data, unsigned long long size, unsigned long long vaddr);
+        void find_rop_gadgets(const unsigned char* data, unsigned long long size, unsigned long long vaddr, std::multiset<std::shared_ptr<Gadget>, Gadget::Sort> &gadgets);
 
     private:
 
@@ -77,10 +77,10 @@ class BeaRopGadgetFinder
          *  \param size: It is the size of the code
          *  \param ending_instr_disasm: It is the DISASM structure of your ending instruction which contains several info like VA, disassembly, etc.
          *  \param len_ending_instr: It is the len of the ending instruction ; this len is returned by Disasm()
+         *  \param gadgets: This is where the function will add the gadgets found in [data, data+size] ; it tries to find gadget with depth instruction (less or equal to depth to be exact)
          *
-         *  \return the whole gadgets found in [data, data+size] ; it tries to find gadget with depth instruction (less or equal to depth to be exact)
          */
-        std::multiset<std::shared_ptr<Gadget>> find_all_gadget_from_ret(const unsigned char* data, unsigned long long vaddr, const DISASM* ending_instr, unsigned int len_ending_instr);
+        void find_all_gadget_from_ret(const unsigned char* data, unsigned long long vaddr, const DISASM* ending_instr, unsigned int len_ending_instr, std::multiset<std::shared_ptr<Gadget>, Gadget::Sort> &gadgets);
         
          /*!
          *  \brief Is it a valid ending instruction ?

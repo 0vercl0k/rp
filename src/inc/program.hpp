@@ -58,10 +58,10 @@ class Program
          *   
          *  \param depth: Set the depth of the research (don't forget the ending instruction doesn't count -- so if you want only ending instruction, depth = 0)
          *  \param engine_display_option: You can give several display options passed directly to the disassembly engine (enable at&t syntax on beaegine for example)
+         *  \param gadgets: The gadgets found
          *
-         *  \return The gadgets found
          */
-        std::multiset<std::shared_ptr<Gadget>, Gadget::Sort> find_gadgets(unsigned int depth, unsigned int engine_display_option = 0);
+        void find_gadgets(unsigned int depth, unsigned int engine_display_option, std::multiset<std::shared_ptr<Gadget>, Gadget::Sort> &gadgets);
 
         /*!
          *  \brief Find hex values in the section of the program

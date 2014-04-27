@@ -141,17 +141,15 @@ std::vector<unsigned char> string_to_hex(const char* hex)
     return bytes;
 }
 
-std::map<std::string, std::shared_ptr<Gadget>> only_unique_gadgets(std::multiset<std::shared_ptr<Gadget>, Gadget::Sort> &list_gadgets)
+void only_unique_gadgets(std::multiset<std::shared_ptr<Gadget>, Gadget::Sort> &list_gadgets, std::map<std::string, std::shared_ptr<Gadget>> &unique_gadgets)
 {
-    std::map<std::string, std::shared_ptr<Gadget>> ret;
-
      /* Now we have a list of gadget, cool, but we want to keep only the unique! */
     for(std::multiset<std::shared_ptr<Gadget>, Gadget::Sort>::const_iterator it_g = list_gadgets.begin(); it_g != list_gadgets.end(); ++it_g)
     {
         /* If a gadget, with the same disassembly, has already been found ; just add its offset in the existing one */
-        if(ret.count((*it_g)->get_disassembly()))
+        if(unique_gadgets.count((*it_g)->get_disassembly()))
         {
-            std::map<std::string, std::shared_ptr<Gadget>>::iterator g = ret.find((*it_g)->get_disassembly());
+            std::map<std::string, std::shared_ptr<Gadget>>::iterator g = unique_gadgets.find((*it_g)->get_disassembly());
                 
             /*
                 we have found the same gadget in memory, so we just store its offset & its va section 
@@ -164,12 +162,10 @@ std::map<std::string, std::shared_ptr<Gadget>> only_unique_gadgets(std::multiset
         }
         else
         {
-            ret.insert(std::make_pair(
+            unique_gadgets.insert(std::make_pair(
                 (*it_g)->get_disassembly(),
                 (*it_g)
             ));
         }
     }
-
-    return ret;
 }

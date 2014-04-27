@@ -90,9 +90,9 @@ void Program::display_information(VerbosityLevel lvl)
     m_exformat->display_information(lvl);
 }
 
-std::multiset<std::shared_ptr<Gadget>, Gadget::Sort> Program::find_gadgets(unsigned int depth, unsigned int engine_display_option)
+void Program::find_gadgets(unsigned int depth, unsigned int engine_display_option, std::multiset<std::shared_ptr<Gadget>, Gadget::Sort> &gadgets_found)
 {
-    std::multiset<std::shared_ptr<Gadget>, Gadget::Sort> gadgets_found;
+    unsigned long long counter = 0;
 
     /* To do a ROP gadget research, we need to know the executable section */
     std::vector<std::shared_ptr<Section>> executable_sections = m_exformat->get_executables_section(m_file);
@@ -105,16 +105,17 @@ std::multiset<std::shared_ptr<Gadget>, Gadget::Sort> Program::find_gadgets(unsig
         std::cout << "in " << (*it_sec)->get_name() << std::endl;
         unsigned long long va_section = (*it_sec)->get_vaddr();
 
-        /* Let the cpu research */
-        std::multiset<std::shared_ptr<Gadget>> gadgets = m_cpu->find_gadget_in_memory(
+        m_cpu->find_gadget_in_memory(
             (*it_sec)->get_section_buffer(),
             (*it_sec)->get_size(),
             va_section,
             depth,
+            gadgets_found,
             engine_display_option
         );
 
-        std::cout << gadgets.size() << " found." << std::endl << std::endl;
+        std::cout << (gadgets_found.size() - counter) << " found." << std::endl << std::endl;
+        counter = gadgets_found.size();
 
         /* 
             XXX: 
@@ -123,13 +124,7 @@ std::multiset<std::shared_ptr<Gadget>, Gadget::Sort> Program::find_gadgets(unsig
 
                 It will introduce differences between the number of unique gadgets found!
         */
-
-        /* Mergin'! */
-        for(std::multiset<std::shared_ptr<Gadget>>::iterator it_g = gadgets.begin(); it_g != gadgets.end(); ++it_g)
-            gadgets_found.insert(*it_g);
     }
-
-    return gadgets_found;
 }
 
 void Program::search_and_display(const unsigned char* hex_values, unsigned int size)

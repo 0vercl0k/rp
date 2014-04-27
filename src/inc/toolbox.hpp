@@ -93,9 +93,9 @@ bool is_hex_char(char c);
  * \brief It keeps only the unique gadgets
  *
  * \param list_gadgets: It is the gadget list with duplicates
+ * \param unique_gadgets: The list of unique gadgets
  *
- * \return The list of unique gadgets
  */
-std::map<std::string, std::shared_ptr<Gadget>> only_unique_gadgets(std::multiset<std::shared_ptr<Gadget>, Gadget::Sort> &list_gadgets);
+void only_unique_gadgets(std::multiset<std::shared_ptr<Gadget>, Gadget::Sort> &list_gadgets, std::map<std::string, std::shared_ptr<Gadget>> &unique_gadgets);
 
 #endif
