@@ -1,9 +1,12 @@
-/*  Header for BeaEngine 4.x    */
 #ifndef _BEA_ENGINE_
 #define _BEA_ENGINE_
+#if  defined(__cplusplus) && defined(__BORLANDC__)
+namespace BeaEngine {
+#endif
 
-#include "Includes/export.h"
-#include "Includes/basic_types.h"
+#include <beaengine/macros.h>
+#include <beaengine/export.h>
+#include <beaengine/basic_types.h>
 
 #if !defined(BEA_ENGINE_STATIC)
 	#if defined(BUILD_BEA_ENGINE_DLL)
@@ -46,6 +49,7 @@ typedef struct {
    UInt8 BranchTaken;
    UInt8 BranchNotTaken;
    REX_Struct REX;
+   char alignment[2];
 } PREFIXINFO  ;
 #pragma pack()
 
@@ -91,18 +95,59 @@ typedef struct  {
 
 #pragma pack(1)
 typedef struct  {
-   char ArgMnemonic[32];
+   char ArgMnemonic[64];
    Int32 ArgType;
    Int32 ArgSize;
-   Int32 ArgPosition;   
+   Int32 ArgPosition;
    UInt32 AccessMode;
    MEMORYTYPE Memory;
    UInt32 SegmentReg;
 } ARGTYPE;
 #pragma pack()
 
+/* reserved structure used for thread-safety */
+/* unusable by customer */
+#pragma pack(1)
+typedef struct {
+   UIntPtr EIP_;
+   UInt64 EIP_VA;
+   UIntPtr EIP_REAL;
+   Int32 OriginalOperandSize;
+   Int32 OperandSize;
+   Int32 MemDecoration;
+   Int32 AddressSize;
+   Int32 MOD_;
+   Int32 RM_;
+   Int32 INDEX_;
+   Int32 SCALE_;
+   Int32 BASE_;
+   Int32 MMX_;
+   Int32 SSE_;
+   Int32 CR_;
+   Int32 DR_;
+   Int32 SEG_;
+   Int32 REGOPCODE;
+   UInt32 DECALAGE_EIP;
+   Int32 FORMATNUMBER;
+   Int32 SYNTAX_;
+   UInt64 EndOfBlock;
+   Int32 RelativeAddress;
+   UInt32 Architecture;
+   Int32 ImmediatSize;
+   Int32 NB_PREFIX;
+   Int32 PrefRepe;
+   Int32 PrefRepne;
+   UInt32 SEGMENTREGS;
+   UInt32 SEGMENTFS;
+   Int32 third_arg;
+   Int32 TAB_;
+   Int32 ERROR_OPCODE;
+   REX_Struct REX;
+   Int32 OutOfBlock;
+} InternalDatas;
+#pragma pack()
 
-
+/* ************** main structure ************ */
 #pragma pack(1)
 typedef struct _Disasm {
    UIntPtr EIP;
@@ -116,7 +161,7 @@ typedef struct _Disasm {
    ARGTYPE Argument2;
    ARGTYPE Argument3;
    PREFIXINFO Prefix;
-   UInt32 Reserved_[40];
+   InternalDatas Reserved_;
 } DISASM, *PDISASM, *LPDISASM;
 #pragma pack()
 
@@ -215,18 +260,18 @@ enum EFLAGS_STATES
 enum BRANCH_TYPE
 {
   JO = 1,
-  JC,
-  JE,
-  JA,
-  JS,
-  JP,
-  JL,
-  JG,
-  JB,
-  JECXZ,
-  JmpType,
-  CallType,
-  RetType,
+  JC = 2,
+  JE = 3,
+  JA = 4,
+  JS = 5,
+  JP = 6,
+  JL = 7,
+  JG = 8,
+  JB = 2,       // JC == JB
+  JECXZ = 10,
+  JmpType = 11,
+  CallType = 12,
+  RetType = 13,
   JNO = -1,
   JNC = -2,
   JNE = -3,
@@ -235,7 +280,7 @@ enum BRANCH_TYPE
   JNP = -6,
   JNL = -7,
   JNG = -8,
-  JNB = -9
+  JNB = -2      // JNC == JNB
 };
 
 enum ARGUMENTS_TYPE
@@ -310,4 +355,8 @@ extern "C"
 BEA_API int __bea_callspec__ Disasm (LPDISASM pDisAsm);
 BEA_API const__ char* __bea_callspec__ BeaEngineVersion (void);
 BEA_API const__ char* __bea_callspec__ BeaEngineRevision (void);
+#if  defined(__cplusplus) && defined(__BORLANDC__)
+};
+using namespace BeaEngine;
+#endif
 #endif
