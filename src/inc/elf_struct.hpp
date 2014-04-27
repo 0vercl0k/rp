@@ -114,6 +114,9 @@ struct Elf_Phdr<x86Version>
     unsigned int p_flags;
     unsigned int p_align;
 
+    explicit Elf_Phdr()
+    {}
+
     void display(VerbosityLevel lvl = VERBOSE_LEVEL_1) const
     {
         w_yel_lf("-> Elf_Phdr32: ");
@@ -148,6 +151,9 @@ struct Elf_Phdr<x64Version>
     unsigned long long p_filesz;
     unsigned long long p_memsz;
     unsigned long long p_align;
+
+    explicit Elf_Phdr()
+    {}
 
     void display(VerbosityLevel lvl = VERBOSE_LEVEL_1) const
     {

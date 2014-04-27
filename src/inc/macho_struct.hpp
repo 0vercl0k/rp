@@ -137,6 +137,9 @@ struct RP_SEGMENT_COMMAND
     unsigned int nsects;
     unsigned int flags;
 
+    explicit RP_SEGMENT_COMMAND()
+    {}
+
     void display(VerbosityLevel lvl) const
     {
         w_yel_lf("-> segment_command");
@@ -188,6 +191,9 @@ struct RP_SECTION<x86Version>
     unsigned int  reserved1;
     unsigned int  reserved2;
 
+    explicit RP_SECTION()
+    {}
+
     void display(VerbosityLevel lvl) const
     {
         w_yel_lf("-> section32");
@@ -227,6 +233,9 @@ struct RP_SECTION<x64Version>
     unsigned int       reserved2;
     unsigned int       reserved3;
 
+    explicit RP_SECTION()
+    {}
+
     void display(VerbosityLevel lvl) const
     {
         w_yel_lf("-> section64");
@@ -258,9 +267,6 @@ __attribute__((packed))
 
 struct MachoLayout
 {  
-    virtual ~MachoLayout(void)
-    {};
-
     virtual void fill_structures(std::ifstream &file)  = 0;
     virtual unsigned int get_size_mach_header(void) const = 0;
     virtual void display(VerbosityLevel lvl = VERBOSE_LEVEL_1) const = 0;
@@ -277,9 +283,9 @@ struct MachoArchLayout : public MachoLayout
     typedef typename std::vector<std::shared_ptr<RP_SECTION<T>>>::const_iterator iter_rp_section;
     typedef typename std::vector<std::shared_ptr<RP_SEGMENT_COMMAND<T>>>::const_iterator iter_rp_segment;
 
-    ~MachoArchLayout(void)
-    {
-    }
+    explicit MachoArchLayout()
+    : MachoLayout()
+    {}
 
     unsigned int get_size_mach_header(void) const
     {

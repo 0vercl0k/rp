@@ -328,6 +328,9 @@ struct RP_IMAGE_SECTION_HEADER {
     unsigned short NumberOfLinenumbers;
     unsigned int   Characteristics;
 
+    explicit RP_IMAGE_SECTION_HEADER()
+    {}
+
     std::string get_name(void) const
     {
         unsigned char name_null_terminated[RP_IMAGE_SIZEOF_SHORT_NAME + 1] = {0};
