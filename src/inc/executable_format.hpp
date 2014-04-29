@@ -94,6 +94,13 @@ class ExecutableFormat
          */
         static std::shared_ptr<ExecutableFormat> GetExecutableFormat(unsigned int magic_dword);
 
+        /*!
+         *  \brief Give you the base address of the executable 
+         *
+         *  \return The prefered base address of the executable
+         */
+        virtual unsigned long long get_base_address(void) = 0;
+
     private:
 
         /*!

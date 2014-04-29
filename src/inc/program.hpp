@@ -71,6 +71,13 @@ class Program
          */
         void search_and_display(const unsigned char *hex_values, unsigned int size);
 
+        /*!
+         *  \brief Get the base address of the program
+         *   
+         *  \return size: Base address of the program
+         */
+        unsigned long long get_base_address(void);
+
     private:
         
         std::shared_ptr<CPU> m_cpu; /*!< a pointer on the CPU used by your program*/

@@ -325,7 +325,7 @@ static void coloshell(const T t, const Colors colo)
 #define display_gadget_lf(va, gadget) {                                                                             \
     enable_color(COLO_RED);                                                                                         \
     std::cout << "0x" << std::setw(sizeof(va)) << std::right << std::setfill('0');                                  \
-    std::cout << std::hex << va;                                                                                    \
+    std::cout << std::hex << (va - base);                                                                           \
     disable_color();                                                                                                \
     std::cout << ": ";                                                                                              \
     enable_color(COLO_GREEN);                                                                                       \

@@ -40,6 +40,8 @@ class Elf : public ExecutableFormat
 
         std::vector<std::shared_ptr<Section>> get_executables_section(std::ifstream & file);
 
+        unsigned long long get_base_address(void);
+
     private:
 
         CPU::E_CPU extract_information_from_binary(std::ifstream &file);

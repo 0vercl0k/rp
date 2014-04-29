@@ -119,3 +119,8 @@ std::vector<std::shared_ptr<Section>> Elf::get_executables_section(std::ifstream
 {
     return m_ELFLayout->get_executable_section(file);
 }
+
+unsigned long long Elf::get_base_address(void)
+{
+    return m_ELFLayout->get_image_base();
+}

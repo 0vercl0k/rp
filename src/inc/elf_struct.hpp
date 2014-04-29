@@ -251,6 +251,7 @@ struct ExecutableLinkingFormatLayout
     
     virtual void fill_structures(std::ifstream &file) = 0;
     virtual void display(VerbosityLevel lvl = VERBOSE_LEVEL_1) const = 0;
+    virtual unsigned long long get_image_base(void) = 0;
     virtual std::vector<std::shared_ptr<Section>> get_executable_section(std::ifstream &file) const = 0;
 };
 
@@ -264,10 +265,14 @@ struct ELFLayout : public ExecutableLinkingFormatLayout
     std::vector<std::shared_ptr<Elf_Phdr<T>>> elfProgramHeaders;
     std::vector<std::shared_ptr<Elf_Shdr_Abstraction<T>>> elfSectionHeaders;
     T offset_string_table, size_string_table;
+    unsigned long long base;
 
     typedef typename std::vector<std::shared_ptr<Elf_Phdr<T>>>::const_iterator iter_elf_phdr;
     typedef typename std::vector<std::shared_ptr<Elf_Shdr_Abstraction<T>>>::const_iterator iter_shdr_abs;
 
+    ELFLayout(void)
+    : ExecutableLinkingFormatLayout(), base(0)
+    {}
 
     ~ELFLayout(void)
     {
@@ -342,6 +347,13 @@ struct ELFLayout : public ExecutableLinkingFormatLayout
 
             file.read((char*)pElfProgramHeader.get(), sizeof(Elf_Phdr<T>));
             elfProgramHeaders.push_back(pElfProgramHeader);
+
+            //XXX: Here we assume that the first LOAD program header encountered will
+            // hold the image base address and I guess this assumption is quite wrong
+            // Fuck you ELF.
+            // https://stackoverflow.com/questions/18296276/base-address-of-elf
+            if(type_to_str(pElfProgramHeader->p_type) == "LOAD" && base == 0)
+                base = pElfProgramHeader->p_vaddr;
         }
 
         /* 3.1] If we want to know the name of the different section, 
@@ -406,6 +418,11 @@ struct ELFLayout : public ExecutableLinkingFormatLayout
         }
 
         return exec_sections;
+    }
+
+    unsigned long long get_image_base(void)
+    {
+        return base;
     }
 };
 

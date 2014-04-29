@@ -271,11 +271,13 @@ struct MachoLayout
     virtual unsigned int get_size_mach_header(void) const = 0;
     virtual void display(VerbosityLevel lvl = VERBOSE_LEVEL_1) const = 0;
     virtual std::vector<std::shared_ptr<Section>> get_executable_section(std::ifstream &file) = 0;
+    virtual unsigned long long get_image_base(void) = 0;
 };
 
 template<class T>
 struct MachoArchLayout : public MachoLayout
 {
+    unsigned long long base;
     RP_MACH_HEADER<T> header;
     std::vector<std::shared_ptr<RP_SEGMENT_COMMAND<T>>> seg_commands;
     std::vector<std::shared_ptr<RP_SECTION<T>>> sections;
@@ -284,7 +286,7 @@ struct MachoArchLayout : public MachoLayout
     typedef typename std::vector<std::shared_ptr<RP_SEGMENT_COMMAND<T>>>::const_iterator iter_rp_segment;
 
     explicit MachoArchLayout()
-    : MachoLayout()
+    : MachoLayout(), base(0)
     {}
 
     unsigned int get_size_mach_header(void) const
@@ -316,6 +318,10 @@ struct MachoArchLayout : public MachoLayout
 
                     file.read((char*)seg_cmd.get(), sizeof(RP_SEGMENT_COMMAND<T>));
                     seg_commands.push_back(seg_cmd);
+
+                    if(_stricmp((char*)seg_cmd->segname, "__TEXT") == 0)
+                        // If this is the __text segment, we populate the base address of the program
+                        base = (unsigned long long)seg_cmd->vmaddr;
 
                     /* 
                        Directly following a segment_command data structure is an array of section data 
@@ -383,6 +389,11 @@ struct MachoArchLayout : public MachoLayout
 
         for(iter_rp_section it = sections.begin(); it != sections.end(); ++it)
             (*it)->display(lvl);
+    }
+
+    unsigned long long get_image_base(void)
+    {
+        return base;
     }
 };
 

@@ -41,6 +41,8 @@ class Raw : public ExecutableFormat
         std::vector<std::shared_ptr<Section>> get_executables_section(std::ifstream & file);
 
         unsigned long long raw_offset_to_va(const unsigned long long absolute_raw_offset, const unsigned long long absolute_raw_offset_section) const;
+        
+        unsigned long long get_base_address(void);
 };
 
 #endif

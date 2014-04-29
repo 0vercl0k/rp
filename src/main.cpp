@@ -42,8 +42,9 @@ int main(int argc, char* argv[])
     struct arg_lit  *help    = arg_lit0("h", "help", "print this help and exit");
     struct arg_lit  *version = arg_lit0("v", "version", "print version information and exit");
     struct arg_lit  *colors  = arg_lit0(NULL, "colors", "enable colors");
+    struct arg_lit  *offsets = arg_lit0(NULL, "offsets", "don't display absolute address, but only offset instead");
     struct arg_end  *end     = arg_end(20);
-    void* argtable[] = {file, display, rop, raw, att, unique, shexa, sint, help, version, colors, end};
+    void* argtable[] = {file, display, rop, raw, att, unique, shexa, sint, help, version, colors, offsets, end};
 
     if(arg_nullcheck(argtable) != 0)
         RAISE_EXCEPTION("Cannot allocate long option structures");
@@ -137,6 +138,12 @@ int main(int argc, char* argv[])
                 std::cout << std::endl << "Wait a few seconds, rp++ is looking for gadgets.." << std::endl;
                 std::multiset<std::shared_ptr<Gadget>, Gadget::Sort> all_gadgets;
                 p.find_gadgets(rop->ival[0], disass_engine_display_option, all_gadgets);
+
+                // Here we set the base beeing 0 if we want to have absolute virtual memory address displayed
+                unsigned long long base = 0;
+                if(offsets->count > 0)
+                // If not we will substract the base address to every gadget to keep only offsets
+                    base = p.get_base_address();
 
                 std::cout << "A total of " << all_gadgets.size() << " gadgets found." << std::endl;
                 if(unique->count > 0)
