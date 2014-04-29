@@ -143,7 +143,7 @@ int main(int argc, char* argv[])
                 unsigned long long base = 0;
                 if(offsets->count > 0)
                 // If not we will substract the base address to every gadget to keep only offsets
-                    base = p.get_base_address();
+                    base = p.get_image_base_address();
 
                 std::cout << "A total of " << all_gadgets.size() << " gadgets found." << std::endl;
                 if(unique->count > 0)

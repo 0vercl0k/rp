@@ -100,7 +100,7 @@ void Macho::display_information(const VerbosityLevel lvl) const
     m_MachoLayout->display(lvl);
 }
 
-unsigned long long Macho::get_base_address(void)
+unsigned long long Macho::get_image_base_address(void)
 {
-    return m_MachoLayout->get_image_base();
+    return m_MachoLayout->get_image_base_address();
 }

@@ -142,7 +142,7 @@ std::vector<std::shared_ptr<Section>> PE::get_executables_section(std::ifstream 
                 (*it)->get_name().c_str(),
                 (*it)->PointerToRawData,
                 /* in the PE, this field is a RVA, so we need to add it the image base to have a VA */
-                m_pPELayout->get_image_base() + (*it)->VirtualAddress,
+                m_pPELayout->get_image_base_address() + (*it)->VirtualAddress,
                 (*it)->SizeOfRawData
             );
             
@@ -156,7 +156,7 @@ std::vector<std::shared_ptr<Section>> PE::get_executables_section(std::ifstream 
     return exec_sections;
 }
 
-unsigned long long PE::get_base_address(void)
+unsigned long long PE::get_image_base_address(void)
 {
-    return m_pPELayout->get_image_base();
+    return m_pPELayout->get_image_base_address();
 }

@@ -251,7 +251,7 @@ struct ExecutableLinkingFormatLayout
     
     virtual void fill_structures(std::ifstream &file) = 0;
     virtual void display(VerbosityLevel lvl = VERBOSE_LEVEL_1) const = 0;
-    virtual unsigned long long get_image_base(void) = 0;
+    virtual unsigned long long get_image_base_address(void) = 0;
     virtual std::vector<std::shared_ptr<Section>> get_executable_section(std::ifstream &file) const = 0;
 };
 
@@ -420,7 +420,7 @@ struct ELFLayout : public ExecutableLinkingFormatLayout
         return exec_sections;
     }
 
-    unsigned long long get_image_base(void)
+    unsigned long long get_image_base_address(void)
     {
         return base;
     }

@@ -146,7 +146,7 @@ void Program::search_and_display(const unsigned char* hex_values, unsigned int s
     }
 }
 
-unsigned long long Program::get_base_address(void)
+unsigned long long Program::get_image_base_address(void)
 {
-    return m_exformat->get_base_address();
+    return m_exformat->get_image_base_address();
 }

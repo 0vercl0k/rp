@@ -60,7 +60,7 @@ unsigned long long Raw::raw_offset_to_va(const unsigned long long absolute_raw_o
     return absolute_raw_offset;
 }
 
-unsigned long long Raw::get_base_address(void)
+unsigned long long Raw::get_image_base_address(void)
 {
     return 0;
 }

@@ -41,7 +41,7 @@ class Macho : public ExecutableFormat
 
         void display_information(const VerbosityLevel lvl) const;
 
-        unsigned long long get_base_address(void);
+        unsigned long long get_image_base_address(void);
 
     private:      
 

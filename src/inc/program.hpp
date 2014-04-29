@@ -76,7 +76,7 @@ class Program
          *   
          *  \return size: Base address of the program
          */
-        unsigned long long get_base_address(void);
+        unsigned long long get_image_base_address(void);
 
     private:
         

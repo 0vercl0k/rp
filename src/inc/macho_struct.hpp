@@ -271,7 +271,7 @@ struct MachoLayout
     virtual unsigned int get_size_mach_header(void) const = 0;
     virtual void display(VerbosityLevel lvl = VERBOSE_LEVEL_1) const = 0;
     virtual std::vector<std::shared_ptr<Section>> get_executable_section(std::ifstream &file) = 0;
-    virtual unsigned long long get_image_base(void) = 0;
+    virtual unsigned long long get_image_base_address(void) = 0;
 };
 
 template<class T>
@@ -391,7 +391,7 @@ struct MachoArchLayout : public MachoLayout
             (*it)->display(lvl);
     }
 
-    unsigned long long get_image_base(void)
+    unsigned long long get_image_base_address(void)
     {
         return base;
     }

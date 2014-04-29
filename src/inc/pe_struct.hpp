@@ -434,7 +434,7 @@ struct PortableExecutableLayout
 
     virtual unsigned int get_nt_headers_size(void) const  = 0;
     virtual void fill_nt_structures(std::ifstream &file)  = 0;
-    virtual unsigned long long get_image_base(void) const = 0;
+    virtual unsigned long long get_image_base_address(void) const = 0;
 };
 
 /* Some magic..and ABSTRACTION */
@@ -484,7 +484,7 @@ struct PELayout : public PortableExecutableLayout
         file.seekg(off);
     }
 
-    unsigned long long get_image_base(void) const
+    unsigned long long get_image_base_address(void) const
     {
         return imgNtHeaders.OptionalHeader.ImageBase;
     }
