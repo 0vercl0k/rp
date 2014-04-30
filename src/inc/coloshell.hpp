@@ -322,16 +322,21 @@ static void coloshell(const T t, const Colors colo)
  * \param va: It is the gadget VA
  * \param gadget: It is the gadget you want to output
  */
-#define display_gadget_lf(va, gadget) {                                                                             \
-    enable_color(COLO_RED);                                                                                         \
-    std::cout << "0x" << std::setw(sizeof(va)) << std::right << std::setfill('0');                                  \
-    std::cout << std::hex << (va - base);                                                                           \
-    disable_color();                                                                                                \
-    std::cout << ": ";                                                                                              \
-    enable_color(COLO_GREEN);                                                                                       \
-    std::cout << (gadget)->get_disassembly() << " (" << std::dec << (gadget)->get_nb() << " found)" << std::endl;   \
-    disable_color();                                                                                                \
-}
+#define display_gadget_lf(va, gadget) {                                                                                 \
+    if(does_badbytes_filter_apply(va, badbyte_list) == false)                                                           \
+    {                                                                                                                   \
+        enable_color(COLO_RED);                                                                                         \
+        std::cout << "0x" << std::setw(sizeof(va)) << std::right << std::setfill('0');                                  \
+        std::cout << std::hex << (va - base);                                                                           \
+        disable_color();                                                                                                \
+        std::cout << ": ";                                                                                              \
+        enable_color(COLO_GREEN);                                                                                       \
+        std::cout << (gadget)->get_disassembly() << " (" << std::dec << (gadget)->get_nb() << " found)" << std::endl;   \
+        disable_color();                                                                                                \
+    }                                                                                                                   \
+    else                                                                                                                \
+        nb_gadgets_filtered++;                                                                                          \
+ }
 
 /**
  * \def display_offset_lf(va, hex_val, size)

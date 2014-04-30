@@ -97,4 +97,16 @@ bool is_hex_char(char c);
  */
 void only_unique_gadgets(std::multiset<std::shared_ptr<Gadget>, Gadget::Sort> &list_gadgets, std::set<std::shared_ptr<Gadget>, Gadget::Sort> &unique_gadgets);
 
+
+/**
+ * \fn bool does_badbytes_filter_apply(unsigned long long va, std::vector<unsigned char> &badbytes)
+ * \brief Return true if va has a bad byte (taken from badbytes)
+ *
+ * \param va: It is the VA to check
+ * \param badbytes: The list of bytes you don't want in va
+ *
+ * \return true if va has at least one bad byte, else false
+ */
+bool does_badbytes_filter_apply(unsigned long long va, std::vector<unsigned char> &badbytes);
+
 #endif

@@ -161,3 +161,17 @@ void only_unique_gadgets(std::multiset<std::shared_ptr<Gadget>, Gadget::Sort> &l
         }
     }
 }
+
+bool does_badbytes_filter_apply(unsigned long long va, std::vector<unsigned char> &badbytes)
+{
+    unsigned char f = (va >> 24) & 0xff;
+    unsigned char s = (va >> 16) & 0xff;
+    unsigned char t = (va >>  8) & 0xff;
+    unsigned char l = (va >>  0) & 0xff;
+
+    for(std::vector<unsigned char>::const_iterator it = badbytes.begin(); it != badbytes.end(); ++it)
+        if((f == *it) || (s == *it) || (t == *it) || (l == *it))
+            return true;
+
+    return false;
+}

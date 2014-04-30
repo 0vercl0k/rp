@@ -31,20 +31,21 @@
 
 int main(int argc, char* argv[])
 {
-    struct arg_file *file    = arg_file0("f", "file", "<binary path>", "give binary path");
-    struct arg_int  *display = arg_int0("i", "info", "<1,2,3>", "display information about the binary header");
-    struct arg_int  *rop     = arg_int0("r", "rop", "<positive int>", "find useful gadget for your future exploits, arg is the gadget maximum size in instructions");
-    struct arg_str  *raw     = arg_str0(NULL, "raw", "<archi>", "find gadgets in a raw file, 'archi' must be in the following list: x86, x64");
-    struct arg_lit  *att     = arg_lit0(NULL, "atsyntax", "enable the at&t syntax");
-    struct arg_lit  *unique  = arg_lit0(NULL, "unique", "display only unique gadget");
-    struct arg_str  *shexa   = arg_str0(NULL, "search-hexa", "<\\x90A\\x90>", "try to find hex values");
-    struct arg_str  *sint    = arg_str0(NULL, "search-int", "<int in hex>", "try to find a pointer on a specific integer value");
-    struct arg_lit  *help    = arg_lit0("h", "help", "print this help and exit");
-    struct arg_lit  *version = arg_lit0("v", "version", "print version information and exit");
-    struct arg_lit  *colors  = arg_lit0(NULL, "colors", "enable colors");
-    struct arg_lit  *offsets = arg_lit0(NULL, "rva", "don't display absolute addresses, but only relative virtual addresses instead");
-    struct arg_end  *end     = arg_end(20);
-    void* argtable[] = {file, display, rop, raw, att, unique, shexa, sint, help, version, colors, offsets, end};
+    struct arg_file *file     = arg_file0("f", "file", "<binary path>", "give binary path");
+    struct arg_int  *display  = arg_int0("i", "info", "<1,2,3>", "display information about the binary header");
+    struct arg_int  *rop      = arg_int0("r", "rop", "<positive int>", "find useful gadget for your future exploits, arg is the gadget maximum size in instructions");
+    struct arg_str  *raw      = arg_str0(NULL, "raw", "<archi>", "find gadgets in a raw file, 'archi' must be in the following list: x86, x64");
+    struct arg_lit  *att      = arg_lit0(NULL, "atsyntax", "enable the at&t syntax");
+    struct arg_lit  *unique   = arg_lit0(NULL, "unique", "display only unique gadget");
+    struct arg_str  *shexa    = arg_str0(NULL, "search-hexa", "<\\x90A\\x90>", "try to find hex values");
+    struct arg_str  *badbytes = arg_str0(NULL, "bad-bytes", "<\\x90A\x90>", "the bytes you don't want to see in the gadgets' addresses");
+    struct arg_str  *sint     = arg_str0(NULL, "search-int", "<int in hex>", "try to find a pointer on a specific integer value");
+    struct arg_lit  *help     = arg_lit0("h", "help", "print this help and exit");
+    struct arg_lit  *version  = arg_lit0("v", "version", "print version information and exit");
+    struct arg_lit  *colors   = arg_lit0(NULL, "colors", "enable colors");
+    struct arg_lit  *rva      = arg_lit0(NULL, "rva", "don't display absolute addresses, but only relative virtual addresses instead");
+    struct arg_end  *end      = arg_end(20);
+    void* argtable[] = {file, display, rop, raw, att, unique, shexa, sint, help, version, colors, rva, badbytes, end};
 
     if(arg_nullcheck(argtable) != 0)
         RAISE_EXCEPTION("Cannot allocate long option structures");
@@ -141,11 +142,16 @@ int main(int argc, char* argv[])
 
                 // Here we set the base beeing 0 if we want to have absolute virtual memory address displayed
                 unsigned long long base = 0;
-                if(offsets->count > 0)
+                if(rva->count > 0)
                 // If not we will substract the base address to every gadget to keep only offsets
                     base = p.get_image_base_address();
 
                 std::cout << "A total of " << all_gadgets.size() << " gadgets found." << std::endl;
+                std::vector<unsigned char> badbyte_list;
+                if(badbytes->count > 0)
+                    badbyte_list = string_to_hex(badbytes->sval[0]);
+
+                unsigned long long nb_gadgets_filtered = 0;
                 if(unique->count > 0)
                 {
                     std::set<std::shared_ptr<Gadget>, Gadget::Sort> unique_gadgets;
@@ -162,6 +168,9 @@ int main(int argc, char* argv[])
                     for(std::multiset<std::shared_ptr<Gadget>, Gadget::Sort>::iterator it = all_gadgets.begin(); it != all_gadgets.end(); ++it)
                         display_gadget_lf((*it)->get_first_absolute_address(), *it);
                 }
+
+                if(badbytes->count > 0)
+                    std::cout << std::endl << nb_gadgets_filtered << " gadgets have been filtered because of your bad-bytes." << std::endl;
             }
 
             if(shexa->count > 0)
