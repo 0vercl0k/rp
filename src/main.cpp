@@ -42,7 +42,7 @@ int main(int argc, char* argv[])
     struct arg_lit  *help    = arg_lit0("h", "help", "print this help and exit");
     struct arg_lit  *version = arg_lit0("v", "version", "print version information and exit");
     struct arg_lit  *colors  = arg_lit0(NULL, "colors", "enable colors");
-    struct arg_lit  *offsets = arg_lit0(NULL, "offsets", "don't display absolute address, but only offset instead");
+    struct arg_lit  *offsets = arg_lit0(NULL, "rva", "don't display absolute addresses, but only relative virtual addresses instead");
     struct arg_end  *end     = arg_end(20);
     void* argtable[] = {file, display, rop, raw, att, unique, shexa, sint, help, version, colors, offsets, end};
 
