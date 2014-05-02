@@ -35,6 +35,10 @@ class x86 : public CPU
         
         void find_gadget_in_memory(const unsigned char *p_memory, const unsigned long long size, const unsigned long long vaddr, const unsigned int depth, std::multiset<std::shared_ptr<Gadget>, Gadget::Sort> &gadgets, unsigned int engine_display_option = 0);
 
+        static unsigned int get_size_biggest_instruction(void);
+
+        static unsigned int get_alignement(void);
+
     private:
         
         std::vector<Gadget> m_gadgets;

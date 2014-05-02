@@ -20,6 +20,10 @@
 #include "x86.hpp"
 #include "rpexception.hpp"
 #include "bearopgadgetfinder.hpp"
+#include "disassenginewrapper.hpp"
+#include "safeint.hpp"
+#include "intelbeaengine.hpp"
+#include "ropsearch_algorithm.hpp"
 
 #include <cstring>
 #include <list>
@@ -38,7 +42,22 @@ std::string x86::get_class_name(void) const
 }
 
 void x86::find_gadget_in_memory(const unsigned char *p_memory, const unsigned long long size, const unsigned long long vaddr, const unsigned int depth, std::multiset<std::shared_ptr<Gadget>, Gadget::Sort> &gadgets, unsigned int engine_display_option)
-{  
+{
+    /*
     BeaRopGadgetFinder bea(BeaRopGadgetFinder::x86, depth, engine_display_option);
     bea.find_rop_gadgets(p_memory, size, vaddr, gadgets);
+    */
+    DisassEngineWrapper &engine = IntelBeaEngine::IntelBeaEngine(IntelBeaEngine::x86, engine_display_option);
+    find_rop_gadgets(p_memory, size, vaddr, depth, gadgets, engine);
+}
+
+unsigned int x86::get_size_biggest_instruction(void)
+{
+    // "On INTEL processors, (in IA-32 or intel 64 modes), instruction never exceeds 15 bytes." -- beaengine.org
+    return 15;
+}
+
+unsigned int x86::get_alignement(void)
+{
+    return 1;
 }

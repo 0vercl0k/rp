@@ -90,9 +90,6 @@ class BeaRopGadgetFinder
          *  \return true if the ending instruction is validated else false
          */
         bool is_valid_ending_instruction(DISASM* ending_instr_d);
-
-        bool is_valid_ending_instruction_nasm(DISASM* ending_instr_d);
-        bool is_valid_ending_instruction_att(DISASM* ending_instr_d);
         
         /*!
          *  \brief Is it a valid instruction ?

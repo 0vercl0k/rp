@@ -17,26 +17,22 @@
     You should have received a copy of the GNU General Public License
     along with rp++.  If not, see <http://www.gnu.org/licenses/>.
 */
-#ifndef x64_H
-#define x64_H
+#ifndef ROPSEARCH_ALGORITHM_HPP
+#define ROPSEARCH_ALGORITHM_HPP
 
-#include "cpu.hpp"
+#include <set>
+#include <memory>
+#include "gadget.hpp"
+#include "disassenginewrapper.hpp"
 
-class x64 : public CPU
-{
-    public:
-        
-        explicit x64(void);
-        
-        ~x64(void);
+void find_rop_gadgets(
+    const unsigned char* data,
+    unsigned long long size,
+    unsigned long long vaddr,
+    unsigned int depth,
+    std::multiset<std::shared_ptr<Gadget>, Gadget::Sort> &merged_gadgets,
+    DisassEngineWrapper &disass_engine
+);
 
-        std::string get_class_name(void) const;
-
-        void find_gadget_in_memory(const unsigned char *p_memory, const unsigned long long size, const unsigned long long vaddr, const unsigned int depth, std::multiset<std::shared_ptr<Gadget>, Gadget::Sort> &gadgets, unsigned int engine_display_option = 0);
-
-        static unsigned int get_size_biggest_instruction(void);
-
-        static unsigned int get_alignement(void);
-};
 
 #endif

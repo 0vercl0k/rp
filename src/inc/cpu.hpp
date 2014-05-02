@@ -24,6 +24,7 @@
 #include <set>
 
 #include "gadget.hpp"
+#include "disassenginewrapper.hpp"
 
 /*! \class CPU
  *
