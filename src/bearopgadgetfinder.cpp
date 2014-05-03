@@ -146,7 +146,7 @@ bool BeaRopGadgetFinder::is_valid_ending_instruction(DISASM* ending_instr_d)
 
         bool is_good_branch_type = (
             /* We accept all the ret type instructions (except retf/iret) */
-            (branch_type == RetType && strncmp(mnemonic, "retf", 4) != 0 && strncmp(mnemonic, "iretd", 4) != 0) || 
+            (branch_type == RetType && strncmp(mnemonic, "retf", 4) != 0 && strncmp(mnemonic, "iretd", 5) != 0) || 
 
             /* call reg32 / call [reg32] */
             (branch_type == CallType && addr_value == 0) ||

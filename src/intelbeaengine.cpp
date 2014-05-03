@@ -21,13 +21,13 @@
 #include "x64.hpp"
 #include "x86.hpp"
 
-IntelBeaEngine::IntelBeaEngine(E_Arch arch, unsigned int engine_display_option)
-: m_opts(PrefixedNumeral + engine_display_option), m_arch(arch)
+IntelBeaEngine::IntelBeaEngine(E_Arch arch)
+: m_arch(arch)
 {
     memset(&m_disasm, 0, sizeof(DISASM));
 
     /* those options are mostly display option for the disassembler engine */
-    m_disasm.Options = m_opts;
+    m_disasm.Options = PrefixedNumeral + NasmSyntax;
 
     /* this one is to precise what architecture we'll disassemble */
     m_disasm.Archi = m_arch;
@@ -89,7 +89,7 @@ bool IntelBeaEngine::is_valid_ending_instruction(InstructionInformation &instr)
 
         bool is_good_branch_type = (
             /* We accept all the ret type instructions (except retf/iret) */
-            (branch_type == RetType && (strcmp(mnemonic_s, "retf") == 0) && (strcmp(mnemonic_s, "iretd") == 0)) || 
+            (branch_type == RetType && (strncmp(mnemonic_s, "retf", 4) != 0) && (strncmp(mnemonic_s, "iretd", 5) != 0)) || 
 
             /* call reg32 / call [reg32] */
             (branch_type == CallType && addr_value == 0) ||
@@ -98,7 +98,7 @@ bool IntelBeaEngine::is_valid_ending_instruction(InstructionInformation &instr)
             (branch_type == JmpType && addr_value == 0) ||
 
             /* int 0x80 & int 0x2e */
-            ((strcmp(disass_s, "int 0x80") == 0) || (strcmp(disass_s, "int 0x2e") == 0) || (strcmp(disass_s, "syscall") == 0))
+            ((strncmp(disass_s, "int 0x80", 8) == 0) || (strncmp(disass_s, "int 0x2e", 8) == 0) || (strncmp(disass_s, "syscall", 7) == 0))
         );
 
         return (

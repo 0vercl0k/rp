@@ -36,7 +36,7 @@ class IntelBeaEngine : public DisassEngineWrapper
             x64 = 64
         };
 
-        explicit IntelBeaEngine(E_Arch arch, unsigned int engine_display_option = 0);
+        explicit IntelBeaEngine(E_Arch arch);
         InstructionInformation disass(const unsigned char *data, unsigned long long len, unsigned long long vaddr, DisassEngineReturn &ret);
 
         bool is_valid_ending_instruction(InstructionInformation &instr);
@@ -51,11 +51,7 @@ class IntelBeaEngine : public DisassEngineWrapper
 
         DISASM m_disasm;
 
-        unsigned long long m_opts; /*!< options passed to the BeaEngine*/
-
         unsigned int m_arch; /*!< architecture the BeaEngine will use to disassemble*/
-
-        unsigned long long m_vaddr; /*!< the real virtual address of the data you want to disassemble*/
 };
 
 #endif

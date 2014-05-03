@@ -33,9 +33,11 @@ void find_all_gadget_from_ret(
 )
 {
     unsigned int alignement = disass_engine.get_alignement();
+    unsigned int size_biggest_instruction = disass_engine.get_size_biggest_instruction();
+
     // We go back, trying to create the longuest gadget possible with the longuest instructions
-    unsigned long long EIP         = ending_instr_disasm.address - (depth * disass_engine.get_size_biggest_instruction()); // /!\ Warning to pointer arith
-    unsigned long long VirtualAddr = ending_instr_disasm.virtual_address_in_memory - (depth * disass_engine.get_size_biggest_instruction());
+    unsigned long long EIP         = ending_instr_disasm.address - (depth * size_biggest_instruction);
+    unsigned long long VirtualAddr = ending_instr_disasm.virtual_address_in_memory - (depth * size_biggest_instruction);
 
     /* going back yeah, but not too much :)) */
     if(EIP < (unsigned long long)data)
