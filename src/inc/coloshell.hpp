@@ -327,7 +327,7 @@ static void coloshell(const T t, const Colors colo)
     {                                                                                                                   \
         enable_color(COLO_RED);                                                                                         \
         std::cout << "0x" << std::setw(sizeof(va)) << std::right << std::setfill('0');                                  \
-        std::cout << std::hex << (va - base);                                                                           \
+        std::cout << std::hex << ((va - base) + new_base);                                                              \
         disable_color();                                                                                                \
         std::cout << ": ";                                                                                              \
         enable_color(COLO_GREEN);                                                                                       \

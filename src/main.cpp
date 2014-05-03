@@ -42,7 +42,7 @@ int main(int argc, char* argv[])
     struct arg_lit  *help     = arg_lit0("h", "help", "print this help and exit");
     struct arg_lit  *version  = arg_lit0("v", "version", "print version information and exit");
     struct arg_lit  *colors   = arg_lit0(NULL, "colors", "enable colors");
-    struct arg_lit  *rva      = arg_lit0(NULL, "rva", "don't display absolute addresses, but only relative virtual addresses instead");
+    struct arg_str  *rva      = arg_str0(NULL, "rva", "<0xdeadbeef>", "don't use the image base of the binary, but yours instead");
     struct arg_end  *end      = arg_end(20);
     void* argtable[] = {file, display, rop, raw, unique, shexa, sint, help, version, colors, rva, badbytes, end};
 
@@ -127,9 +127,14 @@ int main(int argc, char* argv[])
 
                 // Here we set the base beeing 0 if we want to have absolute virtual memory address displayed
                 unsigned long long base = 0;
+                unsigned long long new_base = 0;
                 if(rva->count > 0)
-                // If not we will substract the base address to every gadget to keep only offsets
+                {
+                    // If not we will substract the base address to every gadget to keep only offsets
                     base = p.get_image_base_address();
+                    // And we will use your new base address
+                    new_base = strtoul(rva->sval[0], NULL, 16); //XXX: Only valid with VS2k13 strtoull(rva->sval[0], NULL, 16); 
+                }
 
                 std::cout << "A total of " << all_gadgets.size() << " gadgets found." << std::endl;
                 std::vector<unsigned char> badbyte_list;
