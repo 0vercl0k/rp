@@ -23,7 +23,7 @@
 #include <iostream>
 #include <cstring>
 
-BeaRopGadgetFinder::BeaRopGadgetFinder(E_Arch arch, unsigned int depth, unsigned int engine_display_option)
+BeaRopGadgetFinder::BeaRopGadgetFinder(E_Arch arch, unsigned int depth)
 : m_opts(PrefixedNumeral + NasmSyntax), m_arch(arch), m_depth(depth)
 {
 }

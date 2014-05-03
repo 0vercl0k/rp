@@ -33,7 +33,7 @@ class x86 : public CPU
 
         std::string get_class_name(void) const;
         
-        void find_gadget_in_memory(const unsigned char *p_memory, const unsigned long long size, const unsigned long long vaddr, const unsigned int depth, std::multiset<std::shared_ptr<Gadget>, Gadget::Sort> &gadgets, unsigned int engine_display_option = 0);
+        void find_gadget_in_memory(const unsigned char *p_memory, const unsigned long long size, const unsigned long long vaddr, const unsigned int depth, std::multiset<std::shared_ptr<Gadget>, Gadget::Sort> &gadgets);
 
         static unsigned int get_size_biggest_instruction(void);
 

@@ -50,9 +50,8 @@ class BeaRopGadgetFinder
          *   
          *  \param arch: Which architecture is used by the code ?
          *  \param depth: It means the maximum number of instructions which can composed a gadget (the ending instruction doesn't count)
-         *  \param engine_display_option: You can pass several display options to BeaEngine
          */
-        explicit BeaRopGadgetFinder(E_Arch arch, unsigned int depth, unsigned int engine_display_option = 0);
+        explicit BeaRopGadgetFinder(E_Arch arch, unsigned int depth);
         
         ~BeaRopGadgetFinder(void);
 

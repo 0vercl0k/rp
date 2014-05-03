@@ -41,13 +41,13 @@ std::string x86::get_class_name(void) const
     return std::string("x86");
 }
 
-void x86::find_gadget_in_memory(const unsigned char *p_memory, const unsigned long long size, const unsigned long long vaddr, const unsigned int depth, std::multiset<std::shared_ptr<Gadget>, Gadget::Sort> &gadgets, unsigned int engine_display_option)
+void x86::find_gadget_in_memory(const unsigned char *p_memory, const unsigned long long size, const unsigned long long vaddr, const unsigned int depth, std::multiset<std::shared_ptr<Gadget>, Gadget::Sort> &gadgets)
 {
     /*
     BeaRopGadgetFinder bea(BeaRopGadgetFinder::x86, depth, engine_display_option);
     bea.find_rop_gadgets(p_memory, size, vaddr, gadgets);
     */
-    DisassEngineWrapper &engine = IntelBeaEngine::IntelBeaEngine(IntelBeaEngine::x86, engine_display_option);
+    DisassEngineWrapper &engine = IntelBeaEngine::IntelBeaEngine(IntelBeaEngine::x86);
     find_rop_gadgets(p_memory, size, vaddr, depth, gadgets, engine);
 }
 
