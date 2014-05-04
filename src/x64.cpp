@@ -37,11 +37,11 @@ std::string x64::get_class_name(void) const
 
 void x64::find_gadget_in_memory(const unsigned char *p_memory, const unsigned long long size, const unsigned long long vaddr, const unsigned int depth, std::multiset<std::shared_ptr<Gadget>, Gadget::Sort> &gadgets)
 {
-    BeaRopGadgetFinder bea(BeaRopGadgetFinder::x64, depth);
-    bea.find_rop_gadgets(p_memory, size, vaddr, gadgets);
+    //BeaRopGadgetFinder bea(BeaRopGadgetFinder::x64, depth);
+    //bea.find_rop_gadgets(p_memory, size, vaddr, gadgets);
 
-    //DisassEngineWrapper &engine = IntelBeaEngine::IntelBeaEngine(IntelBeaEngine::x64);
-    //find_rop_gadgets(p_memory, size, vaddr, depth, gadgets, engine);
+    DisassEngineWrapper &engine = IntelBeaEngine::IntelBeaEngine(IntelBeaEngine::x64);
+    find_rop_gadgets(p_memory, size, vaddr, depth, gadgets, engine);
 }
 
 unsigned int x64::get_size_biggest_instruction(void)
