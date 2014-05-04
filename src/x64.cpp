@@ -19,6 +19,8 @@
 */
 #include "x64.hpp"
 #include "bearopgadgetfinder.hpp"
+#include "intelbeaengine.hpp"
+#include "ropsearch_algorithm.hpp"
 
 x64::x64(void)
 {
@@ -37,6 +39,9 @@ void x64::find_gadget_in_memory(const unsigned char *p_memory, const unsigned lo
 {
     BeaRopGadgetFinder bea(BeaRopGadgetFinder::x64, depth);
     bea.find_rop_gadgets(p_memory, size, vaddr, gadgets);
+
+    //DisassEngineWrapper &engine = IntelBeaEngine::IntelBeaEngine(IntelBeaEngine::x64);
+    //find_rop_gadgets(p_memory, size, vaddr, depth, gadgets, engine);
 }
 
 unsigned int x64::get_size_biggest_instruction(void)
