@@ -110,6 +110,9 @@ __attribute__((packed))
 #define RP_IMAGE_NT_OPTIONAL_HDR32_MAGIC 0x10b
 #define RP_IMAGE_NT_OPTIONAL_HDR64_MAGIC 0x20b
 
+#define RP_IMAGE_FILE_MACHINE_I386 0x14c
+#define RP_IMAGE_FILE_MACHINE_ARMTHUMB2LE 0x1c4
+
 struct RP_IMAGE_FILE_HEADER {
     unsigned short Machine;
     unsigned short NumberOfSections;

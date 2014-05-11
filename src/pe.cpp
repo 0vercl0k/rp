@@ -21,6 +21,7 @@
 
 #include "x86.hpp"
 #include "x64.hpp"
+#include "arm.hpp"
 
 #include <iostream>
 #include <cstring>
@@ -73,24 +74,43 @@ CPU::E_CPU PE::extract_information_from_binary(std::ifstream &file)
     {
         case RP_IMAGE_NT_OPTIONAL_HDR32_MAGIC:
         {
-            cpu = CPU::CPU_x86;
-            /* Ok, now we can allocate the good version of the PE Layout */
-            /* The 32bits version there! */
-            init_properly_PELayout<x86Version>();
-            break;
+			switch(imgNtHeaders32.FileHeader.Machine)
+			{
+				case RP_IMAGE_FILE_MACHINE_I386:
+				{
+					cpu = CPU::CPU_x86;
+					break;
+				}
+
+				case RP_IMAGE_FILE_MACHINE_ARMTHUMB2LE:
+				{
+					cpu = CPU::CPU_ARM;
+					break;
+				}
+
+				default:
+					RAISE_EXCEPTION("Cannot determine the CPU type");
+			}
+			break;
         }
 
         case RP_IMAGE_NT_OPTIONAL_HDR64_MAGIC:
         {
             cpu = CPU::CPU_x64;
-            init_properly_PELayout<x64Version>();
             break;
         }
 
         default:
             RAISE_EXCEPTION("Cannot determine the CPU type");
     }
-    
+   
+	/* Ok, now we can allocate the good version of the PE Layout */
+	/* The 32bits version there! */
+	if(cpu == CPU::CPU_x64)
+		init_properly_PELayout<x64Version>();
+	else
+		init_properly_PELayout<x86Version>();
+
     /* Now we can fill the structure */
     std::memcpy(&m_pPELayout->imgDosHeader, &imgDosHeader, m_pPELayout->get_image_dos_header_size());
 
@@ -120,6 +140,12 @@ std::shared_ptr<CPU> PE::get_cpu(std::ifstream &file)
             cpu = std::make_shared<x64>();
             break;
         }
+
+		case CPU::CPU_ARM:
+		{
+			cpu = std::make_shared<ARM>();
+			break;
+		}
 
         default:
             RAISE_EXCEPTION("Cannot determine the CPU type");

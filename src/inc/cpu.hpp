@@ -71,6 +71,7 @@ class CPU
         {
             CPU_x86, /*!< x86 */
             CPU_x64, /*!< x64 */
+			CPU_ARM, /*!< ARM */
             CPU_UNKNOWN /*!< unknown cpu */
         };
 };

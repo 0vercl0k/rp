@@ -27,6 +27,7 @@
 #include "raw.hpp"
 #include "x86.hpp"
 #include "x64.hpp"
+#include "arm.hpp"
 #include "section.hpp"
 #include "coloshell.hpp"
 #include "rpexception.hpp"
@@ -56,6 +57,9 @@ Program::Program(const std::string & program_path, CPU::E_CPU arch)
             case CPU::CPU_x64:
                 m_cpu = std::make_shared<x64>();
                 break;
+
+			case CPU::CPU_ARM:
+				m_cpu = std::make_shared<ARM>();
 
             default:
                 RAISE_EXCEPTION("Don't know your architecture");
