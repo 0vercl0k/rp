@@ -39,11 +39,13 @@ if(CMAKE_SIZEOF_VOID_P EQUAL 8 AND NOT(optX86BUILD))
     set(RP_NAME "${RP_NAME}-x64")
     set(BEA_LIBRARY "BeaEngine.x64.${RP_PLAT}.${EXTENSION_LIBRARY}")
     set(ARGTABLE_LIBRARY "argtable2.x64.${RP_PLAT}.${EXTENSION_LIBRARY}")
+    set(CAPSTONE_LIBRARY "capstone.x64.${RP_PLAT}.${EXTENSION_LIBRARY}")
 else()
     set(FLAG_CXX "-m32")
     set(RP_NAME "${RP_NAME}-x86")
     set(BEA_LIBRARY "BeaEngine.x86.${RP_PLAT}.${EXTENSION_LIBRARY}")
     set(ARGTABLE_LIBRARY "argtable2.x86.${RP_PLAT}.${EXTENSION_LIBRARY}")
+    set(CAPSTONE_LIBRARY "capstone.x86.${RP_PLAT}.${EXTENSION_LIBRARY}")
 endif(CMAKE_SIZEOF_VOID_P EQUAL 8 AND NOT(optX86BUILD))
 
 if(MSVC)
@@ -68,6 +70,7 @@ endif(CMAKE_COMPILER_IS_GNUCXX)
 include_directories("./src/inc/")
 include_directories("./lib/beaengine/inc/")
 include_directories("./lib/argtable2/inc/")
+include_directories("./lib/capstone/inc/")
 
 file(
     GLOB_RECURSE
@@ -92,10 +95,17 @@ set_property(
     IMPORTED_LOCATION ../lib/argtable2/bin/${ARGTABLE_LIBRARY}
 )
 
+add_library(capstone STATIC IMPORTED)
+set_property(
+    TARGET capstone PROPERTY
+    IMPORTED_LOCATION ../lib/capstone/bin/${CAPSTONE_LIBRARY}
+)
+
 target_link_libraries(
     ${RP_NAME}
     beaengine
     argtable2
+    capstone
 )
 
 if(WIN32)

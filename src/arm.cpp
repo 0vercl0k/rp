@@ -20,6 +20,7 @@
 #include "arm.hpp"
 #include "rpexception.hpp"
 #include "disassenginewrapper.hpp"
+#include "armcapstone.hpp"
 #include "safeint.hpp"
 #include "ropsearch_algorithm.hpp"
 
@@ -41,17 +42,17 @@ std::string ARM::get_class_name(void) const
 
 void ARM::find_gadget_in_memory(const unsigned char *p_memory, const unsigned long long size, const unsigned long long vaddr, const unsigned int depth, std::multiset<std::shared_ptr<Gadget>, Gadget::Sort> &gadgets)
 {
-	//XXX:TODO
+    DisassEngineWrapper &engine = ArmCapstone::ArmCapstone();
+    find_rop_gadgets(p_memory, size, vaddr, depth, gadgets, engine);
 }
 
 unsigned int ARM::get_size_biggest_instruction(void)
 {
-    // "On INTEL processors, (in IA-32 or intel 64 modes), instruction never exceeds 15 bytes." -- beaengine.org
-    return 15;
+    return 4;
 }
 
 unsigned int ARM::get_alignement(void)
 {
-	//XXX: Thumb alignement is 2
+	//XXX: Thumb/Thumb2?
     return 4;
 }
