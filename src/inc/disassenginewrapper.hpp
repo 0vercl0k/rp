@@ -31,6 +31,9 @@ struct InstructionInformation
     unsigned long long address;
     unsigned long long virtual_address_in_memory;
 
+	// Capstone field
+	bool cap_is_branch;
+
     // BeaEngine fields
     unsigned int bea_branch_type; // This is used by BeaEngine ; and this will hold DISASM.Instruction.BranchType
     unsigned long long bea_addr_value; // This is used by BeaEngine, DISASM.Instruction

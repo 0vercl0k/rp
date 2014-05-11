@@ -25,12 +25,15 @@ ArmCapstone::ArmCapstone()
 {
 	if(cs_open(CS_ARCH_ARM, CS_MODE_ARM, &m_handle) != CS_ERR_OK)
 		RAISE_EXCEPTION("Apparently no support for ARM in capstone.lib");
+
+	cs_option(m_handle, CS_OPT_DETAIL, CS_OPT_ON);
 }
 
 ArmCapstone::~ArmCapstone()
 {
 	cs_close(&m_handle);
 }
+
 InstructionInformation ArmCapstone::disass(const unsigned char *data, unsigned long long len, unsigned long long vaddr, DisassEngineReturn &ret)
 {
 	InstructionInformation instr;
@@ -49,23 +52,38 @@ InstructionInformation ArmCapstone::disass(const unsigned char *data, unsigned l
 	instr.disassembly = instr.mnemonic + ' ' + std::string(insn[0].op_str);
 	instr.size = insn[0].size;
 
+	if(insn[0].detail != NULL)
+	{
+		for(size_t i = 0; i < insn[0].detail->groups_count; ++i)
+		{
+			if(insn[0].detail->groups[i] == ARM_GRP_JUMP)
+			{
+				instr.cap_is_branch = true;
+				break;
+			}
+		}
+	}
+	else
+	{
+		instr.cap_is_branch = false;
+	}
+
 	end:
 	if(insn != NULL)
-		free(insn);
+		cs_free(insn, count);
 
 	return instr;
 }
 
 bool ArmCapstone::is_valid_ending_instruction(InstructionInformation &instr)
 {
-	return false;
+	return true;//instr.cap_is_branch;
 }
 
 bool ArmCapstone::is_valid_instruction(InstructionInformation &instr)
 {
-	return false;
+	return true;//is_valid_ending_instruction(instr) == false;
 }
-
 
 unsigned int ArmCapstone::get_size_biggest_instruction(void)
 {

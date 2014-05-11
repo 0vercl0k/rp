@@ -21,6 +21,7 @@
 
 #include "x86.hpp"
 #include "x64.hpp"
+#include "arm.hpp"
 
 #include <iostream>
 
@@ -46,6 +47,7 @@ void Elf::display_information(const VerbosityLevel lvl) const
 
 CPU::E_CPU Elf::extract_information_from_binary(std::ifstream &file)
 {
+	unsigned int size_init = 0;
     unsigned char buf[EI_NIDENT] = {0};
     CPU::E_CPU cpu = CPU::CPU_UNKNOWN;
     std::cout << "Loading ELF information.." << std::endl;
@@ -60,27 +62,55 @@ CPU::E_CPU Elf::extract_information_from_binary(std::ifstream &file)
     {
         case ELFCLASS32:
         {
-            cpu = CPU::CPU_x86;
-            init_properly_ELFLayout<x86Version>();
-            break;
+			size_init = 4;
+			break;
         }
 
         case ELFCLASS64:
         {
-            cpu = CPU::CPU_x64;
-            init_properly_ELFLayout<x64Version>();
+            size_init = 8;
             break;
         }
 
         default:
-            RAISE_EXCEPTION("Cannot determine the CPU type");
+            RAISE_EXCEPTION("Cannot determine the architecture size");
     }
+
+	if(size_init == 8)
+		init_properly_ELFLayout<x64Version>();
+	else
+		init_properly_ELFLayout<x86Version>();
 
     /* Filling the structure now !*/
     m_ELFLayout->fill_structures(file);
 
     /* Set correctly the pointer */
     file.seekg(off);
+
+	switch(m_ELFLayout->get_cpu())
+	{
+		case RP_ELFEM_386:
+		{
+			cpu = CPU::CPU_x86;
+			break;
+		}
+
+		case RP_ELFEM_X86_64:
+		{
+			cpu = CPU::CPU_x64;
+			break;
+		}
+
+		case RP_ELFEM_ARM:
+		{
+			cpu = CPU::CPU_ARM;
+			break;
+		}
+
+		default:
+			RAISE_EXCEPTION("Cannot determine the CPU type");
+	}
+
     return cpu;
 }
 
@@ -104,6 +134,12 @@ std::shared_ptr<CPU> Elf::get_cpu(std::ifstream &file)
             cpu = std::make_shared<x64>();
             break;
         }
+
+		case CPU::CPU_ARM:
+		{
+			cpu = std::make_shared<ARM>();
+			break;
+		}
 
         default:
             RAISE_EXCEPTION("Cannot determine the CPU type");

@@ -253,10 +253,15 @@ struct ExecutableLinkingFormatLayout
     virtual void display(VerbosityLevel lvl = VERBOSE_LEVEL_1) const = 0;
     virtual unsigned long long get_image_base_address(void) = 0;
     virtual std::vector<std::shared_ptr<Section>> get_executable_section(std::ifstream &file) const = 0;
+	virtual unsigned short get_cpu(void) = 0;
 };
 
 #define SHT_SYMTAB      2
 #define SHT_STRTAB      3
+
+#define RP_ELFEM_386    0x03
+#define RP_ELFEM_X86_64 0x3e
+#define RP_ELFEM_ARM    0x28
 
 template<class T>
 struct ELFLayout : public ExecutableLinkingFormatLayout
@@ -424,6 +429,11 @@ struct ELFLayout : public ExecutableLinkingFormatLayout
     {
         return base;
     }
+
+	unsigned short get_cpu(void)
+	{
+		return elfHeader.e_machine;
+	}
 };
 
 #endif
