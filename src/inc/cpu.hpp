@@ -56,6 +56,7 @@ class CPU
          *  \param vaddr: It is the real virtual address of the memory which will be disassembled (see the previous remark)
          *  \param depth: It is the number of maximum instructions contained by a gadget
          *  \param gadgets: A list of the Gadget instance
+		 *  \param disass_engine_options: Options you want to pass to the disassembly engine
          *
          */
         virtual void find_gadget_in_memory(
@@ -63,7 +64,8 @@ class CPU
             const unsigned long long size,
             const unsigned long long vaddr,
             const unsigned int depth,
-            std::multiset<std::shared_ptr<Gadget>, Gadget::Sort> &gadgets
+            std::multiset<std::shared_ptr<Gadget>, Gadget::Sort> &gadgets,
+			unsigned int disass_engine_options
         ) = 0;
 
         /*! The different architectures RP++ handles */

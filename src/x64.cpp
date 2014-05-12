@@ -35,7 +35,7 @@ std::string x64::get_class_name(void) const
     return std::string("x64");
 }
 
-void x64::find_gadget_in_memory(const unsigned char *p_memory, const unsigned long long size, const unsigned long long vaddr, const unsigned int depth, std::multiset<std::shared_ptr<Gadget>, Gadget::Sort> &gadgets)
+void x64::find_gadget_in_memory(const unsigned char *p_memory, const unsigned long long size, const unsigned long long vaddr, const unsigned int depth, std::multiset<std::shared_ptr<Gadget>, Gadget::Sort> &gadgets, unsigned int disass_engine_options)
 {
     //BeaRopGadgetFinder bea(BeaRopGadgetFinder::x64, depth);
     //bea.find_rop_gadgets(p_memory, size, vaddr, gadgets);

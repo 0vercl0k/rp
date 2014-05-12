@@ -21,9 +21,17 @@
 #include "arm.hpp"
 #include "rpexception.hpp"
 
-ArmCapstone::ArmCapstone()
+ArmCapstone::ArmCapstone(unsigned int thumb_mode)
+: is_thumb(true)
 {
-	if(cs_open(CS_ARCH_ARM, CS_MODE_ARM, &m_handle) != CS_ERR_OK)
+	cs_mode mode = CS_MODE_THUMB;
+	if(thumb_mode == 0)
+	{
+		mode = CS_MODE_ARM;
+		is_thumb = false;
+	}
+
+	if(cs_open(CS_ARCH_ARM, mode, &m_handle) != CS_ERR_OK)
 		RAISE_EXCEPTION("Apparently no support for ARM in capstone.lib");
 
 	cs_option(m_handle, CS_OPT_DETAIL, CS_OPT_ON);
@@ -52,6 +60,8 @@ InstructionInformation ArmCapstone::disass(const unsigned char *data, unsigned l
 	instr.disassembly = instr.mnemonic + ' ' + std::string(insn[0].op_str);
 	instr.size = insn[0].size;
 
+	instr.cap_is_branch = false;
+
 	if(insn[0].detail != NULL)
 	{
 		for(size_t i = 0; i < insn[0].detail->groups_count; ++i)
@@ -63,10 +73,8 @@ InstructionInformation ArmCapstone::disass(const unsigned char *data, unsigned l
 			}
 		}
 	}
-	else
-	{
-		instr.cap_is_branch = false;
-	}
+
+	ret = AllRight;
 
 	end:
 	if(insn != NULL)
@@ -77,12 +85,12 @@ InstructionInformation ArmCapstone::disass(const unsigned char *data, unsigned l
 
 bool ArmCapstone::is_valid_ending_instruction(InstructionInformation &instr)
 {
-	return true;//instr.cap_is_branch;
+	return instr.cap_is_branch;
 }
 
 bool ArmCapstone::is_valid_instruction(InstructionInformation &instr)
 {
-	return true;//is_valid_ending_instruction(instr) == false;
+	return true;
 }
 
 unsigned int ArmCapstone::get_size_biggest_instruction(void)
@@ -92,5 +100,8 @@ unsigned int ArmCapstone::get_size_biggest_instruction(void)
 
 unsigned int ArmCapstone::get_alignement(void)
 {
+	if(is_thumb)
+		return 2;
+
 	return ARM::get_alignement();
 }

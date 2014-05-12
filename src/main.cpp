@@ -42,9 +42,10 @@ int main(int argc, char* argv[])
     struct arg_lit  *help     = arg_lit0("h", "help", "print this help and exit");
     struct arg_lit  *version  = arg_lit0("v", "version", "print version information and exit");
     struct arg_lit  *colors   = arg_lit0(NULL, "colors", "enable colors");
-    struct arg_str  *rva      = arg_str0(NULL, "rva", "<0xdeadbeef>", "don't use the image base of the binary, but yours instead");
+    struct arg_lit  *thumb    = arg_lit0(NULL, "thumb", "enable thumb mode when looking for ARM gadgets");
+	struct arg_str  *rva      = arg_str0(NULL, "rva", "<0xdeadbeef>", "don't use the image base of the binary, but yours instead");
     struct arg_end  *end      = arg_end(20);
-    void* argtable[] = {file, display, rop, raw, unique, shexa, sint, help, version, colors, rva, badbytes, end};
+    void* argtable[] = {file, display, rop, raw, unique, shexa, sint, help, version, colors, rva, badbytes, thumb, end};
 
     if(arg_nullcheck(argtable) != 0)
         RAISE_EXCEPTION("Cannot allocate long option structures");
@@ -121,9 +122,13 @@ int main(int argc, char* argv[])
                 if(rop->ival[0] > MAXIMUM_INSTRUCTION_PER_GADGET)
                     RAISE_EXCEPTION("You specified a maximum number of instruction too important for the --rop option");
 
+				unsigned int options = 0;
+				if(thumb->count > 0)
+					options = 1;
+
                 std::cout << std::endl << "Wait a few seconds, rp++ is looking for gadgets.." << std::endl;
                 std::multiset<std::shared_ptr<Gadget>, Gadget::Sort> all_gadgets;
-                p.find_gadgets(rop->ival[0], all_gadgets);
+                p.find_gadgets(rop->ival[0], all_gadgets, options);
 
                 // Here we set the base beeing 0 if we want to have absolute virtual memory address displayed
                 unsigned long long base = 0;

@@ -58,9 +58,10 @@ class Program
          *   
          *  \param depth: Set the depth of the research (don't forget the ending instruction doesn't count -- so if you want only ending instruction, depth = 0)
          *  \param gadgets: The gadgets found
-         *
+         *  \param disass_engine_options: Options you want to pass to the disassembly engine
+		 *
          */
-        void find_gadgets(unsigned int depth, std::multiset<std::shared_ptr<Gadget>, Gadget::Sort> &gadgets);
+        void find_gadgets(unsigned int depth, std::multiset<std::shared_ptr<Gadget>, Gadget::Sort> &gadgets, unsigned int disass_engine_options = 0);
 
         /*!
          *  \brief Find hex values in the section of the program

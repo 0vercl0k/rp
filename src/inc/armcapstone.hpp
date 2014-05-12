@@ -27,7 +27,7 @@
 class ArmCapstone : public DisassEngineWrapper
 {
     public:
-        explicit ArmCapstone();
+        explicit ArmCapstone(unsigned int thumb_mode);
 		~ArmCapstone();
 
         InstructionInformation disass(const unsigned char *data, unsigned long long len, unsigned long long vaddr, DisassEngineReturn &ret);
@@ -38,6 +38,7 @@ class ArmCapstone : public DisassEngineWrapper
 
 	private:
 		csh m_handle;
+		bool is_thumb;
 };
 
 #endif

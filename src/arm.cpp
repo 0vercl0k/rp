@@ -40,9 +40,9 @@ std::string ARM::get_class_name(void) const
     return std::string("ARM");
 }
 
-void ARM::find_gadget_in_memory(const unsigned char *p_memory, const unsigned long long size, const unsigned long long vaddr, const unsigned int depth, std::multiset<std::shared_ptr<Gadget>, Gadget::Sort> &gadgets)
+void ARM::find_gadget_in_memory(const unsigned char *p_memory, const unsigned long long size, const unsigned long long vaddr, const unsigned int depth, std::multiset<std::shared_ptr<Gadget>, Gadget::Sort> &gadgets, unsigned int disass_engine_options)
 {
-    DisassEngineWrapper &engine = ArmCapstone::ArmCapstone();
+    DisassEngineWrapper &engine = ArmCapstone::ArmCapstone(disass_engine_options);
     find_rop_gadgets(p_memory, size, vaddr, depth, gadgets, engine);
 }
 

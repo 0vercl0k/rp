@@ -94,7 +94,7 @@ void Program::display_information(VerbosityLevel lvl)
     m_exformat->display_information(lvl);
 }
 
-void Program::find_gadgets(unsigned int depth, std::multiset<std::shared_ptr<Gadget>, Gadget::Sort> &gadgets_found)
+void Program::find_gadgets(unsigned int depth, std::multiset<std::shared_ptr<Gadget>, Gadget::Sort> &gadgets_found, unsigned int disass_engine_options)
 {
     unsigned long long counter = 0;
 
@@ -114,7 +114,8 @@ void Program::find_gadgets(unsigned int depth, std::multiset<std::shared_ptr<Gad
             (*it_sec)->get_size(),
             va_section,
             depth,
-            gadgets_found
+            gadgets_found,
+			disass_engine_options
         );
 
         std::cout << (gadgets_found.size() - counter) << " found." << std::endl << std::endl;
