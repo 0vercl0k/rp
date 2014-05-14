@@ -112,7 +112,7 @@ typedef enum cs_opt_value {
 // @user_data: user-data passed to cs_option() via @user_data field in
 //      cs_opt_skipdata struct below.
 // @return: return number of bytes to skip, or 0 to immediately stop disassembling.
-typedef size_t (*cs_skipdata_cb_t)(const uint8_t *code, size_t offset, void* user_data);
+typedef size_t (*cs_skipdata_cb_t)(const uint8_t *code, uint64_t offset, void* user_data);
 
 // User-customized setup for SKIPDATA option
 typedef struct cs_opt_skipdata {
@@ -141,7 +141,6 @@ typedef struct cs_opt_skipdata {
 	void *user_data;
 } cs_opt_skipdata;
 
-
 #include "arm.h"
 /*
 #include "arm64.h"
@@ -151,7 +150,6 @@ typedef struct cs_opt_skipdata {
 #include "systemz.h"
 #include "x86.h"
 */
-
 // NOTE: All information in cs_detail is only available when CS_OPT_DETAIL = CS_OPT_ON
 typedef struct cs_detail {
 	uint8_t regs_read[12]; // list of implicit registers read by this insn
@@ -165,14 +163,14 @@ typedef struct cs_detail {
 
 	// Architecture-specific instruction info
 	union {
-		//cs_x86 x86;	// X86 architecture, including 16-bit, 32-bit & 64-bit mode
-		//cs_arm64 arm64;	// ARM64 architecture (aka AArch64)
-		cs_arm arm;		// ARM architecture (including Thumb/Thumb2)
-		//cs_mips mips;	// MIPS architecture
-		//cs_ppc ppc;	// PowerPC architecture
-		//cs_sparc sparc;	// Sparc architecture
-		//cs_sysz sysz;	// SystemZ architecture
-	};
+/*		cs_x86 x86;	// X86 architecture, including 16-bit, 32-bit & 64-bit mode
+		cs_arm64 arm64;	// ARM64 architecture (aka AArch64)
+*/		cs_arm arm;		// ARM architecture (including Thumb/Thumb2)
+/*		cs_mips mips;	// MIPS architecture
+		cs_ppc ppc;	// PowerPC architecture
+		cs_sparc sparc;	// Sparc architecture
+		cs_sysz sysz;	// SystemZ architecture
+*/	};
 } cs_detail;
 
 // Detail information of disassembled instruction

@@ -61,16 +61,29 @@ InstructionInformation ArmCapstone::disass(const unsigned char *data, unsigned l
 	instr.size = insn[0].size;
 
 	instr.cap_is_branch = false;
-
 	if(insn[0].detail != NULL)
 	{
-		for(size_t i = 0; i < insn[0].detail->groups_count; ++i)
+		if(cs_insn_group(m_handle, insn, ARM_GRP_JUMP))
+			instr.cap_is_branch = true;
+		else if(instr.mnemonic == "bx" && insn[0].detail->arm.operands[0].type == ARM_OP_REG)
+			instr.cap_is_branch = true;
+		else if(instr.mnemonic == "blx")
+			instr.cap_is_branch = true;
+		else if(instr.mnemonic == "pop")
 		{
-			if(insn[0].detail->groups[i] == ARM_GRP_JUMP)
+			bool has_pc = false;
+			printf("%d - %s %s\n", insn[0].detail->arm.op_count, insn[0].mnemonic, insn[0].op_str);
+			for(size_t i = 0; i < insn[0].detail->arm.op_count; ++i)
 			{
-				instr.cap_is_branch = true;
-				break;
+				if(insn[0].detail->arm.operands[i].type == ARM_OP_REG && insn[0].detail->arm.operands[i].reg == ARM_REG_PC)
+				{
+					has_pc = true;
+					break;
+				}
 			}
+
+			if(has_pc)
+				instr.cap_is_branch = true;
 		}
 	}
 

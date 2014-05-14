@@ -60,6 +60,7 @@ Program::Program(const std::string & program_path, CPU::E_CPU arch)
 
 			case CPU::CPU_ARM:
 				m_cpu = std::make_shared<ARM>();
+				break;
 
             default:
                 RAISE_EXCEPTION("Don't know your architecture");
