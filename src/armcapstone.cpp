@@ -72,7 +72,6 @@ InstructionInformation ArmCapstone::disass(const unsigned char *data, unsigned l
 		else if(instr.mnemonic == "pop")
 		{
 			bool has_pc = false;
-			printf("%d - %s %s\n", insn[0].detail->arm.op_count, insn[0].mnemonic, insn[0].op_str);
 			for(size_t i = 0; i < insn[0].detail->arm.op_count; ++i)
 			{
 				if(insn[0].detail->arm.operands[i].type == ARM_OP_REG && insn[0].detail->arm.operands[i].reg == ARM_REG_PC)
