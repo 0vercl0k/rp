@@ -33,6 +33,7 @@ struct InstructionInformation
 
 	// Capstone field
 	bool cap_is_branch;
+	bool cap_is_valid_ending_instr;
 
     // BeaEngine fields
     unsigned int bea_branch_type; // This is used by BeaEngine ; and this will hold DISASM.Instruction.BranchType

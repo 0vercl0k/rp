@@ -45,8 +45,11 @@ ArmCapstone::~ArmCapstone()
 InstructionInformation ArmCapstone::disass(const unsigned char *data, unsigned long long len, unsigned long long vaddr, DisassEngineReturn &ret)
 {
 	InstructionInformation instr;
-
 	cs_insn *insn = NULL;
+
+	if(len == 0)
+		len = 4;
+
 	size_t count = cs_disasm_ex(m_handle, data, len, vaddr, 1, &insn);
 	if(count != 1)
 	{
@@ -61,14 +64,47 @@ InstructionInformation ArmCapstone::disass(const unsigned char *data, unsigned l
 	instr.size = insn[0].size;
 
 	instr.cap_is_branch = false;
+	instr.cap_is_valid_ending_instr = false;
 	if(insn[0].detail != NULL)
 	{
 		if(cs_insn_group(m_handle, insn, ARM_GRP_JUMP))
+		{
 			instr.cap_is_branch = true;
-		else if(instr.mnemonic == "bx" && insn[0].detail->arm.operands[0].type == ARM_OP_REG)
+			if(insn[0].detail->arm.op_count == 1)
+				if(insn[0].detail->arm.operands[0].type != ARM_OP_IMM)
+					instr.cap_is_valid_ending_instr = true;
+		}
+		else if(instr.mnemonic == "b" || instr.mnemonic == "bl" || instr.mnemonic == "cb" || instr.mnemonic == "cbz")
+		{
 			instr.cap_is_branch = true;
+		}
+		else if(instr.mnemonic == "swi" || instr.mnemonic == "svc")
+		{
+			instr.cap_is_branch = true;
+			instr.cap_is_valid_ending_instr = true;
+		}
+		else if(instr.mnemonic == "mov")
+		{
+			if(insn[0].detail->arm.op_count >= 1)
+			{
+				if(insn[0].detail->arm.operands[0].type == ARM_OP_REG && insn[0].detail->arm.operands[0].reg == ARM_REG_PC)
+				{
+					instr.cap_is_branch = true;
+					instr.cap_is_valid_ending_instr = true;
+				}
+			}
+		}
+		else if(instr.mnemonic == "bx")
+		{
+			instr.cap_is_branch = true;
+			if(insn[0].detail->arm.operands[0].type == ARM_OP_REG)
+				instr.cap_is_valid_ending_instr = true;
+		}
 		else if(instr.mnemonic == "blx")
+		{
 			instr.cap_is_branch = true;
+			instr.cap_is_valid_ending_instr = true;
+		}
 		else if(instr.mnemonic == "pop")
 		{
 			bool has_pc = false;
@@ -82,7 +118,10 @@ InstructionInformation ArmCapstone::disass(const unsigned char *data, unsigned l
 			}
 
 			if(has_pc)
+			{
 				instr.cap_is_branch = true;
+				instr.cap_is_valid_ending_instr = true;
+			}
 		}
 	}
 
@@ -97,12 +136,12 @@ InstructionInformation ArmCapstone::disass(const unsigned char *data, unsigned l
 
 bool ArmCapstone::is_valid_ending_instruction(InstructionInformation &instr)
 {
-	return instr.cap_is_branch;
+	return instr.cap_is_valid_ending_instr;
 }
 
 bool ArmCapstone::is_valid_instruction(InstructionInformation &instr)
 {
-	return true;
+	return instr.cap_is_branch == false;
 }
 
 unsigned int ArmCapstone::get_size_biggest_instruction(void)
