@@ -64,7 +64,7 @@ endif(MSVC)
 if(CMAKE_COMPILER_IS_GNUCXX)
     # an optimized secure static striped binary !
     # btw if you want a full secure binary, disable the -static option (with static you can have only partial relro & no cookie)
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -O2 -static -s -Wl,-z,relro,-z,now -fstack-protector-all ${FLAG_CXX}")
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11 -Wall -O2 -static -s -Wl,-z,relro,-z,now -fstack-protector-all ${FLAG_CXX}")
 endif(CMAKE_COMPILER_IS_GNUCXX)
 
 include_directories("./src/inc/")
