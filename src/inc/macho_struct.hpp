@@ -25,6 +25,7 @@
 #include "coloshell.hpp"
 #include "section.hpp"
 
+#include <cstring>
 #include <vector>
 
 #ifdef WINDOWS
@@ -319,7 +320,7 @@ struct MachoArchLayout : public MachoLayout
                     file.read((char*)seg_cmd.get(), sizeof(RP_SEGMENT_COMMAND<T>));
                     seg_commands.push_back(seg_cmd);
 
-                    if(_stricmp((char*)seg_cmd->segname, "__TEXT") == 0)
+                    if(strcasecmp((char*)seg_cmd->segname, "__TEXT") == 0)
                         // If this is the __text segment, we populate the base address of the program
                         base = (unsigned long long)seg_cmd->vmaddr;
 
@@ -353,6 +354,8 @@ struct MachoArchLayout : public MachoLayout
             if(is_all_section_walked)
                 break;
         }
+
+		file.seekg(off);
     }
 
     std::vector<std::shared_ptr<Section>> get_executable_section(std::ifstream &file)

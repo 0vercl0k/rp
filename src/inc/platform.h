@@ -38,7 +38,7 @@
     #define WINDOWS
 
     #define SYSTEM_PLATFORM "Windows"
-
+	#define strcasecmp _stricmp
     #if defined ARCH_X86
         #define WINDOWS_X86
     #elif defined ARCH_X64

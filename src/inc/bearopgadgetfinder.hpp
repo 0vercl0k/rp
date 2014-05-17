@@ -23,7 +23,7 @@
 #define BEA_USE_STDCALL
 #define BEA_ENGINE_STATIC
 
-#include "beaengine\BeaEngine.h"
+#include "beaengine/BeaEngine.h"
 #include "instruction.hpp"
 #include "gadget.hpp"
 
