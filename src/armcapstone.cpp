@@ -74,7 +74,7 @@ InstructionInformation ArmCapstone::disass(const unsigned char *data, unsigned l
 				if(insn[0].detail->arm.operands[0].type != ARM_OP_IMM)
 					instr.cap_is_valid_ending_instr = true;
 		}
-		else if(instr.mnemonic == "b" || instr.mnemonic == "bl" || instr.mnemonic == "cb" || instr.mnemonic == "cbz")
+		else if(instr.mnemonic == "b" || instr.mnemonic == "bl" || instr.mnemonic == "blx" || instr.mnemonic == "cb" || instr.mnemonic == "cbz")
 		{
 			instr.cap_is_branch = true;
 		}
