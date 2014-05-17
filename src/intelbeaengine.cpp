@@ -50,7 +50,7 @@ InstructionInformation IntelBeaEngine::disass(const unsigned char *data, unsigne
     }
 
     /* OK this one is an unknow opcode, goto the next one */
-    if(len == UNKNOWN_OPCODE)
+    if(len_instr == UNKNOWN_OPCODE)
     {
         ret = UnknownInstruction;
         goto end;
