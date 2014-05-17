@@ -21,6 +21,8 @@
 #include "x64.hpp"
 #include "x86.hpp"
 
+#include <cstring>
+
 IntelBeaEngine::IntelBeaEngine(E_Arch arch)
 : m_arch(arch)
 {

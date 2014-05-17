@@ -164,13 +164,14 @@ std::vector<std::shared_ptr<Section>> PE::get_executables_section(std::ifstream 
     {
         if((*it)->Characteristics & RP_IMAGE_SCN_MEM_EXECUTE)
         {
-            std::shared_ptr<Section> tmp = std::make_shared<Section>(
+			//XXX: g++ + std::make_shared + packed struct
+            std::shared_ptr<Section> tmp(new Section(
                 (*it)->get_name().c_str(),
                 (*it)->PointerToRawData,
                 /* in the PE, this field is a RVA, so we need to add it the image base to have a VA */
                 m_pPELayout->get_image_base_address() + (*it)->VirtualAddress,
                 (*it)->SizeOfRawData
-            );
+            ));
             
             tmp->dump(file);
 

@@ -366,12 +366,13 @@ struct MachoArchLayout : public MachoLayout
         {
             if((*it)->flags & S_ATTR_PURE_INSTRUCTIONS || (*it)->flags & S_ATTR_SOME_INSTRUCTIONS)
             {
-                std::shared_ptr<Section> s = std::make_shared<Section>(
+				// XXX: Hum g++ doesn't like make_shared + (*it) being a packed structure
+                std::shared_ptr<Section> s(new Section(
                     (char*)(*it)->sectname,
                     (*it)->offset,
                     (*it)->addr,
                     (*it)->size
-                );
+                ));
 
                 s->dump(file);
 

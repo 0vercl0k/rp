@@ -405,12 +405,13 @@ struct ELFLayout : public ExecutableLinkingFormatLayout
         {
             if((*it)->p_flags & 1)
             {
-                std::shared_ptr<Section> sec = std::make_shared<Section>(
+				// XXX: g++ + std::make_shared + packed struct
+                std::shared_ptr<Section> sec(new Section(
                     type_to_str((*it)->p_type).c_str(),
                     (*it)->p_offset,
                     (*it)->p_vaddr,
                     (*it)->p_filesz
-                );
+                ));
 
                 if(sec == NULL)
                     RAISE_EXCEPTION("Cannot alocate a section");

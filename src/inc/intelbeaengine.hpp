@@ -23,7 +23,7 @@
 #define BEA_USE_STDCALL
 #define BEA_ENGINE_STATIC
 
-#include "beaengine\BeaEngine.h"
+#include "beaengine/BeaEngine.h"
 #include "disassenginewrapper.hpp"
 
 class IntelBeaEngine : public DisassEngineWrapper

@@ -45,8 +45,8 @@ void x86::find_gadget_in_memory(const unsigned char *p_memory, const unsigned lo
 {
     //BeaRopGadgetFinder bea(BeaRopGadgetFinder::x86, depth);
     //bea.find_rop_gadgets(p_memory, size, vaddr, gadgets);
-    
-    DisassEngineWrapper &engine = IntelBeaEngine::IntelBeaEngine(IntelBeaEngine::x86);
+    IntelBeaEngine bea_engine(IntelBeaEngine::x86);
+    DisassEngineWrapper &engine = bea_engine;
     find_rop_gadgets(p_memory, size, vaddr, depth, gadgets, engine);
 }
 
