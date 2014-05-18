@@ -28,8 +28,8 @@ struct InstructionInformation
     std::string disassembly;
     std::string mnemonic;
     unsigned int size;
-    unsigned long long address;
-    unsigned long long virtual_address_in_memory;
+    uintptr_t address;
+    uintptr_t virtual_address_in_memory;
 
 	// Capstone field
 	bool cap_is_branch;

@@ -50,15 +50,15 @@ InstructionInformation ArmCapstone::disass(const unsigned char *data, unsigned l
 	if(len == 0)
 		len = 4;
 
-	size_t count = cs_disasm_ex(m_handle, data, len, vaddr, 1, &insn);
+	size_t count = cs_disasm_ex(m_handle, data, (size_t)len, vaddr, 1, &insn);
 	if(count != 1)
 	{
 		ret = UnknownInstruction;
 		goto end;
 	}
 
-	instr.address = (unsigned long long)data;
-	instr.virtual_address_in_memory = vaddr;
+	instr.address = (uintptr_t)data;
+	instr.virtual_address_in_memory = (uintptr_t)vaddr;
 	instr.mnemonic = std::string(insn[0].mnemonic);
 	instr.disassembly = instr.mnemonic + ' ' + std::string(insn[0].op_str);
 	instr.size = insn[0].size;

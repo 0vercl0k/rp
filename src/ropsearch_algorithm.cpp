@@ -36,14 +36,22 @@ void find_all_gadget_from_ret(
     unsigned int size_biggest_instruction = disass_engine.get_size_biggest_instruction();
 
     // We go back, trying to create the longuest gadget possible with the longuest instructions
-    unsigned long long EIP         = ending_instr_disasm.address - (depth * size_biggest_instruction);
-    unsigned long long VirtualAddr = ending_instr_disasm.virtual_address_in_memory - (depth * size_biggest_instruction);
+    uintptr_t EIP         = ending_instr_disasm.address - (depth * size_biggest_instruction);
+    uintptr_t VirtualAddr = ending_instr_disasm.virtual_address_in_memory - (depth * size_biggest_instruction);
 
     /* going back yeah, but not too much :)) */
-    if(EIP < (unsigned long long)data)
+	/*
+	/!\ I encountered a quirk in g++:
+	  unsigned char *p = (unsigned char*)0x80000000;
+	  unsigned long long q = (unsigned long long)p;
+	  printf("%llx", q); -> ffffffff80000000
+	  --
+	  To fix this sign-extension issue, EIP is now an uintptr_t
+	*/
+    if(EIP < (uintptr_t)data)
     {
-        EIP = (unsigned long long)data;
-        VirtualAddr = vaddr;
+        EIP = (uintptr_t)data;
+        VirtualAddr = (uintptr_t)vaddr;
     }
 
     while(EIP < ending_instr_disasm.address)
@@ -51,8 +59,8 @@ void find_all_gadget_from_ret(
         std::list<Instruction> list_of_instr;
 
         /* save where we were in memory */
-        unsigned long long saved_eip  = EIP;
-        unsigned long long saved_vaddr = VirtualAddr;
+        uintptr_t saved_eip  = EIP;
+        uintptr_t saved_vaddr = VirtualAddr;
 
         bool is_a_valid_gadget = false;
 
@@ -75,7 +83,7 @@ void find_all_gadget_from_ret(
             list_of_instr.push_back(Instruction(
                 std::string(instr.disassembly),
                 std::string(instr.mnemonic),
-                EIP - (unsigned long long)data,
+                EIP - (uintptr_t)data,
                 instr.size
             ));
             
@@ -103,7 +111,7 @@ void find_all_gadget_from_ret(
             list_of_instr.push_back(Instruction(
                 std::string(ending_instr_disasm.disassembly),
                 std::string(ending_instr_disasm.mnemonic),
-                ending_instr_disasm.address - (unsigned long long)data,
+                ending_instr_disasm.address - (uintptr_t)data,
                 ending_instr_disasm.size
             ));
 
