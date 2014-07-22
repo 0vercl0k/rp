@@ -31,7 +31,7 @@ Macho::~Macho(void)
 
 std::shared_ptr<CPU> Macho::get_cpu(std::ifstream &file)
 {
-    std::shared_ptr<CPU> cpu(NULL);
+    std::shared_ptr<CPU> cpu;
     RP_MACH_HEADER<x86Version> header32;
 
     std::cout << "Loading Mach-O information.." << std::endl;

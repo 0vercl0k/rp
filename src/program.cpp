@@ -34,7 +34,6 @@
 #include "toolbox.hpp"
 
 Program::Program(const std::string & program_path, CPU::E_CPU arch)
-: m_cpu(NULL), m_exformat(NULL)
 {
     unsigned int magic_dword = 0;
 
