@@ -8,8 +8,6 @@ It is open-source, sort-of documented with Doxygen and has been tested on severa
 
 By the way, the tool is a standalone executable ; you will upload static-compiled binaries for each OS.
 
-You can build very easily rp++ with CMake. If you are not familiar with it, it will just generate a project file for the IDE you want.
-
 There are also some other things you will be able to do with rp++, like finding hexadecimal values, or strings, etc. ; it's always handy to have those kind of features during CTFs for example.
 
 
