@@ -1,7 +1,7 @@
 /*
     This file is part of rp++.
 
-    Copyright (C) 2013, Axel "0vercl0k" Souchet <0vercl0k at tuxfamily.org>
+    Copyright (C) 2014, Axel "0vercl0k" Souchet <0vercl0k at tuxfamily.org>
     All rights reserved.
 
     rp++ is free software: you can redistribute it and/or modify
@@ -23,8 +23,8 @@
 #include <iostream>
 #include <cstring>
 
-BeaRopGadgetFinder::BeaRopGadgetFinder(E_Arch arch, unsigned int depth, unsigned int engine_display_option)
-: m_opts(PrefixedNumeral + engine_display_option), m_arch(arch), m_depth(depth)
+BeaRopGadgetFinder::BeaRopGadgetFinder(E_Arch arch, unsigned int depth)
+: m_opts(PrefixedNumeral + NasmSyntax), m_arch(arch), m_depth(depth)
 {
 }
 
@@ -43,9 +43,8 @@ void BeaRopGadgetFinder::init_disasm_struct(DISASM* d)
     d->Archi = m_arch;
 }
 
-std::multiset<Gadget*> BeaRopGadgetFinder::find_all_gadget_from_ret(const unsigned char* data, unsigned long long vaddr, const DISASM* ending_instr_disasm, unsigned int len_ending_instr)
+void BeaRopGadgetFinder::find_all_gadget_from_ret(const unsigned char* data, unsigned long long vaddr, const DISASM* ending_instr_disasm, unsigned int len_ending_instr, std::multiset<std::shared_ptr<Gadget>, Gadget::Sort> &gadgets)
 {
-    std::multiset<Gadget*> gadgets;
     DISASM dis;
 
     init_disasm_struct(&dis);
@@ -119,9 +118,7 @@ std::multiset<Gadget*> BeaRopGadgetFinder::find_all_gadget_from_ret(const unsign
             ));
 
 
-            Gadget *gadget = new (std::nothrow) Gadget();
-            if(gadget == NULL)
-                RAISE_EXCEPTION("Cannot allocate gadget");
+            std::shared_ptr<Gadget> gadget = std::make_shared<Gadget>();
 
             /* Now we populate our gadget with the instructions previously found.. */
             gadget->add_instructions(list_of_instr, vaddr);
@@ -133,83 +130,43 @@ std::multiset<Gadget*> BeaRopGadgetFinder::find_all_gadget_from_ret(const unsign
         dis.EIP = saved_eip + 1;
         dis.VirtualAddr = saved_vaddr + 1;
     }
-
-    return gadgets;
-}
-
-bool BeaRopGadgetFinder::is_valid_ending_instruction_nasm(DISASM* ending_instr_d)
-{
-    Int32 branch_type = ending_instr_d->Instruction.BranchType;
-    UInt64 addr_value = ending_instr_d->Instruction.AddrValue;
-    char *mnemonic = ending_instr_d->Instruction.Mnemonic, *completeInstr = ending_instr_d->CompleteInstr;
-
-    bool is_good_branch_type = (
-        /* We accept all the ret type instructions (except retf/iret) */
-        (branch_type == RetType && strncmp(mnemonic, "retf", 4) != 0 && strncmp(mnemonic, "iretd", 4) != 0) || 
-
-        /* call reg32 / call [reg32] */
-        (branch_type == CallType && addr_value == 0) ||
-
-        /* jmp reg32 / jmp [reg32] */
-        (branch_type == JmpType && addr_value == 0) ||
-
-        /* int 0x80 & int 0x2e */
-        (strncmp(completeInstr, "int 0x80", 8) == 0 || strncmp(completeInstr, "int 0x2e", 8) == 0 || strncmp(completeInstr, "syscall", 7) == 0)
-    );
-
-    return (
-        is_good_branch_type && 
-
-        /* Yeah, entrance isn't allowed to the jmp far/call far */
-        strstr(completeInstr, "far") == NULL
-    );
-}
-
-bool BeaRopGadgetFinder::is_valid_ending_instruction_att(DISASM* ending_instr_d)
-{
-    Int32 branch_type = ending_instr_d->Instruction.BranchType;
-    UInt64 addr_value = ending_instr_d->Instruction.AddrValue;
-    char *mnemonic = ending_instr_d->Instruction.Mnemonic, *completeInstr = ending_instr_d->CompleteInstr;
-
-    bool is_good_branch_type = (
-        /* We accept all the ret type instructions (except retf/iret) */
-        (branch_type == RetType && strncmp(mnemonic, "lret", 4) != 0 && strncmp(mnemonic, "retf", 4) != 0 && strncmp(mnemonic, "iret", 4) != 0) || 
-
-        /* call reg32 / call [reg32] */
-        (branch_type == CallType && addr_value == 0) ||
-
-        /* jmp reg32 / jmp [reg32] */
-        (branch_type == JmpType && addr_value == 0) ||
-
-        /* int 0x80 & int 0x2e */
-        (strncmp(completeInstr, "intb $0x80", 10) == 0 || strncmp(completeInstr, "intb $0x2e", 10) == 0 || strncmp(completeInstr, "syscall", 7) == 0)
-    );
-
-    return (
-        is_good_branch_type && 
-
-        /* Yeah, entrance isn't allowed to the jmp far/call far */
-        (strncmp(completeInstr, "lcall", 5) != 0 && strncmp(completeInstr, "ljmp", 4) != 0)
-    );
 }
 
 bool BeaRopGadgetFinder::is_valid_ending_instruction(DISASM* ending_instr_d)
 {
-    bool isAllowed = false;
-
     /*
         Work Around, BeaEngine in x64 mode disassemble "\xDE\xDB" as an instruction without disassembly
         Btw, this is not the only case!
     */
     if(ending_instr_d->CompleteInstr[0] != 0)
     {
-        if(m_opts & NasmSyntax)
-            isAllowed = is_valid_ending_instruction_nasm(ending_instr_d);
-        else
-            isAllowed = is_valid_ending_instruction_att(ending_instr_d);
+        Int32 branch_type = ending_instr_d->Instruction.BranchType;
+        UInt64 addr_value = ending_instr_d->Instruction.AddrValue;
+        char *mnemonic = ending_instr_d->Instruction.Mnemonic, *completeInstr = ending_instr_d->CompleteInstr;
+
+        bool is_good_branch_type = (
+            /* We accept all the ret type instructions (except retf/iret) */
+            (branch_type == RetType && strncmp(mnemonic, "retf", 4) != 0 && strncmp(mnemonic, "iretd", 5) != 0) || 
+
+            /* call reg32 / call [reg32] */
+            (branch_type == CallType && addr_value == 0) ||
+
+            /* jmp reg32 / jmp [reg32] */
+            (branch_type == JmpType && addr_value == 0) ||
+
+            /* int 0x80 & int 0x2e */
+            (strncmp(completeInstr, "int 0x80", 8) == 0 || strncmp(completeInstr, "int 0x2e", 8) == 0 || strncmp(completeInstr, "syscall", 7) == 0)
+        );
+
+        return (
+            is_good_branch_type && 
+
+            /* Yeah, entrance isn't allowed to the jmp far/call far */
+            strstr(completeInstr, "far") == NULL
+        );
     }
 
-    return isAllowed;
+    return false;
 }
 
 bool BeaRopGadgetFinder::is_valid_instruction(DISASM *ending_instr_d)
@@ -249,9 +206,8 @@ bool BeaRopGadgetFinder::is_valid_instruction(DISASM *ending_instr_d)
     );
 }
 
-std::multiset<Gadget*> BeaRopGadgetFinder::find_rop_gadgets(const unsigned char* data, unsigned long long size, unsigned long long vaddr)
+void BeaRopGadgetFinder::find_rop_gadgets(const unsigned char* data, unsigned long long size, unsigned long long vaddr, std::multiset<std::shared_ptr<Gadget>, Gadget::Sort> &merged_gadgets)
 {
-    std::multiset<Gadget*> merged_gadgets;
     DISASM dis;
 
     init_disasm_struct(&dis);
@@ -260,15 +216,13 @@ std::multiset<Gadget*> BeaRopGadgetFinder::find_rop_gadgets(const unsigned char*
     {
         dis.EIP = (UIntPtr)(data + offset);
         dis.VirtualAddr = SafeAddU64(vaddr, offset);
-        dis.SecurityBlock = (UInt32)(size - offset + 1);
+        dis.SecurityBlock = (UInt32)(size - offset);
         
         int len = Disasm(&dis);
-        /* I guess we're done ! */
-        if(len == OUT_OF_BLOCK)
-            break;
 
         /* OK this one is an unknow opcode, goto the next one */
-        if(len == UNKNOWN_OPCODE)
+        /* Or this instruction is too long (goes out of boundary) */
+        if(len == UNKNOWN_OPCODE || len == OUT_OF_BLOCK)
             continue;
 
         if(is_valid_ending_instruction(&dis))
@@ -288,9 +242,7 @@ std::multiset<Gadget*> BeaRopGadgetFinder::find_rop_gadgets(const unsigned char*
                 len
             ));
 
-            Gadget *gadget_with_one_instr = new (std::nothrow) Gadget();
-            if(gadget_with_one_instr == NULL)
-                RAISE_EXCEPTION("Cannot allocate gadget_with_one_instr");
+            std::shared_ptr<Gadget> gadget_with_one_instr = std::make_shared<Gadget>();
 
             /* the gadget will only have 1 ending instruction */
             gadget_with_one_instr->add_instructions(only_ending_instr, vaddr);
@@ -299,12 +251,12 @@ std::multiset<Gadget*> BeaRopGadgetFinder::find_rop_gadgets(const unsigned char*
             /* if we want to see gadget with more instructions */
             if(m_depth > 0)
             {
-                std::multiset<Gadget*> gadgets = find_all_gadget_from_ret(data, vaddr, &ret_instr, len);
-                for(std::multiset<Gadget*>::iterator it = gadgets.begin(); it != gadgets.end(); ++it)
-                    merged_gadgets.insert(*it);
+                find_all_gadget_from_ret(
+                    data, vaddr,
+                    &ret_instr,
+                    len, merged_gadgets
+                );
             }
         }
     }
-
-    return merged_gadgets;
 }

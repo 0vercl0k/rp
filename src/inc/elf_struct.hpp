@@ -1,7 +1,7 @@
 /*
     This file is part of rp++.
 
-    Copyright (C) 2013, Axel "0vercl0k" Souchet <0vercl0k at tuxfamily.org>
+    Copyright (C) 2014, Axel "0vercl0k" Souchet <0vercl0k at tuxfamily.org>
     All rights reserved.
 
     rp++ is free software: you can redistribute it and/or modify
@@ -32,6 +32,7 @@
 #include <vector>
 #include <string>
 #include <cstring>
+#include <array>
 
 /* Information extracted from winnt.h ; a bit of template-kung-fu and here it goes ! */
 
@@ -113,6 +114,9 @@ struct Elf_Phdr<x86Version>
     unsigned int p_flags;
     unsigned int p_align;
 
+    explicit Elf_Phdr()
+    {}
+
     void display(VerbosityLevel lvl = VERBOSE_LEVEL_1) const
     {
         w_yel_lf("-> Elf_Phdr32: ");
@@ -147,6 +151,9 @@ struct Elf_Phdr<x64Version>
     unsigned long long p_filesz;
     unsigned long long p_memsz;
     unsigned long long p_align;
+
+    explicit Elf_Phdr()
+    {}
 
     void display(VerbosityLevel lvl = VERBOSE_LEVEL_1) const
     {
@@ -244,35 +251,36 @@ struct ExecutableLinkingFormatLayout
     
     virtual void fill_structures(std::ifstream &file) = 0;
     virtual void display(VerbosityLevel lvl = VERBOSE_LEVEL_1) const = 0;
-    virtual std::vector<Section*> get_executable_section(std::ifstream &file) const = 0;
+    virtual unsigned long long get_image_base_address(void) = 0;
+    virtual std::vector<std::shared_ptr<Section>> get_executable_section(std::ifstream &file) const = 0;
+	virtual unsigned short get_cpu(void) = 0;
 };
 
 #define SHT_SYMTAB      2
 #define SHT_STRTAB      3
 
+#define RP_ELFEM_386    0x03
+#define RP_ELFEM_X86_64 0x3e
+#define RP_ELFEM_ARM    0x28
+
 template<class T>
 struct ELFLayout : public ExecutableLinkingFormatLayout
 {
     Elf_Ehdr<T> elfHeader;
-    std::vector<Elf_Phdr<T>*> elfProgramHeaders;
-    std::vector<Elf_Shdr_Abstraction<T>*> elfSectionHeaders;
+    std::vector<std::shared_ptr<Elf_Phdr<T>>> elfProgramHeaders;
+    std::vector<std::shared_ptr<Elf_Shdr_Abstraction<T>>> elfSectionHeaders;
     T offset_string_table, size_string_table;
+    unsigned long long base;
 
-    typedef typename std::vector<Elf_Phdr<T>*>::const_iterator iter_elf_phdr;
-    typedef typename std::vector<Elf_Shdr_Abstraction<T>*>::const_iterator iter_shdr_abs;
+    typedef typename std::vector<std::shared_ptr<Elf_Phdr<T>>>::const_iterator iter_elf_phdr;
+    typedef typename std::vector<std::shared_ptr<Elf_Shdr_Abstraction<T>>>::const_iterator iter_shdr_abs;
 
+    ELFLayout(void)
+    : ExecutableLinkingFormatLayout(), base(0)
+    {}
 
     ~ELFLayout(void)
     {
-        for(iter_elf_phdr it = elfProgramHeaders.begin();
-            it != elfProgramHeaders.end();
-            ++it)
-            delete *it;
-
-        for(iter_shdr_abs it = elfSectionHeaders.begin();
-            it != elfSectionHeaders.end();
-            ++it)
-            delete *it;
     }
 
     void display(VerbosityLevel lvl = VERBOSE_LEVEL_1) const
@@ -307,7 +315,6 @@ struct ELFLayout : public ExecutableLinkingFormatLayout
 
     T find_string_table(std::ifstream &file)
     {
-        
         Elf_Shdr<T> elf_shdr;
         std::streampos off = file.tellg();
 
@@ -341,12 +348,17 @@ struct ELFLayout : public ExecutableLinkingFormatLayout
         file.seekg((std::streamoff)elfHeader.e_phoff, std::ios::beg);
         for(unsigned int i = 0; i < elfHeader.e_phnum; ++i)
         {
-            Elf_Phdr<T>* pElfProgramHeader = new (std::nothrow) Elf_Phdr<T>;
-            if(pElfProgramHeader == NULL)
-                RAISE_EXCEPTION("Cannot allocate pElfProgramHeader");
+            std::shared_ptr<Elf_Phdr<T>> pElfProgramHeader = std::make_shared<Elf_Phdr<T>>();
 
-            file.read((char*)pElfProgramHeader, sizeof(Elf_Phdr<T>));
+            file.read((char*)pElfProgramHeader.get(), sizeof(Elf_Phdr<T>));
             elfProgramHeaders.push_back(pElfProgramHeader);
+
+            //XXX: Here we assume that the first LOAD program header encountered will
+            // hold the image base address and I guess this assumption is quite wrong
+            // Fuck you ELF.
+            // https://stackoverflow.com/questions/18296276/base-address-of-elf
+            if(type_to_str(pElfProgramHeader->p_type) == "LOAD" && base == 0)
+                base = pElfProgramHeader->p_vaddr;
         }
 
         /* 3.1] If we want to know the name of the different section, 
@@ -356,19 +368,16 @@ struct ELFLayout : public ExecutableLinkingFormatLayout
 
         /* 3.2] Keep the string table in memory */
         file.seekg((std::streamoff)offset_string_table, std::ios::beg);
-        char* string_table_section = new (std::nothrow) char[(unsigned int)size_string_table];
-        if(string_table_section == NULL)
-            RAISE_EXCEPTION("Cannot allocate string_table_section");
+        
+        std::vector<char> string_table_section((unsigned int)size_string_table);
 
-        file.read(string_table_section, (std::streamsize)size_string_table);
+        file.read(string_table_section.data(), (std::streamsize)size_string_table);
 
         /* 3.3] Goto the first Section Header, and dump them !*/
         file.seekg((std::streamoff)elfHeader.e_shoff, std::ios::beg);
         for(unsigned int i = 0; i < elfHeader.e_shnum; ++i)
         {
-            Elf_Shdr_Abstraction<T>* pElfSectionHeader = new (std::nothrow) Elf_Shdr_Abstraction<T>;
-            if(pElfSectionHeader == NULL)
-                RAISE_EXCEPTION("Cannot allocate pElfSectionHeader");
+            std::shared_ptr<Elf_Shdr_Abstraction<T>> pElfSectionHeader = std::make_shared<Elf_Shdr_Abstraction<T>>();
             
             file.read((char*)&pElfSectionHeader->header, sizeof(Elf_Shdr<T>));
 
@@ -376,7 +385,7 @@ struct ELFLayout : public ExecutableLinkingFormatLayout
             if(pElfSectionHeader->header.sh_name < size_string_table)
             {
                 /* Yeah we know where is the string */
-                char *name_section = string_table_section + pElfSectionHeader->header.sh_name;
+                char *name_section = string_table_section.data() + pElfSectionHeader->header.sh_name;
                 std::string s(name_section, std::strlen(name_section));
                 pElfSectionHeader->name = (s == "") ? std::string("unknown section") : s;
             }
@@ -386,24 +395,23 @@ struct ELFLayout : public ExecutableLinkingFormatLayout
 
         /* Set correctly the pointer */
         file.seekg(off);
-
-        delete[] string_table_section;
     }
 
-    std::vector<Section*> get_executable_section(std::ifstream &file) const
+    std::vector<std::shared_ptr<Section>> get_executable_section(std::ifstream &file) const
     {
-        std::vector<Section*> exec_sections;
+        std::vector<std::shared_ptr<Section>> exec_sections;
 
         for(iter_elf_phdr it = elfProgramHeaders.begin(); it != elfProgramHeaders.end(); ++it)
         {
             if((*it)->p_flags & 1)
             {
-                Section *sec = new (std::nothrow) Section(
+				// XXX: g++ + std::make_shared + packed struct
+                std::shared_ptr<Section> sec(new Section(
                     type_to_str((*it)->p_type).c_str(),
                     (*it)->p_offset,
                     (*it)->p_vaddr,
                     (*it)->p_filesz
-                );
+                ));
 
                 if(sec == NULL)
                     RAISE_EXCEPTION("Cannot alocate a section");
@@ -417,6 +425,16 @@ struct ELFLayout : public ExecutableLinkingFormatLayout
 
         return exec_sections;
     }
+
+    unsigned long long get_image_base_address(void)
+    {
+        return base;
+    }
+
+	unsigned short get_cpu(void)
+	{
+		return elfHeader.e_machine;
+	}
 };
 
 #endif

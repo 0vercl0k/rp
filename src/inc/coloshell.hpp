@@ -1,7 +1,7 @@
 /*
     This file is part of rp++.
 
-    Copyright (C) 2013, Axel "0vercl0k" Souchet <0vercl0k at tuxfamily.org>
+    Copyright (C) 2014, Axel "0vercl0k" Souchet <0vercl0k at tuxfamily.org>
     All rights reserved.
 
     rp++ is free software: you can redistribute it and/or modify
@@ -29,7 +29,7 @@
 #include <windows.h>
 #endif
 
-#define COLORS_ENABLED                     // remove this define if you don't want color in your shell
+extern bool g_are_colors_enabled;
 
 /* Here you will find all you need to display the data in a cute way on a windows/unix terminal */
 
@@ -54,14 +54,13 @@
 #endif
 
 /**
- * \fn static void enable_color(const Colors colo)
+ * \fn static void enable_color_(const Colors colo)
  * \brief Enable a color in your shell
  *
  * \param colo: the color you want to activate
  */
-static void enable_color(const Colors colo)
+static void enable_color_(const Colors colo)
 {
-#ifdef COLORS_ENABLED
 #ifdef WINDOWS
     HANDLE hStdOutput = GetStdHandle(STD_OUTPUT_HANDLE);
     if(hStdOutput == INVALID_HANDLE_VALUE)
@@ -78,18 +77,26 @@ static void enable_color(const Colors colo)
     };
     std::cout << colors[colo];
 #endif
-
-#else
-#endif
 }
 
 /**
- * \fn static void disable_color(const Colors colo)
+ * \fn static void enable_color(const Colors colo)
+ * \brief Enable a color in your shell
+ *
+ * \param colo: the color you want to activate
+ */
+static void enable_color(const Colors colo)
+{
+    if(g_are_colors_enabled)
+        enable_color_(colo);
+}
+
+/**
+ * \fn static void disable_color_(const Colors colo)
  * \brief Unset the color you have previously set
  */
-static void disable_color(void)
+static void disable_color_(void)
 {
-#ifdef COLORS_ENABLED
 #ifdef WINDOWS
     HANDLE hStdOutput = GetStdHandle(STD_OUTPUT_HANDLE);
     if(hStdOutput == INVALID_HANDLE_VALUE)
@@ -106,8 +113,16 @@ static void disable_color(void)
     };
     std::cout << colors[COLO_DEFAULT];
 #endif
-#else
-#endif
+}
+
+/**
+ * \fn static void disable_color_(const Colors colo)
+ * \brief Unset the color you have previously set
+ */
+static void disable_color(void)
+{
+    if(g_are_colors_enabled)
+        disable_color_();
 }
 
 /**
@@ -307,16 +322,21 @@ static void coloshell(const T t, const Colors colo)
  * \param va: It is the gadget VA
  * \param gadget: It is the gadget you want to output
  */
-#define display_gadget_lf(va, gadget) {                                                                             \
-    enable_color(COLO_RED);                                                                                         \
-    std::cout << "0x" << std::setw(sizeof(va)) << std::right << std::setfill('0');                                  \
-    std::cout << std::hex << va;                                                                                    \
-    disable_color();                                                                                                \
-    std::cout << ": ";                                                                                              \
-    enable_color(COLO_GREEN);                                                                                       \
-    std::cout << (gadget)->get_disassembly() << " (" << std::dec << (gadget)->get_nb() << " found)" << std::endl;   \
-    disable_color();                                                                                                \
-}
+#define display_gadget_lf(va, gadget) {                                                                                 \
+    if(does_badbytes_filter_apply(va, badbyte_list) == false)                                                           \
+    {                                                                                                                   \
+        enable_color(COLO_RED);                                                                                         \
+        std::cout << "0x" << std::setw(sizeof(va)) << std::right << std::setfill('0');                                  \
+        std::cout << std::hex << ((va - base) + new_base);                                                              \
+        disable_color();                                                                                                \
+        std::cout << ": ";                                                                                              \
+        enable_color(COLO_GREEN);                                                                                       \
+        std::cout << (gadget)->get_disassembly() << " (" << std::dec << (gadget)->get_nb() << " found)" << std::endl;   \
+        disable_color();                                                                                                \
+    }                                                                                                                   \
+    else                                                                                                                \
+        nb_gadgets_filtered++;                                                                                          \
+ }
 
 /**
  * \def display_offset_lf(va, hex_val, size)

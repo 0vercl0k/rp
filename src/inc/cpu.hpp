@@ -1,7 +1,7 @@
 /*
     This file is part of rp++.
 
-    Copyright (C) 2013, Axel "0vercl0k" Souchet <0vercl0k at tuxfamily.org>
+    Copyright (C) 2014, Axel "0vercl0k" Souchet <0vercl0k at tuxfamily.org>
     All rights reserved.
 
     rp++ is free software: you can redistribute it and/or modify
@@ -24,6 +24,7 @@
 #include <set>
 
 #include "gadget.hpp"
+#include "disassenginewrapper.hpp"
 
 /*! \class CPU
  *
@@ -54,17 +55,25 @@ class CPU
          *  \param size: It is the size of the p_memory
          *  \param vaddr: It is the real virtual address of the memory which will be disassembled (see the previous remark)
          *  \param depth: It is the number of maximum instructions contained by a gadget
-         *  \param engine_display_option: Pass display options to the dissassembly engine
+         *  \param gadgets: A list of the Gadget instance
+		 *  \param disass_engine_options: Options you want to pass to the disassembly engine
          *
-         *  \return A list of the Gadget instance
          */
-        virtual std::multiset<Gadget*> find_gadget_in_memory(const unsigned char *p_memory, const unsigned long long size, const unsigned long long vaddr, const unsigned int depth, unsigned int engine_display_option = 0) = 0;
+        virtual void find_gadget_in_memory(
+            const unsigned char *p_memory,
+            const unsigned long long size,
+            const unsigned long long vaddr,
+            const unsigned int depth,
+            std::multiset<std::shared_ptr<Gadget>, Gadget::Sort> &gadgets,
+			unsigned int disass_engine_options
+        ) = 0;
 
         /*! The different architectures RP++ handles */
         enum E_CPU
         {
             CPU_x86, /*!< x86 */
             CPU_x64, /*!< x64 */
+			CPU_ARM, /*!< ARM */
             CPU_UNKNOWN /*!< unknown cpu */
         };
 };

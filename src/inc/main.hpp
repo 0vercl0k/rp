@@ -1,7 +1,7 @@
 /*
 	This file is part of rp++.
 
-	Copyright (C) 2013, Axel "0vercl0k" Souchet <0vercl0k at tuxfamily.org>
+	Copyright (C) 2014, Axel "0vercl0k" Souchet <0vercl0k at tuxfamily.org>
 	All rights reserved.
 
 	rp++ is free software: you can redistribute it and/or modify
@@ -20,6 +20,8 @@
 #ifndef MAIN_HPP
 #define MAIN_HPP
 
+// Using Visual Leak Detector (https://vld.codeplex.com/releases) to track memory leaks
+// #include "vld.h"
 #include "platform.h"
 
 /*
@@ -28,7 +30,7 @@
 
 #define MAXIMUM_INSTRUCTION_PER_GADGET 20  // it defines the maximum number of instruction per gadget
 
-#define NUM_V "0.4"
+#define NUM_V "1.0"
 
 #ifdef ARCH_X64
 #define VERSION_TMP NUM_V " x64 built the " __DATE__ " " __TIME__

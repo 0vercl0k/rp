@@ -1,7 +1,7 @@
 /*
     This file is part of rp++.
 
-    Copyright (C) 2013, Axel "0vercl0k" Souchet <0vercl0k at tuxfamily.org>
+    Copyright (C) 2014, Axel "0vercl0k" Souchet <0vercl0k at tuxfamily.org>
     All rights reserved.
 
     rp++ is free software: you can redistribute it and/or modify
@@ -101,16 +101,13 @@ bool is_hex_char(char c)
     );
 }
 
-unsigned char * string_to_hex(const char* hex, unsigned int * size)
+std::vector<unsigned char> string_to_hex(const char* hex)
 {
     unsigned int len = (unsigned int)std::strlen(hex), i = 0, byte = 0;
     std::vector<unsigned char> bytes;
 
     if(len == 0)
-    {
-        *size = 0;
-        return NULL;
-    }
+        return bytes;
 
     while(i < len)
     {
@@ -141,51 +138,40 @@ unsigned char * string_to_hex(const char* hex, unsigned int * size)
         bytes.push_back((unsigned char)byte);
     }
 
-    *size = (unsigned int)bytes.size();
-
-    unsigned char *buffer = new (std::nothrow) unsigned char[*size];
-    if(buffer == NULL)
-        RAISE_EXCEPTION("Cannot allocate buffer");
-
-    unsigned int j = 0;
-    for(std::vector<unsigned char>::iterator it = bytes.begin(); it != bytes.end(); ++it, j++)
-        buffer[j] = *it;
-
-    return buffer;
+    return bytes;
 }
 
-std::map<std::string, Gadget*> only_unique_gadgets(std::multiset<Gadget*, Gadget::Sort> &list_gadgets)
+void only_unique_gadgets(std::multiset<std::shared_ptr<Gadget>, Gadget::Sort> &list_gadgets, std::set<std::shared_ptr<Gadget>, Gadget::Sort> &unique_gadgets)
 {
-    std::map<std::string, Gadget*> ret;
-
      /* Now we have a list of gadget, cool, but we want to keep only the unique! */
-        for(std::multiset<Gadget*, Gadget::Sort>::const_iterator it_g = list_gadgets.begin(); it_g != list_gadgets.end(); ++it_g)
-        {
-            /* If a gadget, with the same disassembly, has already been found ; just add its offset in the existing one */
-            if(ret.count((*it_g)->get_disassembly()))
-            {
-                std::map<std::string, Gadget*>::iterator g = ret.find((*it_g)->get_disassembly());
-                
-                /*
-                    we have found the same gadget in memory, so we just store its offset & its va section 
-                    maybe you can ask yourself 'Why do we store its va section ?' and the answer is:
-                    because you can find the same gadget in another executable sections!
-                */
-                g->second->add_new_one((*it_g)->get_first_offset(),
-                    (*it_g)->get_first_va_section()
-                );
-
-                /* in this case the gadget must be freed */
-                delete *it_g;
-            }
-            else
-            {
-                ret.insert(std::make_pair(
-                    (*it_g)->get_disassembly(),
-                    (*it_g)
-                ));
-            }
+    for(std::multiset<std::shared_ptr<Gadget>, Gadget::Sort>::const_iterator it_g = list_gadgets.begin(); it_g != list_gadgets.end(); ++it_g)
+    {
+        std::pair<std::set<std::shared_ptr<Gadget>, Gadget::Sort>::iterator, bool> g = unique_gadgets.insert(*it_g);
+        /* If a gadget, with the same disassembly, has already been found ; just add its offset in the existing one */
+        if(g.second == false)
+        {               
+            /*
+                we have found the same gadget in memory, so we just store its offset & its va section 
+                maybe you can ask yourself 'Why do we store its va section ?' and the answer is:
+                because you can find the same gadget in another executable sections!
+            */
+            (*g.first)->add_new_one((*it_g)->get_first_offset(),
+                (*it_g)->get_first_va_section()
+            );
         }
+    }
+}
 
-    return ret;
+bool does_badbytes_filter_apply(unsigned long long va, std::vector<unsigned char> &badbytes)
+{
+    unsigned char f = (va >> 24) & 0xff;
+    unsigned char s = (va >> 16) & 0xff;
+    unsigned char t = (va >>  8) & 0xff;
+    unsigned char l = (va >>  0) & 0xff;
+
+    for(std::vector<unsigned char>::const_iterator it = badbytes.begin(); it != badbytes.end(); ++it)
+        if((f == *it) || (s == *it) || (t == *it) || (l == *it))
+            return true;
+
+    return false;
 }

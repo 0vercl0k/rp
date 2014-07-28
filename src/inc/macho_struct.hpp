@@ -1,7 +1,7 @@
 /*
     This file is part of rp++.
 
-    Copyright (C) 2013, Axel "0vercl0k" Souchet <0vercl0k at tuxfamily.org>
+    Copyright (C) 2014, Axel "0vercl0k" Souchet <0vercl0k at tuxfamily.org>
     All rights reserved.
 
     rp++ is free software: you can redistribute it and/or modify
@@ -25,6 +25,7 @@
 #include "coloshell.hpp"
 #include "section.hpp"
 
+#include <cstring>
 #include <vector>
 
 #ifdef WINDOWS
@@ -137,6 +138,9 @@ struct RP_SEGMENT_COMMAND
     unsigned int nsects;
     unsigned int flags;
 
+    explicit RP_SEGMENT_COMMAND()
+    {}
+
     void display(VerbosityLevel lvl) const
     {
         w_yel_lf("-> segment_command");
@@ -188,6 +192,9 @@ struct RP_SECTION<x86Version>
     unsigned int  reserved1;
     unsigned int  reserved2;
 
+    explicit RP_SECTION()
+    {}
+
     void display(VerbosityLevel lvl) const
     {
         w_yel_lf("-> section32");
@@ -227,6 +234,9 @@ struct RP_SECTION<x64Version>
     unsigned int       reserved2;
     unsigned int       reserved3;
 
+    explicit RP_SECTION()
+    {}
+
     void display(VerbosityLevel lvl) const
     {
         w_yel_lf("-> section64");
@@ -258,33 +268,27 @@ __attribute__((packed))
 
 struct MachoLayout
 {  
-    virtual ~MachoLayout(void)
-    {};
-
     virtual void fill_structures(std::ifstream &file)  = 0;
     virtual unsigned int get_size_mach_header(void) const = 0;
     virtual void display(VerbosityLevel lvl = VERBOSE_LEVEL_1) const = 0;
-    virtual std::vector<Section*> get_executable_section(std::ifstream &file) = 0;
+    virtual std::vector<std::shared_ptr<Section>> get_executable_section(std::ifstream &file) = 0;
+    virtual unsigned long long get_image_base_address(void) = 0;
 };
 
 template<class T>
 struct MachoArchLayout : public MachoLayout
 {
+    unsigned long long base;
     RP_MACH_HEADER<T> header;
-    std::vector<RP_SEGMENT_COMMAND<T>*> seg_commands;
-    std::vector<RP_SECTION<T>*> sections;
+    std::vector<std::shared_ptr<RP_SEGMENT_COMMAND<T>>> seg_commands;
+    std::vector<std::shared_ptr<RP_SECTION<T>>> sections;
 
-    typedef typename std::vector<RP_SECTION<T>*>::const_iterator iter_rp_section;
-    typedef typename std::vector<RP_SEGMENT_COMMAND<T>*>::const_iterator iter_rp_segment;
+    typedef typename std::vector<std::shared_ptr<RP_SECTION<T>>>::const_iterator iter_rp_section;
+    typedef typename std::vector<std::shared_ptr<RP_SEGMENT_COMMAND<T>>>::const_iterator iter_rp_segment;
 
-    ~MachoArchLayout(void)
-    {
-        for(iter_rp_segment it = seg_commands.begin(); it != seg_commands.end(); ++it)
-            delete *it;
-
-        for(iter_rp_section it = sections.begin(); it != sections.end(); ++it)
-            delete *it;
-    }
+    explicit MachoArchLayout()
+    : MachoLayout(), base(0)
+    {}
 
     unsigned int get_size_mach_header(void) const
     {
@@ -311,12 +315,14 @@ struct MachoArchLayout : public MachoLayout
                 case LC_SEGMENT:
                 case LC_SEGMENT_64:
                 {
-                    RP_SEGMENT_COMMAND<T>* seg_cmd = new (std::nothrow) RP_SEGMENT_COMMAND<T>;
-                    if(seg_cmd == NULL)
-                        RAISE_EXCEPTION("Cannot allocate seg_cmd");
+                    std::shared_ptr<RP_SEGMENT_COMMAND<T>> seg_cmd = std::make_shared<RP_SEGMENT_COMMAND<T>>();
 
-                    file.read((char*)seg_cmd, sizeof(RP_SEGMENT_COMMAND<T>));
+                    file.read((char*)seg_cmd.get(), sizeof(RP_SEGMENT_COMMAND<T>));
                     seg_commands.push_back(seg_cmd);
+
+                    if(strcasecmp((char*)seg_cmd->segname, "__TEXT") == 0)
+                        // If this is the __text segment, we populate the base address of the program
+                        base = (unsigned long long)seg_cmd->vmaddr;
 
                     /* 
                        Directly following a segment_command data structure is an array of section data 
@@ -325,11 +331,9 @@ struct MachoArchLayout : public MachoLayout
                     */
                     for(unsigned int j = 0; j < seg_cmd->nsects; ++j)
                     {
-                        RP_SECTION<T>* sect = new (std::nothrow) RP_SECTION<T>;
-                        if(sect == NULL)
-                            RAISE_EXCEPTION("Cannot allocate sect");
+                        std::shared_ptr<RP_SECTION<T>> sect = std::make_shared<RP_SECTION<T>>();
 
-                        file.read((char*)sect, sizeof(RP_SECTION<T>));
+                        file.read((char*)sect.get(), sizeof(RP_SECTION<T>));
                         sections.push_back(sect);
                     }
 
@@ -350,26 +354,26 @@ struct MachoArchLayout : public MachoLayout
             if(is_all_section_walked)
                 break;
         }
+
+		file.seekg(off);
     }
 
-    std::vector<Section*> get_executable_section(std::ifstream &file)
+    std::vector<std::shared_ptr<Section>> get_executable_section(std::ifstream &file)
     {
-        std::vector<Section*> exc_sect;
+        std::vector<std::shared_ptr<Section>> exc_sect;
 
         for(iter_rp_section it = sections.begin(); it != sections.end(); ++it)
         {
             if((*it)->flags & S_ATTR_PURE_INSTRUCTIONS || (*it)->flags & S_ATTR_SOME_INSTRUCTIONS)
             {
-                Section *s = new Section(
+				// XXX: Hum g++ doesn't like make_shared + (*it) being a packed structure
+                std::shared_ptr<Section> s(new Section(
                     (char*)(*it)->sectname,
                     (*it)->offset,
                     (*it)->addr,
                     (*it)->size
-                );
+                ));
 
-                if(s == NULL)
-                    RAISE_EXCEPTION("Cannot allocate s");
-                
                 s->dump(file);
 
                 s->set_props(Section::Executable);
@@ -389,6 +393,11 @@ struct MachoArchLayout : public MachoLayout
 
         for(iter_rp_section it = sections.begin(); it != sections.end(); ++it)
             (*it)->display(lvl);
+    }
+
+    unsigned long long get_image_base_address(void)
+    {
+        return base;
     }
 };
 

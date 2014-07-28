@@ -1,7 +1,7 @@
 /*
     This file is part of rp++.
 
-    Copyright (C) 2013, Axel "0vercl0k" Souchet <0vercl0k at tuxfamily.org>
+    Copyright (C) 2014, Axel "0vercl0k" Souchet <0vercl0k at tuxfamily.org>
     All rights reserved.
 
     rp++ is free software: you can redistribute it and/or modify
@@ -24,6 +24,7 @@
 #include <string>
 #include <vector>
 #include <map>
+#include <memory>
 
 #include "instruction.hpp"
 
@@ -66,7 +67,7 @@ class Gadget
          *  \brief Get the size of your gadget
          *  \return the size of the whole gadget
          */
-        std::list<Instruction*> get_instructions(void);
+        std::list<std::shared_ptr<Instruction>> get_instructions(void);
 
         /*!
          *  \brief Get the first offset of this gadget (first offset because a gadget instance stores other offset with the same disassembly in memory)
@@ -103,7 +104,7 @@ class Gadget
          *  \brief Get the ending instruction of this gadget
          *  \return a pointer on the ending instruction
          */
-        Instruction* get_ending_instruction(void);
+        std::shared_ptr<Instruction> get_ending_instruction(void);
 
         /*!
          * \brief This structure can be used for sorting Gadgets instance
@@ -111,7 +112,7 @@ class Gadget
          */
         struct Sort
         {
-            bool operator()(const Gadget *g, const Gadget *d) const
+            bool operator()(const std::shared_ptr<Gadget> g, const std::shared_ptr<Gadget> d) const
             {
                 return g->get_disassembly() < d->get_disassembly();
             }
@@ -123,7 +124,7 @@ class Gadget
 
         unsigned int m_size; /*!< the size in byte of the gadget*/
 
-        std::list<Instruction*> m_instructions; /*!< the list of the different instructions composing the gadget*/
+        std::list<std::shared_ptr<Instruction>> m_instructions; /*!< the list of the different instructions composing the gadget*/
 
         std::vector<unsigned long long> m_offsets; /*!< the vector which stores where you can find the same gadget ; those offsets are relative to m_va_section*/
         

@@ -1,7 +1,7 @@
 /*
     This file is part of rp++.
 
-    Copyright (C) 2013, Axel "0vercl0k" Souchet <0vercl0k at tuxfamily.org>
+    Copyright (C) 2014, Axel "0vercl0k" Souchet <0vercl0k at tuxfamily.org>
     All rights reserved.
 
     rp++ is free software: you can redistribute it and/or modify
@@ -21,6 +21,7 @@
 
 #include "x86.hpp"
 #include "x64.hpp"
+#include "arm.hpp"
 
 #include <iostream>
 #include <cstring>
@@ -31,15 +32,6 @@ PE::PE(void)
 
 PE::~PE(void)
 {
-    for(std::vector<RP_IMAGE_SECTION_HEADER*>::iterator it = m_pPELayout->imgSectionHeaders.begin();
-        it != m_pPELayout->imgSectionHeaders.end();
-        ++it)
-        delete *it;
-
-    m_pPELayout->imgSectionHeaders.clear();
-
-    if(m_pPELayout != NULL)
-        delete m_pPELayout;
 }
 
 std::string PE::get_class_name(void) const
@@ -82,24 +74,43 @@ CPU::E_CPU PE::extract_information_from_binary(std::ifstream &file)
     {
         case RP_IMAGE_NT_OPTIONAL_HDR32_MAGIC:
         {
-            cpu = CPU::CPU_x86;
-            /* Ok, now we can allocate the good version of the PE Layout */
-            /* The 32bits version there! */
-            init_properly_PELayout<x86Version>();
-            break;
+			switch(imgNtHeaders32.FileHeader.Machine)
+			{
+				case RP_IMAGE_FILE_MACHINE_I386:
+				{
+					cpu = CPU::CPU_x86;
+					break;
+				}
+
+				case RP_IMAGE_FILE_MACHINE_ARMTHUMB2LE:
+				{
+					cpu = CPU::CPU_ARM;
+					break;
+				}
+
+				default:
+					RAISE_EXCEPTION("Cannot determine the CPU type");
+			}
+			break;
         }
 
         case RP_IMAGE_NT_OPTIONAL_HDR64_MAGIC:
         {
             cpu = CPU::CPU_x64;
-            init_properly_PELayout<x64Version>();
             break;
         }
 
         default:
             RAISE_EXCEPTION("Cannot determine the CPU type");
     }
-    
+   
+	/* Ok, now we can allocate the good version of the PE Layout */
+	/* The 32bits version there! */
+	if(cpu == CPU::CPU_x64)
+		init_properly_PELayout<x64Version>();
+	else
+		init_properly_PELayout<x86Version>();
+
     /* Now we can fill the structure */
     std::memcpy(&m_pPELayout->imgDosHeader, &imgDosHeader, m_pPELayout->get_image_dos_header_size());
 
@@ -109,9 +120,9 @@ CPU::E_CPU PE::extract_information_from_binary(std::ifstream &file)
     return cpu;
 }
 
-CPU* PE::get_cpu(std::ifstream &file)
+std::shared_ptr<CPU> PE::get_cpu(std::ifstream &file)
 {
-    CPU* cpu(NULL);
+    std::shared_ptr<CPU> cpu;
     CPU::E_CPU cpu_type = CPU::CPU_UNKNOWN;
 
     cpu_type = extract_information_from_binary(file);
@@ -120,15 +131,21 @@ CPU* PE::get_cpu(std::ifstream &file)
     {
         case CPU::CPU_x86:
         {
-            cpu = new (std::nothrow) x86();
+            cpu = std::make_shared<x86>();
             break;
         }
 
         case CPU::CPU_x64:
         {
-            cpu = new (std::nothrow) x64();
+            cpu = std::make_shared<x64>();
             break;
         }
+
+		case CPU::CPU_ARM:
+		{
+			cpu = std::make_shared<ARM>();
+			break;
+		}
 
         default:
             RAISE_EXCEPTION("Cannot determine the CPU type");
@@ -137,26 +154,24 @@ CPU* PE::get_cpu(std::ifstream &file)
     return cpu;
 }
 
-std::vector<Section*> PE::get_executables_section(std::ifstream & file)
+std::vector<std::shared_ptr<Section>> PE::get_executables_section(std::ifstream & file)
 {
-    std::vector<Section*> exec_sections;
+    std::vector<std::shared_ptr<Section>> exec_sections;
 
-    for(std::vector<RP_IMAGE_SECTION_HEADER*>::iterator it = m_pPELayout->imgSectionHeaders.begin();
+    for(std::vector<std::shared_ptr<RP_IMAGE_SECTION_HEADER>>::iterator it = m_pPELayout->imgSectionHeaders.begin();
         it != m_pPELayout->imgSectionHeaders.end();
         ++it)
     {
         if((*it)->Characteristics & RP_IMAGE_SCN_MEM_EXECUTE)
         {
-            Section *tmp = new (std::nothrow) Section(
+			//XXX: g++ + std::make_shared + packed struct
+            std::shared_ptr<Section> tmp(new Section(
                 (*it)->get_name().c_str(),
                 (*it)->PointerToRawData,
                 /* in the PE, this field is a RVA, so we need to add it the image base to have a VA */
-                m_pPELayout->get_image_base() + (*it)->VirtualAddress,
+                m_pPELayout->get_image_base_address() + (*it)->VirtualAddress,
                 (*it)->SizeOfRawData
-            );
-
-            if(tmp == NULL)
-                RAISE_EXCEPTION("Cannot allocate a section");
+            ));
             
             tmp->dump(file);
 
@@ -166,4 +181,9 @@ std::vector<Section*> PE::get_executables_section(std::ifstream & file)
         }
     }
     return exec_sections;
+}
+
+unsigned long long PE::get_image_base_address(void)
+{
+    return m_pPELayout->get_image_base_address();
 }

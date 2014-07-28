@@ -1,7 +1,7 @@
 /*
     This file is part of rp++.
 
-    Copyright (C) 2013, Axel "0vercl0k" Souchet <0vercl0k at tuxfamily.org>
+    Copyright (C) 2014, Axel "0vercl0k" Souchet <0vercl0k at tuxfamily.org>
     All rights reserved.
 
     rp++ is free software: you can redistribute it and/or modify
@@ -57,11 +57,11 @@ class Program
          *  \brief Find all the rop gadgets
          *   
          *  \param depth: Set the depth of the research (don't forget the ending instruction doesn't count -- so if you want only ending instruction, depth = 0)
-         *  \param engine_display_option: You can give several display options passed directly to the disassembly engine (enable at&t syntax on beaegine for example)
-         *
-         *  \return The gadgets found
+         *  \param gadgets: The gadgets found
+         *  \param disass_engine_options: Options you want to pass to the disassembly engine
+		 *
          */
-        std::multiset<Gadget*, Gadget::Sort> find_gadgets(unsigned int depth, unsigned int engine_display_option = 0);
+        void find_gadgets(unsigned int depth, std::multiset<std::shared_ptr<Gadget>, Gadget::Sort> &gadgets, unsigned int disass_engine_options = 0);
 
         /*!
          *  \brief Find hex values in the section of the program
@@ -71,11 +71,18 @@ class Program
          */
         void search_and_display(const unsigned char *hex_values, unsigned int size);
 
+        /*!
+         *  \brief Get the base address of the program
+         *   
+         *  \return size: Base address of the program
+         */
+        unsigned long long get_image_base_address(void);
+
     private:
         
-        CPU* m_cpu; /*!< a pointer on the CPU used by your program*/
+        std::shared_ptr<CPU> m_cpu; /*!< a pointer on the CPU used by your program*/
         
-        ExecutableFormat* m_exformat; /*!< a pointer on the ExecutableFormat used by your program*/
+        std::shared_ptr<ExecutableFormat> m_exformat; /*!< a pointer on the ExecutableFormat used by your program*/
         
         std::ifstream m_file; /*!< the file descriptor*/
 };

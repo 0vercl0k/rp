@@ -1,7 +1,7 @@
 /*
     This file is part of rp++.
 
-    Copyright (C) 2013, Axel "0vercl0k" Souchet <0vercl0k at tuxfamily.org>
+    Copyright (C) 2014, Axel "0vercl0k" Souchet <0vercl0k at tuxfamily.org>
     All rights reserved.
 
     rp++ is free software: you can redistribute it and/or modify
@@ -33,7 +33,18 @@ class x86 : public CPU
 
         std::string get_class_name(void) const;
         
-        std::multiset<Gadget*> find_gadget_in_memory(const unsigned char *p_memory, const unsigned long long size, const unsigned long long vaddr, const unsigned int depth, unsigned int engine_display_option = 0);
+        void find_gadget_in_memory(
+			const unsigned char *p_memory,
+			const unsigned long long size,
+			const unsigned long long vaddr,
+			const unsigned int depth,
+			std::multiset<std::shared_ptr<Gadget>, Gadget::Sort> &gadgets,
+			unsigned int disass_engine_options
+		);
+
+        static unsigned int get_size_biggest_instruction(void);
+
+        static unsigned int get_alignement(void);
 
     private:
         

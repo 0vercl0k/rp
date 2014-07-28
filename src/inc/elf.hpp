@@ -1,7 +1,7 @@
 /*
     This file is part of rp++.
 
-    Copyright (C) 2013, Axel "0vercl0k" Souchet <0vercl0k at tuxfamily.org>
+    Copyright (C) 2014, Axel "0vercl0k" Souchet <0vercl0k at tuxfamily.org>
     All rights reserved.
 
     rp++ is free software: you can redistribute it and/or modify
@@ -32,13 +32,15 @@ class Elf : public ExecutableFormat
         
         ~Elf(void);
 
-        CPU* get_cpu(std::ifstream &file);
+        std::shared_ptr<CPU> get_cpu(std::ifstream &file);
 
         void display_information(const VerbosityLevel lvl) const;
 
         std::string get_class_name(void) const;
 
-        std::vector<Section*> get_executables_section(std::ifstream & file);
+        std::vector<std::shared_ptr<Section>> get_executables_section(std::ifstream & file);
+
+        unsigned long long get_image_base_address(void);
 
     private:
 
@@ -47,12 +49,12 @@ class Elf : public ExecutableFormat
         template<class T>
         void init_properly_ELFLayout(void)
         {
-            m_ELFLayout = new (std::nothrow) ELFLayout<T>;
+            m_ELFLayout = std::make_shared<ELFLayout<T>>();
             if(m_ELFLayout == NULL)
                 RAISE_EXCEPTION("m_ELFLayout allocation failed");
         }
 
-        ExecutableLinkingFormatLayout* m_ELFLayout;
+        std::shared_ptr<ExecutableLinkingFormatLayout> m_ELFLayout;
         CPU::E_CPU m_CPU;
 };
 

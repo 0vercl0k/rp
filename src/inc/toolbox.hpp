@@ -1,7 +1,7 @@
 /*
     This file is part of rp++.
 
-    Copyright (C) 2013, Axel "0vercl0k" Souchet <0vercl0k at tuxfamily.org>
+    Copyright (C) 2014, Axel "0vercl0k" Souchet <0vercl0k at tuxfamily.org>
     All rights reserved.
 
     rp++ is free software: you can redistribute it and/or modify
@@ -22,9 +22,9 @@
 
 #include <string>
 #include <fstream>
-#include <map>
 #include <set>
 #include <string>
+#include <vector>
 #include "gadget.hpp"
 
 /* Choose your verbosity level */
@@ -56,15 +56,14 @@ std::string verbosity_to_string(VerbosityLevel lvl);
 std::streampos get_file_size(std::ifstream &file);
 
 /**
- * \fn unsigned char * string_to_hex(const char* hex, unsigned int * size)
+ * \fn std::vector<unsigned char> string_to_hex(const char* hex)
  * \brief Enable a color in your shell
  *
  * \param hex: The string that represents your raw hex values -- for example \x41BC\x90 => we want [0x41, 0x42, 0x43, 0x90] in memory
- * \param size: A pointer on a variable that will hold the number of bytes composing your buffer
  *
- * \return a pointer on a buffer that contains size bytes
+ * \return a vector that contains the converted bytes
  */
-unsigned char * string_to_hex(const char* hex, unsigned int * size);
+std::vector<unsigned char> string_to_hex(const char* hex);
 
 /**
  * \fn bool is_matching(std::string &disass, const char* p)
@@ -89,13 +88,25 @@ bool is_hex_char(char c);
 
 
 /**
- * \fn std::map<std::string, Gadget*> only_unique_gadgets(std::list<Gadget*> &list_gadgets)
+ * \fn void only_unique_gadgets(std::multiset<std::shared_ptr<Gadget>, Gadget::Sort> &list_gadgets, std::set<std::shared_ptr<Gadget>, Gadget::Sort> &unique_gadgets)
  * \brief It keeps only the unique gadgets
  *
  * \param list_gadgets: It is the gadget list with duplicates
+ * \param unique_gadgets: The list of unique gadgets
  *
- * \return The list of unique gadgets
  */
-std::map<std::string, Gadget*> only_unique_gadgets(std::multiset<Gadget*, Gadget::Sort> &list_gadgets);
+void only_unique_gadgets(std::multiset<std::shared_ptr<Gadget>, Gadget::Sort> &list_gadgets, std::set<std::shared_ptr<Gadget>, Gadget::Sort> &unique_gadgets);
+
+
+/**
+ * \fn bool does_badbytes_filter_apply(unsigned long long va, std::vector<unsigned char> &badbytes)
+ * \brief Return true if va has a bad byte (taken from badbytes)
+ *
+ * \param va: It is the VA to check
+ * \param badbytes: The list of bytes you don't want in va
+ *
+ * \return true if va has at least one bad byte, else false
+ */
+bool does_badbytes_filter_apply(unsigned long long va, std::vector<unsigned char> &badbytes);
 
 #endif

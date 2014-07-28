@@ -2,7 +2,7 @@
  * @file   basic_types.h
  * @author  <igor.gutnik@gmail.com>
  * @date   Thu Dec 24 19:31:22 2009
- * 
+ *
  * @brief  Definitions of fixed-size integer types for various platforms
  *
  * This file is part of BeaEngine.
@@ -25,11 +25,11 @@
 
 #include <stddef.h>
 
-#if defined(__GNUC__) || defined (__INTEL_COMPILER) || defined(__LCC__)
+#if defined(__GNUC__) || defined (__INTEL_COMPILER) || defined(__LCC__) || defined(__POCC__)
 #include <stdint.h>
 #endif
 
-#if defined(_MSC_VER)
+#if defined(_MSC_VER) && !defined(__BORLANDC__)
 	/*
 	* Windows/Visual C++
 	*/
@@ -45,6 +45,27 @@
 		#define BEA_PTR_IS_64_BIT 1
 		typedef signed __int64     IntPtr;
 		typedef unsigned __int64   UIntPtr;
+	#else
+		typedef signed long        IntPtr;
+		typedef size_t             UIntPtr;
+	#endif
+	#define BEA_HAVE_INT64 1
+#elif defined(__POCC__)
+	/*
+	* PellesC
+	*/
+	typedef signed char            Int8;
+	typedef unsigned char          UInt8;
+	typedef signed short           Int16;
+	typedef unsigned short         UInt16;
+	typedef signed int             Int32;
+	typedef unsigned int           UInt32;
+	typedef signed long long       Int64;
+	typedef unsigned long long     UInt64;
+	#if defined(_WIN64)
+		#define BEA_PTR_IS_64_BIT 1
+		typedef signed long long   IntPtr;
+		typedef unsigned long long UIntPtr;
 	#else
 		typedef signed long        IntPtr;
 		typedef size_t             UIntPtr;
@@ -149,7 +170,7 @@
 		typedef unsigned long long UInt64;
 	#endif
 	#define BEA_HAVE_INT64 1
-#elif defined(__IBMCPP__) 
+#elif defined(__IBMCPP__)
 	/*
 	* IBM XL C++
 	*/
@@ -183,6 +204,7 @@
 	typedef unsigned int           UInt32;
     typedef unsigned __int64       Int64;
     typedef signed __int64         UInt64;
+	typedef signed long            IntPtr;
 	typedef unsigned long          UIntPtr;
     #define BEA_HAVE_INT64 1
 #elif defined(__WATCOMC__)
@@ -199,7 +221,7 @@
     typedef signed __int64         UInt64;
     #define BEA_HAVE_INT64 1
 	typedef size_t                 UIntPtr;
-#elif defined(__sgi) 
+#elif defined(__sgi)
 	/*
 	* MIPSpro C++
 	*/
@@ -227,7 +249,7 @@
 	#define W64LIT(x) x##ui64
 #else
 	#define W64LIT(x) x##ULL
-#endif 
+#endif
 
 
 #ifndef C_STATIC_ASSERT
@@ -247,4 +269,4 @@ C_STATIC_ASSERT(sizeof_UInt32, (sizeof(UInt32) == 4));
 C_STATIC_ASSERT(sizeof_Int64 , (sizeof(Int64)  == 8));
 C_STATIC_ASSERT(sizeof_UInt64, (sizeof(UInt64) == 8));
 
-#endif 
+#endif

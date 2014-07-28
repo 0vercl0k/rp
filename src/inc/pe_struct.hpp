@@ -1,7 +1,7 @@
 /*
     This file is part of rp++.
 
-    Copyright (C) 2013, Axel "0vercl0k" Souchet <0vercl0k at tuxfamily.org>
+    Copyright (C) 2014, Axel "0vercl0k" Souchet <0vercl0k at tuxfamily.org>
     All rights reserved.
 
     rp++ is free software: you can redistribute it and/or modify
@@ -109,6 +109,9 @@ __attribute__((packed))
 
 #define RP_IMAGE_NT_OPTIONAL_HDR32_MAGIC 0x10b
 #define RP_IMAGE_NT_OPTIONAL_HDR64_MAGIC 0x20b
+
+#define RP_IMAGE_FILE_MACHINE_I386 0x14c
+#define RP_IMAGE_FILE_MACHINE_ARMTHUMB2LE 0x1c4
 
 struct RP_IMAGE_FILE_HEADER {
     unsigned short Machine;
@@ -328,6 +331,9 @@ struct RP_IMAGE_SECTION_HEADER {
     unsigned short NumberOfLinenumbers;
     unsigned int   Characteristics;
 
+    explicit RP_IMAGE_SECTION_HEADER()
+    {}
+
     std::string get_name(void) const
     {
         unsigned char name_null_terminated[RP_IMAGE_SIZEOF_SHORT_NAME + 1] = {0};
@@ -405,14 +411,12 @@ typedef RP_IMAGE_NT_HEADERS<x64Version> RP_IMAGE_NT_HEADERS64;
 struct PortableExecutableLayout
 {
     RP_IMAGE_DOS_HEADER                   imgDosHeader;
-    std::vector<RP_IMAGE_SECTION_HEADER*> imgSectionHeaders;
+    std::vector<std::shared_ptr<RP_IMAGE_SECTION_HEADER>> imgSectionHeaders;
 
-    typedef std::vector<RP_IMAGE_SECTION_HEADER*>::const_iterator iter_sect_header;
+    typedef std::vector<std::shared_ptr<RP_IMAGE_SECTION_HEADER>>::const_iterator iter_sect_header;
 
     virtual ~PortableExecutableLayout(void)
     {
-        for(iter_sect_header it = imgSectionHeaders.begin(); it != imgSectionHeaders.end(); ++it)
-            delete *it;
     }
 
     virtual void display(VerbosityLevel lvl = VERBOSE_LEVEL_1) const
@@ -433,7 +437,7 @@ struct PortableExecutableLayout
 
     virtual unsigned int get_nt_headers_size(void) const  = 0;
     virtual void fill_nt_structures(std::ifstream &file)  = 0;
-    virtual unsigned long long get_image_base(void) const = 0;
+    virtual unsigned long long get_image_base_address(void) const = 0;
 };
 
 /* Some magic..and ABSTRACTION */
@@ -474,18 +478,16 @@ struct PELayout : public PortableExecutableLayout
 
         for(unsigned int i = 0; i < imgNtHeaders.FileHeader.NumberOfSections; ++i)
         {
-            RP_IMAGE_SECTION_HEADER* pImgSectionHeader = new (std::nothrow) RP_IMAGE_SECTION_HEADER;
-            if(pImgSectionHeader == NULL)
-                RAISE_EXCEPTION("Cannot allocate memory for pImgSectionHeader");
+            std::shared_ptr<RP_IMAGE_SECTION_HEADER> pImgSectionHeader = std::make_shared<RP_IMAGE_SECTION_HEADER>();
             
-            file.read((char*)pImgSectionHeader, get_image_section_header_size());
+            file.read((char*)pImgSectionHeader.get(), get_image_section_header_size());
             imgSectionHeaders.push_back(pImgSectionHeader);
         }
 
         file.seekg(off);
     }
 
-    unsigned long long get_image_base(void) const
+    unsigned long long get_image_base_address(void) const
     {
         return imgNtHeaders.OptionalHeader.ImageBase;
     }

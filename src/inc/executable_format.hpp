@@ -1,7 +1,7 @@
 /*
     This file is part of rp++.
 
-    Copyright (C) 2013, Axel "0vercl0k" Souchet <0vercl0k at tuxfamily.org>
+    Copyright (C) 2014, Axel "0vercl0k" Souchet <0vercl0k at tuxfamily.org>
     All rights reserved.
 
     rp++ is free software: you can redistribute it and/or modify
@@ -24,6 +24,7 @@
 #include <fstream>
 #include <iostream>
 #include <vector>
+#include <memory>
 
 #include "cpu.hpp"
 #include "toolbox.hpp"
@@ -56,7 +57,7 @@ class ExecutableFormat
          *   
          *  \return a pointer on the correct CPU
          */
-        virtual CPU* get_cpu(std::ifstream &file) = 0;
+        virtual std::shared_ptr<CPU> get_cpu(std::ifstream &file) = 0;
 
         /*!
          *  \brief Display information concerning the executable format: where sections begin, entry point, etc.
@@ -82,7 +83,7 @@ class ExecutableFormat
          *
          *  \return A vector of Section instances
          */
-        virtual std::vector<Section*> get_executables_section(std::ifstream & file) = 0;
+        virtual std::vector<std::shared_ptr<Section>> get_executables_section(std::ifstream & file) = 0;
 
         /*!
          *  \brief Give you a PE/ELF instance (based mostly on the magic signature) 
@@ -91,7 +92,14 @@ class ExecutableFormat
          *
          *  \return A pointer on the correct ExecutableFormat deduced thanks to the magic_dword argument
          */
-        static ExecutableFormat* GetExecutableFormat(unsigned int magic_dword);
+        static std::shared_ptr<ExecutableFormat> GetExecutableFormat(unsigned int magic_dword);
+
+        /*!
+         *  \brief Give you the base address of the executable 
+         *
+         *  \return The prefered base address of the executable
+         */
+        virtual unsigned long long get_image_base_address(void) = 0;
 
     private:
 

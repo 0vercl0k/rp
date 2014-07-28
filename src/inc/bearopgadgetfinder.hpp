@@ -1,7 +1,7 @@
 /*
     This file is part of rp++.
 
-    Copyright (C) 2013, Axel "0vercl0k" Souchet <0vercl0k at tuxfamily.org>
+    Copyright (C) 2014, Axel "0vercl0k" Souchet <0vercl0k at tuxfamily.org>
     All rights reserved.
 
     rp++ is free software: you can redistribute it and/or modify
@@ -23,7 +23,7 @@
 #define BEA_USE_STDCALL
 #define BEA_ENGINE_STATIC
 
-#include "BeaEngine.h"
+#include "beaengine/BeaEngine.h"
 #include "instruction.hpp"
 #include "gadget.hpp"
 
@@ -50,9 +50,8 @@ class BeaRopGadgetFinder
          *   
          *  \param arch: Which architecture is used by the code ?
          *  \param depth: It means the maximum number of instructions which can composed a gadget (the ending instruction doesn't count)
-         *  \param engine_display_option: You can pass several display options to BeaEngine
          */
-        explicit BeaRopGadgetFinder(E_Arch arch, unsigned int depth, unsigned int engine_display_option = 0);
+        explicit BeaRopGadgetFinder(E_Arch arch, unsigned int depth);
         
         ~BeaRopGadgetFinder(void);
 
@@ -63,10 +62,10 @@ class BeaRopGadgetFinder
          *  \param data: It is the where the code is in memory
          *  \param size: It is the size of the code
          *  \param vaddr: It's the *real* virtual address of the data (BeaEngine needs it to disassemble correctly instruction with relative offset, like jmp)
+         *  \param gadgets: The whole gadgets found in [data, data+size] ; it tries to find gadget with depth instruction (less or equal to depth to be exact)
          *
-         *  \return the whole gadgets found in [data, data+size] ; it tries to find gadget with depth instruction (less or equal to depth to be exact)
          */
-        std::multiset<Gadget*> find_rop_gadgets(const unsigned char* data, unsigned long long size, unsigned long long vaddr);
+        void find_rop_gadgets(const unsigned char* data, unsigned long long size, unsigned long long vaddr, std::multiset<std::shared_ptr<Gadget>, Gadget::Sort> &gadgets);
 
     private:
 
@@ -77,10 +76,10 @@ class BeaRopGadgetFinder
          *  \param size: It is the size of the code
          *  \param ending_instr_disasm: It is the DISASM structure of your ending instruction which contains several info like VA, disassembly, etc.
          *  \param len_ending_instr: It is the len of the ending instruction ; this len is returned by Disasm()
+         *  \param gadgets: This is where the function will add the gadgets found in [data, data+size] ; it tries to find gadget with depth instruction (less or equal to depth to be exact)
          *
-         *  \return the whole gadgets found in [data, data+size] ; it tries to find gadget with depth instruction (less or equal to depth to be exact)
          */
-        std::multiset<Gadget*> find_all_gadget_from_ret(const unsigned char* data, unsigned long long vaddr, const DISASM* ending_instr, unsigned int len_ending_instr);
+        void find_all_gadget_from_ret(const unsigned char* data, unsigned long long vaddr, const DISASM* ending_instr, unsigned int len_ending_instr, std::multiset<std::shared_ptr<Gadget>, Gadget::Sort> &gadgets);
         
          /*!
          *  \brief Is it a valid ending instruction ?
@@ -90,9 +89,6 @@ class BeaRopGadgetFinder
          *  \return true if the ending instruction is validated else false
          */
         bool is_valid_ending_instruction(DISASM* ending_instr_d);
-
-        bool is_valid_ending_instruction_nasm(DISASM* ending_instr_d);
-        bool is_valid_ending_instruction_att(DISASM* ending_instr_d);
         
         /*!
          *  \brief Is it a valid instruction ?

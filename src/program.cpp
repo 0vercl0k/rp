@@ -1,7 +1,7 @@
 /*
     This file is part of rp++.
 
-    Copyright (C) 2013, Axel "0vercl0k" Souchet <0vercl0k at tuxfamily.org>
+    Copyright (C) 2014, Axel "0vercl0k" Souchet <0vercl0k at tuxfamily.org>
     All rights reserved.
 
     rp++ is free software: you can redistribute it and/or modify
@@ -27,13 +27,13 @@
 #include "raw.hpp"
 #include "x86.hpp"
 #include "x64.hpp"
+#include "arm.hpp"
 #include "section.hpp"
 #include "coloshell.hpp"
 #include "rpexception.hpp"
 #include "toolbox.hpp"
 
 Program::Program(const std::string & program_path, CPU::E_CPU arch)
-: m_cpu(NULL), m_exformat(NULL)
 {
     unsigned int magic_dword = 0;
 
@@ -45,27 +45,25 @@ Program::Program(const std::string & program_path, CPU::E_CPU arch)
     /* If we know the CPU in the constructor, it is a raw file */
     if(arch != CPU::CPU_UNKNOWN)
     {
-        m_exformat = new (std::nothrow) Raw();
-        if(m_exformat == NULL)
-            RAISE_EXCEPTION("Cannot allocate raw");
+        m_exformat = std::make_shared<Raw>();
         
         switch(arch)
         {
             case CPU::CPU_x86:
-                m_cpu = new (std::nothrow) x86();
+                m_cpu = std::make_shared<x86>();
                 break;
 
             case CPU::CPU_x64:
-                m_cpu = new (std::nothrow) x64();
+                m_cpu = std::make_shared<x64>();
                 break;
+
+			case CPU::CPU_ARM:
+				m_cpu = std::make_shared<ARM>();
+				break;
 
             default:
                 RAISE_EXCEPTION("Don't know your architecture");
         }
-
-        if(m_cpu == NULL)
-            RAISE_EXCEPTION("Cannot allocate m_cpu");
- 
     }
     /* This isn't a raw file, we have to determine the executable format and the cpu */
     else
@@ -89,12 +87,6 @@ Program::~Program(void)
 {
     if(m_file.is_open())
         m_file.close();
-    
-    if(m_exformat != NULL)
-        delete m_exformat;
-
-    if(m_cpu != NULL)
-        delete m_cpu;
 }
 
 void Program::display_information(VerbosityLevel lvl)
@@ -102,31 +94,32 @@ void Program::display_information(VerbosityLevel lvl)
     m_exformat->display_information(lvl);
 }
 
-std::multiset<Gadget*, Gadget::Sort> Program::find_gadgets(unsigned int depth, unsigned int engine_display_option)
+void Program::find_gadgets(unsigned int depth, std::multiset<std::shared_ptr<Gadget>, Gadget::Sort> &gadgets_found, unsigned int disass_engine_options)
 {
-    std::multiset<Gadget*, Gadget::Sort> gadgets_found;
+    unsigned long long counter = 0;
 
     /* To do a ROP gadget research, we need to know the executable section */
-    std::vector<Section*> executable_sections = m_exformat->get_executables_section(m_file);
+    std::vector<std::shared_ptr<Section>> executable_sections = m_exformat->get_executables_section(m_file);
     if(executable_sections.size() == 0)
         std::cout << "It seems your binary haven't executable sections." << std::endl;
 
     /* Walk the executable sections */
-    for(std::vector<Section*>::iterator it_sec = executable_sections.begin(); it_sec != executable_sections.end(); ++it_sec)
+    for(std::vector<std::shared_ptr<Section>>::iterator it_sec = executable_sections.begin(); it_sec != executable_sections.end(); ++it_sec)
     {
         std::cout << "in " << (*it_sec)->get_name() << std::endl;
         unsigned long long va_section = (*it_sec)->get_vaddr();
 
-        /* Let the cpu research */
-        std::multiset<Gadget*> gadgets = m_cpu->find_gadget_in_memory(
+        m_cpu->find_gadget_in_memory(
             (*it_sec)->get_section_buffer(),
             (*it_sec)->get_size(),
             va_section,
             depth,
-            engine_display_option
+            gadgets_found,
+			disass_engine_options
         );
 
-        std::cout << gadgets.size() << " found." << std::endl << std::endl;
+        std::cout << (gadgets_found.size() - counter) << " found." << std::endl << std::endl;
+        counter = gadgets_found.size();
 
         /* 
             XXX: 
@@ -135,22 +128,16 @@ std::multiset<Gadget*, Gadget::Sort> Program::find_gadgets(unsigned int depth, u
 
                 It will introduce differences between the number of unique gadgets found!
         */
-
-        /* Mergin'! */
-        for(std::multiset<Gadget*>::iterator it_g = gadgets.begin(); it_g != gadgets.end(); ++it_g)
-            gadgets_found.insert(*it_g);
     }
-
-    return gadgets_found;
 }
 
 void Program::search_and_display(const unsigned char* hex_values, unsigned int size)
 {
-    std::vector<Section*> executable_sections = m_exformat->get_executables_section(m_file);
+    std::vector<std::shared_ptr<Section>> executable_sections = m_exformat->get_executables_section(m_file);
     if(executable_sections.size() == 0)
         std::cout << "It seems your binary haven't executable sections." << std::endl;
 
-    for(std::vector<Section*>::iterator it = executable_sections.begin(); it != executable_sections.end(); ++it)
+    for(std::vector<std::shared_ptr<Section>>::iterator it = executable_sections.begin(); it != executable_sections.end(); ++it)
     {
         std::list<unsigned long long> ret = (*it)->search_in_memory(hex_values, size);
         for(std::list<unsigned long long>::iterator it2 = ret.begin(); it2 != ret.end(); ++it2)
@@ -161,4 +148,9 @@ void Program::search_and_display(const unsigned char* hex_values, unsigned int s
             display_offset_lf(va, hex_values, size); 
         }
     }
+}
+
+unsigned long long Program::get_image_base_address(void)
+{
+    return m_exformat->get_image_base_address();
 }
