@@ -32,7 +32,6 @@ Yeah, here are some benchmarks I have done on my personal laptop (Win7 x64, Inte
 
 
 ## Screenshot!
-============
 
 rp++-v1 on Win7 x64 / Debian Squeeze x64 / FreeBSD x64 / Mac OSX Lion x64:
 <img src="http://image.noelshack.com/fichiers/2014/31/1406551461-rop-mosaic.png">
