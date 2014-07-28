@@ -3,10 +3,13 @@
 ## Description
 
 rp++ is a full-cpp written tool that aims to find ROP sequences in PE/Elf/Mach-O (doesn't support the FAT binaries) x86/x64/ARM binaries.
+
 It is open-source, sort-of documented with Doxygen and has been tested on several OS: Debian / Windows 8.1 / Mac OSX Lion (10.7.3). Moreover, it is x64 compatible.
+
 By the way, the tool is a standalone executable ; you will upload static-compiled binaries for each OS.
 
 You can build very easily rp++ with CMake. If you are not familiar with it, it will just generate a project file for the IDE you want.
+
 There are also some other things you will be able to do with rp++, like finding hexadecimal values, or strings, etc. ; it's always handy to have those kind of features during CTFs for example.
 
 
@@ -40,20 +43,57 @@ rp++-v1 on Win7 x64 / Debian Squeeze x64 / FreeBSD x64 / Mac OSX Lion x64:
 
 ####USAGE:
 <pre>
+./rp++ [-hv] [-f <binary path>] [-i <1,2,3>] [-r <positive int>] [--raw=<archi>] [--unique] [--search-hexa=<\x90A\x90>]
+[--search-int=<int in hex>] [--colors] [--rva=<0xdeadbeef>] [--bad-bytes=<\x90A\x90>] [--thumb]
 </pre>
 
 ####OPTIONS:
 <pre>
+  -f, --file=<binary path>  give binary path
+  -i, --info=<1,2,3>        display information about the binary header
+  -r, --rop=<positive int>  find useful gadget for your future exploits, arg is the gadget maximum size in instructions
+  --raw=<archi>             find gadgets in a raw file, 'archi' must be in the following list: x86, x64, arm
+  --unique                  display only unique gadget
+  --search-hexa=<\x90A\x90> try to find hex values
+  --search-int=<int in hex> try to find a pointer on a specific integer value
+  -h, --help                print this help and exit
+  -v, --version             print version information and exit
+  --colors                  enable colors
+  --rva=<0xdeadbeef>        don't use the image base of the binary, but yours instead
+  --bad-bytes=<\x90A\x90>   the bytes you don't want to see in the gadgets' addresses
+  --thumb                   enable thumb mode when looking for ARM gadgets
 </pre>
 
 ## Standalone binaries
 
 ### rp++-v1
-I've generated an x86 and an x64 versions for Windows (compiled with VS 2010 on Win7 x64), Linux (compiled with gcc 4.4.5 on Debian x64 6.0.1), FreeBSD (compiled with gcc 4.2.1 on FreeBSD 8.2) and Mac OSX (compiled with gcc 4.2.1 on OSX 10.7.3 ; not statically linked): 
+I've generated binaries for:
+  * Windows compiled with VS 2010 on Win7 x64,
+  * Linux compiled with GCC 4.4.5 on Debian x64 6.0.1,
+  * FreeBSD compiled with GCC 4.2.1 on FreeBSD 8.2,
+  * Mac OSX compiled with GCC 4.2.1 on OSX 10.7.3 (not statically linked though).
+
+Binaries have been uploaded here:
 https://github.com/0vercl0k/rp/downloads
 
 ### rp++-v2
 Soooon!
+
+## Build-it yourself
+### On Linux-like platforms:
+<pre>
+$ git clone https://github.com/0vercl0k/rp.git
+$ cd rp
+$ mkdir build && cd build
+$ cmake .. && make
+$ # Binary should now be in ../bin :-)
+</pre>
+
+### On Windows:
+1. Download CMake
+2. Launch CMake & generate a VS project inside the directory you want
+3. Launch the generated VS project
+4. Compile!
 
 ## Contact
 I really want to improve this project, so really, if you have any remark regarding this tool (it includes: feature request, bug report or buying me beers), feel free to contact me ; I'm reachable on IRC/twitter/email/github.
