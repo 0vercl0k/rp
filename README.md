@@ -72,7 +72,11 @@ I've generated binaries for:
   * Mac OSX compiled with GCC 4.2.1 on OSX 10.7.3 (not statically linked though).
 
 Binaries have been uploaded here:
-https://github.com/0vercl0k/rp/downloads
+https://github.com/0vercl0k/rp/releases/tag/v1
+
+### rp++-v2-beta
+
+https://github.com/0vercl0k/rp/releases/tag/v2-beta
 
 ### rp++-v2
 Soooon!
