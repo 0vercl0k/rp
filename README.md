@@ -41,24 +41,24 @@ rp++-v1 on Win7 x64 / Debian Squeeze x64 / FreeBSD x64 / Mac OSX Lion x64:
 
 ####USAGE:
 <pre>
-./rp++ [-hv] [-f <binary path>] [-i <1,2,3>] [-r <positive int>] [--raw=<archi>] [--unique] [--search-hexa=<\x90A\x90>]
-[--search-int=<int in hex>] [--colors] [--rva=<0xdeadbeef>] [--bad-bytes=<\x90A\x90>] [--thumb]
+./rp++ [-hv] [-f &lt;binary path&gt;] [-i &lt;1,2,3&gt;] [-r &lt;positive int&gt;] [--raw=&lt;archi&gt;] [--unique] [--search-hexa=&lt;\x90A\x90&gt;]
+[--search-int=&lt;int in hex&gt;] [--colors] [--rva=&lt;0xdeadbeef&gt;] [--bad-bytes=&lt;\x90A\x90&gt;] [--thumb]
 </pre>
 
 ####OPTIONS:
 <pre>
-  -f, --file=<binary path>  give binary path
-  -i, --info=<1,2,3>        display information about the binary header
-  -r, --rop=<positive int>  find useful gadget for your future exploits, arg is the gadget maximum size in instructions
-  --raw=<archi>             find gadgets in a raw file, 'archi' must be in the following list: x86, x64, arm
+  -f, --file=&lt;binary path&gt;  give binary path
+  -i, --info=&lt;1,2,3&gt;        display information about the binary header
+  -r, --rop=&lt;positive int&gt;  find useful gadget for your future exploits, arg is the gadget maximum size in instructions
+  --raw=&lt;archi&gt;             find gadgets in a raw file, 'archi' must be in the following list: x86, x64, arm
   --unique                  display only unique gadget
-  --search-hexa=<\x90A\x90> try to find hex values
-  --search-int=<int in hex> try to find a pointer on a specific integer value
+  --search-hexa=&lt;\x90A\x90&gt; try to find hex values
+  --search-int=&lt;int in hex&gt; try to find a pointer on a specific integer value
   -h, --help                print this help and exit
   -v, --version             print version information and exit
   --colors                  enable colors
-  --rva=<0xdeadbeef>        don't use the image base of the binary, but yours instead
-  --bad-bytes=<\x90A\x90>   the bytes you don't want to see in the gadgets' addresses
+  --rva=&lt;0xdeadbeef&gt;        don't use the image base of the binary, but yours instead
+  --bad-bytes=&lt;\x90A\x90&gt;   the bytes you don't want to see in the gadgets' addresses
   --thumb                   enable thumb mode when looking for ARM gadgets
 </pre>
 
