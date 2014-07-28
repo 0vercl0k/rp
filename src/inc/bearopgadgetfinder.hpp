@@ -112,8 +112,6 @@ class BeaRopGadgetFinder
         UInt32 m_arch; /*!< architecture the BeaEngine will use to disassemble*/
 
         unsigned int m_depth; /*!< the maximum number of instruction that can composed a gadget*/
-
-        unsigned long long m_vaddr; /*!< the real virtual address of the data you want to disassemble*/
 };
 
 #endif

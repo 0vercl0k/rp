@@ -55,7 +55,6 @@ class Elf : public ExecutableFormat
         }
 
         std::shared_ptr<ExecutableLinkingFormatLayout> m_ELFLayout;
-        CPU::E_CPU m_CPU;
 };
 
 #endif

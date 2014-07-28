@@ -59,7 +59,7 @@ extern bool g_are_colors_enabled;
  *
  * \param colo: the color you want to activate
  */
-static void enable_color_(const Colors colo)
+static inline void enable_color_(const Colors colo)
 {
 #ifdef WINDOWS
     HANDLE hStdOutput = GetStdHandle(STD_OUTPUT_HANDLE);
@@ -85,7 +85,7 @@ static void enable_color_(const Colors colo)
  *
  * \param colo: the color you want to activate
  */
-static void enable_color(const Colors colo)
+static inline void enable_color(const Colors colo)
 {
     if(g_are_colors_enabled)
         enable_color_(colo);
@@ -119,7 +119,7 @@ static void disable_color_(void)
  * \fn static void disable_color_(const Colors colo)
  * \brief Unset the color you have previously set
  */
-static void disable_color(void)
+static inline void disable_color(void)
 {
     if(g_are_colors_enabled)
         disable_color_();
