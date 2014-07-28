@@ -4,7 +4,7 @@
 
 rp++ is a full-cpp written tool that aims to find ROP sequences in PE/Elf/Mach-O (doesn't support the FAT binaries) x86/x64/ARM binaries.
 
-It is open-source, sort-of documented with Doxygen and has been tested on several OS: Debian / Windows 8.1 / Mac OSX Lion (10.7.3). Moreover, it is x64 compatible.
+It is open-source, sort-of documented with Doxygen and has been tested on several OS: Ubuntu14 / Windows 8.1 / Mac OSX Lion (10.7.3). Moreover, it is x64 compatible.
 
 By the way, the tool is a standalone executable ; you will upload static-compiled binaries for each OS.
 
@@ -76,6 +76,11 @@ https://github.com/0vercl0k/rp/releases/tag/v1
 
 ### rp++-v2-beta
 
+Binaries have been generated for:
+  * Windows compiled with VS 2012 on Win8.1 x64,
+  * Linux compiled with GCC 4.8.2 on Ubuntu14 x64,
+
+Find them here:
 https://github.com/0vercl0k/rp/releases/tag/v2-beta
 
 ### rp++-v2
