@@ -36,7 +36,7 @@ int main(int argc, char* argv[])
     struct arg_str  *raw      = arg_str0(NULL, "raw", "<archi>", "find gadgets in a raw file, 'archi' must be in the following list: x86, x64, arm");
     struct arg_lit  *unique   = arg_lit0(NULL, "unique", "display only unique gadget");
     struct arg_str  *shexa    = arg_str0(NULL, "search-hexa", "<\\x90A\\x90>", "try to find hex values");
-    struct arg_str  *badbytes = arg_str0(NULL, "bad-bytes", "<\\x90A\x90>", "the bytes you don't want to see in the gadgets' addresses");
+    struct arg_str  *badbytes = arg_str0(NULL, "bad-bytes", "<\\x90A\\x90>", "the bytes you don't want to see in the gadgets' addresses");
     struct arg_str  *sint     = arg_str0(NULL, "search-int", "<int in hex>", "try to find a pointer on a specific integer value");
     struct arg_lit  *help     = arg_lit0("h", "help", "print this help and exit");
     struct arg_lit  *version  = arg_lit0("v", "version", "print version information and exit");
