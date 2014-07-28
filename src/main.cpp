@@ -66,7 +66,7 @@ int main(int argc, char* argv[])
         {
             w_yel_lf("DESCRIPTION:");
             w_red("rp++");
-            std::cout << " allows you to find ROP gadgets in pe/elf/mach-o x86/x64 binaries." << std::endl;
+            std::cout << " allows you to find ROP gadgets in pe/elf/mach-o x86/x64/ARM binaries." << std::endl;
             std::cout << "NB: The original idea comes from (@jonathansalwan) and his 'ROPGadget' tool." << std::endl << std::endl;
             
             w_yel_lf("USAGE:");
