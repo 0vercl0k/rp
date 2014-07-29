@@ -64,15 +64,8 @@ rp++-v1 on Win7 x64 / Debian Squeeze x64 / FreeBSD x64 / Mac OSX Lion x64:
 
 ## Standalone binaries
 
-### rp++-v1
-I've generated binaries for:
-  * Windows compiled with VS 2010 on Win7 x64,
-  * Linux compiled with GCC 4.4.5 on Debian x64 6.0.1,
-  * FreeBSD compiled with GCC 4.2.1 on FreeBSD 8.2,
-  * Mac OSX compiled with GCC 4.2.1 on OSX 10.7.3 (not statically linked though).
-
-Binaries have been uploaded here:
-https://github.com/0vercl0k/rp/releases/tag/v1
+### rp++-v2
+Soooon!
 
 ### rp++-v2-beta
 
@@ -83,8 +76,15 @@ Binaries have been generated for:
 Find them here:
 https://github.com/0vercl0k/rp/releases/tag/v2-beta
 
-### rp++-v2
-Soooon!
+### rp++-v1
+I've generated binaries for:
+  * Windows compiled with VS 2010 on Win7 x64,
+  * Linux compiled with GCC 4.4.5 on Debian x64 6.0.1,
+  * FreeBSD compiled with GCC 4.2.1 on FreeBSD 8.2,
+  * Mac OSX compiled with GCC 4.2.1 on OSX 10.7.3 (not statically linked though).
+
+Binaries have been uploaded here:
+https://github.com/0vercl0k/rp/releases/tag/v1
 
 ## Build-it yourself
 ### On Linux-like platforms:
