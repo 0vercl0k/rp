@@ -156,13 +156,13 @@ int main(int argc, char* argv[])
                     std::cout << "You decided to keep only the unique ones, " << unique_gadgets.size() << " unique gadgets found." << std::endl;
 
                     /* Now we walk the gadgets found and set the VA */
-                    for(auto it = unique_gadgets.cbegin(); it != unique_gadgets.cend(); ++it)
-                        display_gadget_lf((*it)->get_first_absolute_address(), *it);
+                    for(const auto &unique_gadget : unique_gadgets)
+                        display_gadget_lf(unique_gadget->get_first_absolute_address(), unique_gadget);
                 }
                 else
                 {
-                    for(auto it = all_gadgets.cbegin(); it != all_gadgets.cend(); ++it)
-                        display_gadget_lf((*it)->get_first_absolute_address(), *it);
+                    for(const auto &gadget : all_gadgets)
+                        display_gadget_lf(gadget->get_first_absolute_address(), gadget);
                 }
 
                 if(badbytes->count > 0)

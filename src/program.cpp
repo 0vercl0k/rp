@@ -105,14 +105,14 @@ void Program::find_gadgets(unsigned int depth, std::multiset<std::shared_ptr<Gad
         std::cout << "It seems your binary haven't executable sections." << std::endl;
 
     /* Walk the executable sections */
-    for(auto it_sec = executable_sections.begin(); it_sec != executable_sections.end(); ++it_sec)
+    for(auto executable_section : executable_sections)
     {
-        std::cout << "in " << (*it_sec)->get_name() << std::endl;
-        unsigned long long va_section = (*it_sec)->get_vaddr();
+        std::cout << "in " << executable_section->get_name() << std::endl;
+        unsigned long long va_section = executable_section->get_vaddr();
 
         m_cpu->find_gadget_in_memory(
-            (*it_sec)->get_section_buffer(),
-            (*it_sec)->get_size(),
+            executable_section->get_section_buffer(),
+            executable_section->get_size(),
             va_section,
             depth,
             gadgets_found,
@@ -138,13 +138,13 @@ void Program::search_and_display(const unsigned char* hex_values, unsigned int s
     if(executable_sections.size() == 0)
         std::cout << "It seems your binary haven't executable sections." << std::endl;
 
-    for(auto it = executable_sections.begin(); it != executable_sections.end(); ++it)
+    for(auto &executable_section : executable_sections)
     {
-        std::list<unsigned long long> ret = (*it)->search_in_memory(hex_values, size);
-        for(auto it2 = ret.begin(); it2 != ret.end(); ++it2)
+        std::list<unsigned long long> offsets = executable_section->search_in_memory(hex_values, size);
+        for(auto &offset : offsets)
         {
-            unsigned long long va_section = (*it)->get_vaddr();
-            unsigned long long va = va_section + *it2;
+            unsigned long long va_section = executable_section->get_vaddr();
+            unsigned long long va = va_section + offset;
             
             display_offset_lf(va, hex_values, size); 
         }

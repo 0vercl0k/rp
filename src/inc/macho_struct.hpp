@@ -359,16 +359,16 @@ struct MachoArchLayout : public MachoLayout
     {
         std::vector<std::shared_ptr<Section>> exc_sect;
 
-        for(auto it = sections.begin(); it != sections.end(); ++it)
+        for(auto &section : sections)
         {
-            if((*it)->flags & S_ATTR_PURE_INSTRUCTIONS || (*it)->flags & S_ATTR_SOME_INSTRUCTIONS)
+            if(section->flags & S_ATTR_PURE_INSTRUCTIONS || section->flags & S_ATTR_SOME_INSTRUCTIONS)
             {
-				// XXX: Hum g++ doesn't like make_shared + (*it) being a packed structure
+				// XXX: Hum g++ doesn't like make_shared + section being a packed structure
                 std::shared_ptr<Section> s(new Section(
-                    (char*)(*it)->sectname,
-                    (*it)->offset,
-                    (*it)->addr,
-                    (*it)->size
+                    (char*)section->sectname,
+                    section->offset,
+                    section->addr,
+                    section->size
                 ));
 
                 s->dump(file);
@@ -385,11 +385,11 @@ struct MachoArchLayout : public MachoLayout
     {
         header.display(lvl);
 
-        for(auto it = seg_commands.begin(); it != seg_commands.end(); ++it)
-            (*it)->display(lvl);
+        for(auto &segcommand : seg_commands)
+            segcommand->display(lvl);
 
-        for(auto it = sections.begin(); it != sections.end(); ++it)
-            (*it)->display(lvl);
+        for(auto &section : sections)
+            section->display(lvl);
     }
 
     unsigned long long get_image_base_address(void)

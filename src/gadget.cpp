@@ -42,7 +42,7 @@ unsigned int Gadget::get_size(void) const
 
 void Gadget::add_instructions(std::list<Instruction> &instrs, unsigned long long va_section)
 {
-    for(auto it = instrs.cbegin(); it != instrs.cend(); ++it)
+    for(const auto &instr : instrs)
     {
         /* 
          * If we haven't any offset yet, it means this instruction is the first one added
@@ -52,20 +52,20 @@ void Gadget::add_instructions(std::list<Instruction> &instrs, unsigned long long
          */
         if(m_offsets.size() == 0)
         {
-            m_offsets.push_back(it->get_offset());
+            m_offsets.push_back(instr.get_offset());
             m_va_sections.push_back(va_section);
         }
         
-        std::shared_ptr<Instruction> instr_copy = std::make_shared<Instruction>(*it);
+        std::shared_ptr<Instruction> instr_copy = std::make_shared<Instruction>(instr);
 
         /* We build our gadget instruction per instruction */
         m_instructions.push_back(instr_copy);
 
         /* Don't forget to increment the size */
-        m_size += it->get_size();
+        m_size += instr.get_size();
 
         /* Build the disassembly instruction per instruction */
-        m_disassembly += it->get_disassembly() + " ; ";
+        m_disassembly += instr.get_disassembly() + " ; ";
     }
 }
 

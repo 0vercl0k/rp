@@ -455,10 +455,8 @@ struct PELayout : public PortableExecutableLayout
         imgNtHeaders.display(lvl);
         if(lvl > VERBOSE_LEVEL_1)
         {
-            for(auto it = imgSectionHeaders.begin();
-                it != imgSectionHeaders.end();
-                ++it)
-                (*it)->display();
+            for(auto &sectionheader : imgSectionHeaders)
+                sectionheader->display();
         }
     }
 

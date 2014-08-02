@@ -285,10 +285,8 @@ struct ELFLayout : public ExecutableLinkingFormatLayout
         unsigned int i = 0;
         elfHeader.display(lvl);
 
-        for(auto it = elfProgramHeaders.begin();
-            it != elfProgramHeaders.end();
-            ++it)
-                (*it)->display(lvl);
+        for(auto &programheader : elfProgramHeaders)
+                programheader->display(lvl);
 
         w_yel_lf("-> Elf Headers:");
         std::cout << std::setw(12) << std::setfill(' ') << std::left;
@@ -301,12 +299,10 @@ struct ELFLayout : public ExecutableLinkingFormatLayout
         w_gre("name");
         std::cout << std::endl << std::setw(70) << std::setfill('-') << "-" << std::endl;
 
-        for(auto it = elfSectionHeaders.begin();
-            it != elfSectionHeaders.end();
-            ++it)
+        for(auto &sectionheader : elfSectionHeaders)
         {
             std::cout << "0x" << std::setw(10) << std::setfill(' ') << std::left << i++;
-            (*it)->display(lvl);
+            sectionheader->display(lvl);
         }
     }
 
@@ -398,16 +394,16 @@ struct ELFLayout : public ExecutableLinkingFormatLayout
     {
         std::vector<std::shared_ptr<Section>> exec_sections;
 
-        for(auto it = elfProgramHeaders.begin(); it != elfProgramHeaders.end(); ++it)
+        for(auto &programheader : elfProgramHeaders)
         {
-            if((*it)->p_flags & 1)
+            if(programheader->p_flags & 1)
             {
 				// XXX: g++ + std::make_shared + packed struct
                 std::shared_ptr<Section> sec(new Section(
-                    type_to_str((*it)->p_type).c_str(),
-                    (*it)->p_offset,
-                    (*it)->p_vaddr,
-                    (*it)->p_filesz
+                    type_to_str(programheader->p_type).c_str(),
+                    programheader->p_offset,
+                    programheader->p_vaddr,
+                    programheader->p_filesz
                 ));
 
                 if(sec == NULL)

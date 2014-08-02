@@ -144,9 +144,9 @@ std::vector<unsigned char> string_to_hex(const char* hex)
 void only_unique_gadgets(std::multiset<std::shared_ptr<Gadget>, Gadget::Sort> &list_gadgets, std::set<std::shared_ptr<Gadget>, Gadget::Sort> &unique_gadgets)
 {
      /* Now we have a list of gadget, cool, but we want to keep only the unique! */
-    for(auto it_g = list_gadgets.cbegin(); it_g != list_gadgets.cend(); ++it_g)
+    for(const auto &gadget : list_gadgets)
     {
-        auto g = unique_gadgets.insert(*it_g);
+        auto g = unique_gadgets.insert(gadget);
         /* If a gadget, with the same disassembly, has already been found ; just add its offset in the existing one */
         if(g.second == false)
         {               
@@ -155,8 +155,8 @@ void only_unique_gadgets(std::multiset<std::shared_ptr<Gadget>, Gadget::Sort> &l
                 maybe you can ask yourself 'Why do we store its va section ?' and the answer is:
                 because you can find the same gadget in another executable sections!
             */
-            (*g.first)->add_new_one((*it_g)->get_first_offset(),
-                (*it_g)->get_first_va_section()
+            (*g.first)->add_new_one(gadget->get_first_offset(),
+                gadget->get_first_va_section()
             );
         }
     }
@@ -169,8 +169,8 @@ bool does_badbytes_filter_apply(unsigned long long va, std::vector<unsigned char
     unsigned char t = (va >>  8) & 0xff;
     unsigned char l = (va >>  0) & 0xff;
 
-    for(auto it = badbytes.cbegin(); it != badbytes.cend(); ++it)
-        if((f == *it) || (s == *it) || (t == *it) || (l == *it))
+    for(const auto &badbyte : badbytes)
+        if((f == badbyte) || (s == badbyte) || (t == badbyte) || (l == badbyte))
             return true;
 
     return false;
