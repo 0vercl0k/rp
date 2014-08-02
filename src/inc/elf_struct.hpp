@@ -288,7 +288,7 @@ struct ELFLayout : public ExecutableLinkingFormatLayout
         unsigned int i = 0;
         elfHeader.display(lvl);
 
-        for(iter_elf_phdr it = elfProgramHeaders.begin();
+        for(auto it = elfProgramHeaders.begin();
             it != elfProgramHeaders.end();
             ++it)
                 (*it)->display(lvl);
@@ -304,7 +304,7 @@ struct ELFLayout : public ExecutableLinkingFormatLayout
         w_gre("name");
         std::cout << std::endl << std::setw(70) << std::setfill('-') << "-" << std::endl;
 
-        for(iter_shdr_abs it = elfSectionHeaders.begin();
+        for(auto it = elfSectionHeaders.begin();
             it != elfSectionHeaders.end();
             ++it)
         {
@@ -401,7 +401,7 @@ struct ELFLayout : public ExecutableLinkingFormatLayout
     {
         std::vector<std::shared_ptr<Section>> exec_sections;
 
-        for(iter_elf_phdr it = elfProgramHeaders.begin(); it != elfProgramHeaders.end(); ++it)
+        for(auto it = elfProgramHeaders.begin(); it != elfProgramHeaders.end(); ++it)
         {
             if((*it)->p_flags & 1)
             {

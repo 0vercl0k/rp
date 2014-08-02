@@ -144,9 +144,9 @@ std::vector<unsigned char> string_to_hex(const char* hex)
 void only_unique_gadgets(std::multiset<std::shared_ptr<Gadget>, Gadget::Sort> &list_gadgets, std::set<std::shared_ptr<Gadget>, Gadget::Sort> &unique_gadgets)
 {
      /* Now we have a list of gadget, cool, but we want to keep only the unique! */
-    for(std::multiset<std::shared_ptr<Gadget>, Gadget::Sort>::const_iterator it_g = list_gadgets.begin(); it_g != list_gadgets.end(); ++it_g)
+    for(auto it_g = list_gadgets.cbegin(); it_g != list_gadgets.cend(); ++it_g)
     {
-        std::pair<std::set<std::shared_ptr<Gadget>, Gadget::Sort>::iterator, bool> g = unique_gadgets.insert(*it_g);
+        auto g = unique_gadgets.insert(*it_g);
         /* If a gadget, with the same disassembly, has already been found ; just add its offset in the existing one */
         if(g.second == false)
         {               
@@ -169,7 +169,7 @@ bool does_badbytes_filter_apply(unsigned long long va, std::vector<unsigned char
     unsigned char t = (va >>  8) & 0xff;
     unsigned char l = (va >>  0) & 0xff;
 
-    for(std::vector<unsigned char>::const_iterator it = badbytes.begin(); it != badbytes.end(); ++it)
+    for(auto it = badbytes.cbegin(); it != badbytes.cend(); ++it)
         if((f == *it) || (s == *it) || (t == *it) || (l == *it))
             return true;
 

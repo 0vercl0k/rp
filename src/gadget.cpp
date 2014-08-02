@@ -42,7 +42,7 @@ unsigned int Gadget::get_size(void) const
 
 void Gadget::add_instructions(std::list<Instruction> &instrs, unsigned long long va_section)
 {
-    for(std::list<Instruction>::const_iterator it = instrs.begin(); it != instrs.end(); ++it)
+    for(auto it = instrs.cbegin(); it != instrs.cend(); ++it)
     {
         /* 
          * If we haven't any offset yet, it means this instruction is the first one added

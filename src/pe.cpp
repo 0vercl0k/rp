@@ -158,7 +158,7 @@ std::vector<std::shared_ptr<Section>> PE::get_executables_section(std::ifstream 
 {
     std::vector<std::shared_ptr<Section>> exec_sections;
 
-    for(std::vector<std::shared_ptr<RP_IMAGE_SECTION_HEADER>>::iterator it = m_pPELayout->imgSectionHeaders.begin();
+    for(auto it = m_pPELayout->imgSectionHeaders.begin();
         it != m_pPELayout->imgSectionHeaders.end();
         ++it)
     {

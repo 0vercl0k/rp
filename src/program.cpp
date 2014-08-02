@@ -105,7 +105,7 @@ void Program::find_gadgets(unsigned int depth, std::multiset<std::shared_ptr<Gad
         std::cout << "It seems your binary haven't executable sections." << std::endl;
 
     /* Walk the executable sections */
-    for(std::vector<std::shared_ptr<Section>>::iterator it_sec = executable_sections.begin(); it_sec != executable_sections.end(); ++it_sec)
+    for(auto it_sec = executable_sections.begin(); it_sec != executable_sections.end(); ++it_sec)
     {
         std::cout << "in " << (*it_sec)->get_name() << std::endl;
         unsigned long long va_section = (*it_sec)->get_vaddr();
@@ -138,10 +138,10 @@ void Program::search_and_display(const unsigned char* hex_values, unsigned int s
     if(executable_sections.size() == 0)
         std::cout << "It seems your binary haven't executable sections." << std::endl;
 
-    for(std::vector<std::shared_ptr<Section>>::iterator it = executable_sections.begin(); it != executable_sections.end(); ++it)
+    for(auto it = executable_sections.begin(); it != executable_sections.end(); ++it)
     {
         std::list<unsigned long long> ret = (*it)->search_in_memory(hex_values, size);
-        for(std::list<unsigned long long>::iterator it2 = ret.begin(); it2 != ret.end(); ++it2)
+        for(auto it2 = ret.begin(); it2 != ret.end(); ++it2)
         {
             unsigned long long va_section = (*it)->get_vaddr();
             unsigned long long va = va_section + *it2;

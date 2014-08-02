@@ -156,12 +156,12 @@ int main(int argc, char* argv[])
                     std::cout << "You decided to keep only the unique ones, " << unique_gadgets.size() << " unique gadgets found." << std::endl;
 
                     /* Now we walk the gadgets found and set the VA */
-                    for(std::set<std::shared_ptr<Gadget>, Gadget::Sort>::const_iterator it = unique_gadgets.begin(); it != unique_gadgets.end(); ++it)
+                    for(auto it = unique_gadgets.cbegin(); it != unique_gadgets.cend(); ++it)
                         display_gadget_lf((*it)->get_first_absolute_address(), *it);
                 }
                 else
                 {
-                    for(std::multiset<std::shared_ptr<Gadget>, Gadget::Sort>::iterator it = all_gadgets.begin(); it != all_gadgets.end(); ++it)
+                    for(auto it = all_gadgets.cbegin(); it != all_gadgets.cend(); ++it)
                         display_gadget_lf((*it)->get_first_absolute_address(), *it);
                 }
 

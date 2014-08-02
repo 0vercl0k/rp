@@ -362,7 +362,7 @@ struct MachoArchLayout : public MachoLayout
     {
         std::vector<std::shared_ptr<Section>> exc_sect;
 
-        for(iter_rp_section it = sections.begin(); it != sections.end(); ++it)
+        for(auto it = sections.begin(); it != sections.end(); ++it)
         {
             if((*it)->flags & S_ATTR_PURE_INSTRUCTIONS || (*it)->flags & S_ATTR_SOME_INSTRUCTIONS)
             {
@@ -388,10 +388,10 @@ struct MachoArchLayout : public MachoLayout
     {
         header.display(lvl);
 
-        for(iter_rp_segment it = seg_commands.begin(); it != seg_commands.end(); ++it)
+        for(auto it = seg_commands.begin(); it != seg_commands.end(); ++it)
             (*it)->display(lvl);
 
-        for(iter_rp_section it = sections.begin(); it != sections.end(); ++it)
+        for(auto it = sections.begin(); it != sections.end(); ++it)
             (*it)->display(lvl);
     }
 
