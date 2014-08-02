@@ -283,9 +283,6 @@ struct MachoArchLayout : public MachoLayout
     std::vector<std::shared_ptr<RP_SEGMENT_COMMAND<T>>> seg_commands;
     std::vector<std::shared_ptr<RP_SECTION<T>>> sections;
 
-    typedef typename std::vector<std::shared_ptr<RP_SECTION<T>>>::const_iterator iter_rp_section;
-    typedef typename std::vector<std::shared_ptr<RP_SEGMENT_COMMAND<T>>>::const_iterator iter_rp_segment;
-
     explicit MachoArchLayout()
     : MachoLayout(), base(0)
     {}

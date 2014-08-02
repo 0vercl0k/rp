@@ -413,8 +413,6 @@ struct PortableExecutableLayout
     RP_IMAGE_DOS_HEADER                   imgDosHeader;
     std::vector<std::shared_ptr<RP_IMAGE_SECTION_HEADER>> imgSectionHeaders;
 
-    typedef std::vector<std::shared_ptr<RP_IMAGE_SECTION_HEADER>>::const_iterator iter_sect_header;
-
     virtual ~PortableExecutableLayout(void)
     {
     }

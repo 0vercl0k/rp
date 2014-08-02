@@ -272,9 +272,6 @@ struct ELFLayout : public ExecutableLinkingFormatLayout
     T offset_string_table, size_string_table;
     unsigned long long base;
 
-    typedef typename std::vector<std::shared_ptr<Elf_Phdr<T>>>::const_iterator iter_elf_phdr;
-    typedef typename std::vector<std::shared_ptr<Elf_Shdr_Abstraction<T>>>::const_iterator iter_shdr_abs;
-
     ELFLayout(void)
     : ExecutableLinkingFormatLayout(), base(0)
     {}
