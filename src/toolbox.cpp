@@ -122,7 +122,7 @@ std::vector<unsigned char> string_to_hex(const char* hex)
                     0
                 };
 
-                byte = strtoul(str_byte, NULL, 16);
+                byte = strtoul(str_byte, nullptr, 16);
                 i += 4;
             }
             else

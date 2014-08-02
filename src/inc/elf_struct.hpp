@@ -406,7 +406,7 @@ struct ELFLayout : public ExecutableLinkingFormatLayout
                     programheader->p_filesz
                 ));
 
-                if(sec == NULL)
+                if(sec == nullptr)
                     RAISE_EXCEPTION("Cannot alocate a section");
                 
                 sec->dump(file);

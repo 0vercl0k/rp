@@ -116,7 +116,7 @@ CPU::E_CPU Elf::extract_information_from_binary(std::ifstream &file)
 
 std::shared_ptr<CPU> Elf::get_cpu(std::ifstream &file)
 {
-    std::shared_ptr<CPU> cpu(NULL);
+    std::shared_ptr<CPU> cpu(nullptr);
     CPU::E_CPU cpu_type = CPU::CPU_UNKNOWN;
 
     cpu_type = extract_information_from_binary(file);
@@ -145,7 +145,7 @@ std::shared_ptr<CPU> Elf::get_cpu(std::ifstream &file)
             RAISE_EXCEPTION("Cannot determine the CPU type");
     }
     
-    if(cpu == NULL)
+    if(cpu == nullptr)
         RAISE_EXCEPTION("Cannot allocate a cpu");
 
     return cpu;

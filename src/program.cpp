@@ -34,7 +34,7 @@
 #include "toolbox.hpp"
 
 Program::Program(const std::string & program_path, CPU::E_CPU arch)
-: m_cpu(NULL), m_exformat(NULL)
+: m_cpu(nullptr), m_exformat(NULL)
 {
     unsigned int magic_dword = 0;
 
@@ -72,11 +72,11 @@ Program::Program(const std::string & program_path, CPU::E_CPU arch)
         m_file.read((char*)&magic_dword, sizeof(magic_dword));
 
         m_exformat = ExecutableFormat::GetExecutableFormat(magic_dword);
-        if(m_exformat == NULL)
+        if(m_exformat == nullptr)
             RAISE_EXCEPTION("GetExecutableFormat fails");
 
         m_cpu = m_exformat->get_cpu(m_file);
-        if(m_cpu == NULL)
+        if(m_cpu == nullptr)
             RAISE_EXCEPTION("get_cpu fails");
     }
 

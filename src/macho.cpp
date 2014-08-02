@@ -31,7 +31,7 @@ Macho::~Macho(void)
 
 std::shared_ptr<CPU> Macho::get_cpu(std::ifstream &file)
 {
-    std::shared_ptr<CPU> cpu(NULL);
+    std::shared_ptr<CPU> cpu(nullptr);
     RP_MACH_HEADER<x86Version> header32;
 
     std::cout << "Loading Mach-O information.." << std::endl;
@@ -64,7 +64,7 @@ std::shared_ptr<CPU> Macho::get_cpu(std::ifstream &file)
 
     file.seekg(off);
 
-    if(cpu == NULL)
+    if(cpu == nullptr)
         RAISE_EXCEPTION("Cannot allocate cpu");
 
     /* Now we can fill the structure */

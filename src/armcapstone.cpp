@@ -45,7 +45,7 @@ ArmCapstone::~ArmCapstone()
 InstructionInformation ArmCapstone::disass(const unsigned char *data, unsigned long long len, unsigned long long vaddr, DisassEngineReturn &ret)
 {
 	InstructionInformation instr;
-	cs_insn *insn = NULL;
+	cs_insn *insn = nullptr;
 
 	if(len == 0)
 		len = 4;
@@ -65,7 +65,7 @@ InstructionInformation ArmCapstone::disass(const unsigned char *data, unsigned l
 
 	instr.cap_is_branch = false;
 	instr.cap_is_valid_ending_instr = false;
-	if(insn[0].detail != NULL)
+	if(insn[0].detail != nullptr)
 	{
 		if(cs_insn_group(m_handle, insn, ARM_GRP_JUMP))
 		{
@@ -128,7 +128,7 @@ InstructionInformation ArmCapstone::disass(const unsigned char *data, unsigned l
 	ret = AllRight;
 
 	end:
-	if(insn != NULL)
+	if(insn != nullptr)
 		cs_free(insn, count);
 
 	return instr;

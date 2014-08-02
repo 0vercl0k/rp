@@ -162,7 +162,7 @@ bool BeaRopGadgetFinder::is_valid_ending_instruction(DISASM* ending_instr_d)
             is_good_branch_type && 
 
             /* Yeah, entrance isn't allowed to the jmp far/call far */
-            strstr(completeInstr, "far") == NULL
+            strstr(completeInstr, "far") == nullptr
         );
     }
 
@@ -202,7 +202,7 @@ bool BeaRopGadgetFinder::is_valid_instruction(DISASM *ending_instr_d)
         branch_type != JNL &&
         branch_type != JNG &&
         branch_type != JNB &&
-        strstr(ending_instr_d->CompleteInstr, "far") == NULL
+        strstr(ending_instr_d->CompleteInstr, "far") == nullptr
     );
 }
 

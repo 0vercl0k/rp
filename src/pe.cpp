@@ -122,7 +122,7 @@ CPU::E_CPU PE::extract_information_from_binary(std::ifstream &file)
 
 std::shared_ptr<CPU> PE::get_cpu(std::ifstream &file)
 {
-    std::shared_ptr<CPU> cpu(NULL);
+    std::shared_ptr<CPU> cpu(nullptr);
     CPU::E_CPU cpu_type = CPU::CPU_UNKNOWN;
 
     cpu_type = extract_information_from_binary(file);

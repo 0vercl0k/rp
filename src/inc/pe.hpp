@@ -50,7 +50,7 @@ class PE : public ExecutableFormat
         void init_properly_PELayout()
         {
             m_pPELayout = std::make_shared<PELayout<T>>();
-            if(m_pPELayout == NULL)
+            if(m_pPELayout == nullptr)
                 RAISE_EXCEPTION("m_PELayout allocation failed");
         }
 

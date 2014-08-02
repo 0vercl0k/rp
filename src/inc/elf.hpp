@@ -50,7 +50,7 @@ class Elf : public ExecutableFormat
         void init_properly_ELFLayout(void)
         {
             m_ELFLayout = std::make_shared<ELFLayout<T>>();
-            if(m_ELFLayout == NULL)
+            if(m_ELFLayout == nullptr)
                 RAISE_EXCEPTION("m_ELFLayout allocation failed");
         }
 

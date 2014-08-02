@@ -32,7 +32,7 @@ ExecutableFormat::~ExecutableFormat(void)
 
 std::shared_ptr<ExecutableFormat> ExecutableFormat::GetExecutableFormat(unsigned int magic_dword)
 {
-    std::shared_ptr<ExecutableFormat> exe_format(NULL);
+    std::shared_ptr<ExecutableFormat> exe_format(nullptr);
     if((magic_dword & 0xffff) == 0x5A4D)
         exe_format = std::make_shared<PE>();
     else
@@ -66,7 +66,7 @@ std::shared_ptr<ExecutableFormat> ExecutableFormat::GetExecutableFormat(unsigned
         }
     }
 
-    if(exe_format == NULL)
+    if(exe_format == nullptr)
         RAISE_EXCEPTION("Cannot allocate exe_format");
 
     return exe_format;

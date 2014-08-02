@@ -33,16 +33,16 @@ int main(int argc, char* argv[])
     struct arg_file *file     = arg_file0("f", "file", "<binary path>", "give binary path");
     struct arg_int  *display  = arg_int0("i", "info", "<1,2,3>", "display information about the binary header");
     struct arg_int  *rop      = arg_int0("r", "rop", "<positive int>", "find useful gadget for your future exploits, arg is the gadget maximum size in instructions");
-    struct arg_str  *raw      = arg_str0(NULL, "raw", "<archi>", "find gadgets in a raw file, 'archi' must be in the following list: x86, x64, arm");
-    struct arg_lit  *unique   = arg_lit0(NULL, "unique", "display only unique gadget");
-    struct arg_str  *shexa    = arg_str0(NULL, "search-hexa", "<\\x90A\\x90>", "try to find hex values");
-    struct arg_str  *badbytes = arg_str0(NULL, "bad-bytes", "<\\x90A\\x90>", "the bytes you don't want to see in the gadgets' addresses");
-    struct arg_str  *sint     = arg_str0(NULL, "search-int", "<int in hex>", "try to find a pointer on a specific integer value");
+    struct arg_str  *raw      = arg_str0(nullptr, "raw", "<archi>", "find gadgets in a raw file, 'archi' must be in the following list: x86, x64, arm");
+    struct arg_lit  *unique   = arg_lit0(nullptr, "unique", "display only unique gadget");
+    struct arg_str  *shexa    = arg_str0(nullptr, "search-hexa", "<\\x90A\\x90>", "try to find hex values");
+    struct arg_str  *badbytes = arg_str0(nullptr, "bad-bytes", "<\\x90A\\x90>", "the bytes you don't want to see in the gadgets' addresses");
+    struct arg_str  *sint     = arg_str0(nullptr, "search-int", "<int in hex>", "try to find a pointer on a specific integer value");
     struct arg_lit  *help     = arg_lit0("h", "help", "print this help and exit");
     struct arg_lit  *version  = arg_lit0("v", "version", "print version information and exit");
-    struct arg_lit  *colors   = arg_lit0(NULL, "colors", "enable colors");
-    struct arg_lit  *thumb    = arg_lit0(NULL, "thumb", "enable thumb mode when looking for ARM gadgets");
-	struct arg_str  *rva      = arg_str0(NULL, "rva", "<0xdeadbeef>", "don't use the image base of the binary, but yours instead");
+    struct arg_lit  *colors   = arg_lit0(nullptr, "colors", "enable colors");
+    struct arg_lit  *thumb    = arg_lit0(nullptr, "thumb", "enable thumb mode when looking for ARM gadgets");
+	struct arg_str  *rva      = arg_str0(nullptr, "rva", "<0xdeadbeef>", "don't use the image base of the binary, but yours instead");
     struct arg_end  *end      = arg_end(20);
     void* argtable[] = {file, display, rop, raw, unique, shexa, sint, help, version, colors, rva, badbytes, thumb, end};
 
@@ -139,7 +139,7 @@ int main(int argc, char* argv[])
                     // If not we will substract the base address to every gadget to keep only offsets
                     base = p.get_image_base_address();
                     // And we will use your new base address
-                    new_base = strtoul(rva->sval[0], NULL, 16); //XXX: Only valid with VS2k13 strtoull(rva->sval[0], NULL, 16); 
+                    new_base = strtoul(rva->sval[0], nullptr, 16); //XXX: Only valid with VS2k13 strtoull(rva->sval[0], NULL, 16); 
                 }
 
                 std::cout << "A total of " << all_gadgets.size() << " gadgets found." << std::endl;
@@ -177,7 +177,7 @@ int main(int argc, char* argv[])
             
             if(sint->count > 0)
             {
-                unsigned int val = std::strtoul(sint->sval[0], NULL, 16);
+                unsigned int val = std::strtoul(sint->sval[0], nullptr, 16);
                 p.search_and_display((const unsigned char*)&val, sizeof(unsigned int));
             }
         }
