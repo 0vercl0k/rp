@@ -336,7 +336,7 @@ struct RP_IMAGE_SECTION_HEADER {
 
     std::string get_name(void) const
     {
-        unsigned char name_null_terminated[RP_IMAGE_SIZEOF_SHORT_NAME + 1] = {0};
+        unsigned char name_null_terminated[RP_IMAGE_SIZEOF_SHORT_NAME + 1] {0};
         /* Yeah sometimes you don't have null byte after the name -- I try to be clean */
         memcpy(name_null_terminated, Name, RP_IMAGE_SIZEOF_SHORT_NAME * sizeof(unsigned char));
 

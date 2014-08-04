@@ -71,7 +71,7 @@ static inline void enable_color_(const Colors colo)
         (unsigned short)colo
         );
 #else
-    const char *colors[] = {
+    const char *colors[] {
         "\x1b[91m", "\x1b[92m",
         "\x1b[93m", "\x1b[0m"
     };
@@ -107,7 +107,7 @@ static void disable_color_(void)
         COLO_DEFAULT
         );
 #else
-    const char *colors[] = {
+    const char *colors[] {
         "\x1b[91m", "\x1b[92m",
         "\x1b[93m", "\x1b[0m"
     };

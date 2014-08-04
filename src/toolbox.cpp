@@ -116,7 +116,7 @@ std::vector<unsigned char> string_to_hex(const char* hex)
         {
             if(is_hex_char(hex[i + 2]) && is_hex_char(hex[i + 3]))
             {
-                char str_byte[3] = {
+                char str_byte[3] {
                     hex[i + 2],
                     hex[i + 3],
                     0

@@ -44,7 +44,7 @@ int main(int argc, char* argv[])
     struct arg_lit  *thumb    = arg_lit0(nullptr, "thumb", "enable thumb mode when looking for ARM gadgets");
 	struct arg_str  *rva      = arg_str0(nullptr, "rva", "<0xdeadbeef>", "don't use the image base of the binary, but yours instead");
     struct arg_end  *end      = arg_end(20);
-    void* argtable[] = {file, display, rop, raw, unique, shexa, sint, help, version, colors, rva, badbytes, thumb, end};
+    void* argtable[] {file, display, rop, raw, unique, shexa, sint, help, version, colors, rva, badbytes, thumb, end};
 
     if(arg_nullcheck(argtable) != 0)
         RAISE_EXCEPTION("Cannot allocate long option structures");

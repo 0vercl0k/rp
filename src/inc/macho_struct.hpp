@@ -304,7 +304,7 @@ struct MachoArchLayout : public MachoLayout
         /* 2] The load commands now */
         for(unsigned int i = 0; i < header.ncmds; ++i)
         {
-            RP_LOAD_COMMAND loadcmd = {0};
+            RP_LOAD_COMMAND loadcmd {0};
 
             file.read((char*)&loadcmd, sizeof(RP_LOAD_COMMAND));
             switch(loadcmd.cmd)
