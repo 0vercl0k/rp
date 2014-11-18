@@ -117,7 +117,7 @@ bool IntelBeaEngine::is_valid_ending_instruction(InstructionInformation &instr)
 bool IntelBeaEngine::is_valid_instruction(InstructionInformation &instr)
 {
     Int32 branch_type = instr.bea_branch_type;
-
+    unsigned long long addr_value = instr.bea_addr_value;
     return (
         /*
             Work Around, BeaEngine in x64 mode disassemble "\xDE\xDB" as an instruction without disassembly
@@ -126,7 +126,10 @@ bool IntelBeaEngine::is_valid_instruction(InstructionInformation &instr)
         instr.disassembly != "" &&
         branch_type != RetType && 
         branch_type != JmpType &&
-        branch_type != CallType &&
+        // Per @__awe's request
+        ((branch_type == CallType && addr_value == 0) || branch_type != CallType) &&
+        /*
+        Per @__awe's request too
         branch_type != JE &&
         branch_type != JB &&
         branch_type != JC &&
@@ -147,6 +150,7 @@ bool IntelBeaEngine::is_valid_instruction(InstructionInformation &instr)
         branch_type != JNL &&
         branch_type != JNG &&
         branch_type != JNB &&
+        */
         instr.disassembly.find("far") == std::string::npos
     );
 }
