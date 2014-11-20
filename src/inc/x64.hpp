@@ -38,7 +38,8 @@ class x64 : public CPU
 			const unsigned long long vaddr,
 			const unsigned int depth,
 			std::multiset<std::shared_ptr<Gadget>, Gadget::Sort> &gadgets,
-			unsigned int disass_engine_options
+            unsigned int disass_engine_options,
+            std::mutex &m
 		);
 
         static unsigned int get_size_biggest_instruction(void);

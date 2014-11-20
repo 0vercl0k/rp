@@ -40,11 +40,15 @@ std::string ARM::get_class_name(void) const
     return std::string("ARM");
 }
 
-void ARM::find_gadget_in_memory(const unsigned char *p_memory, const unsigned long long size, const unsigned long long vaddr, const unsigned int depth, std::multiset<std::shared_ptr<Gadget>, Gadget::Sort> &gadgets, unsigned int disass_engine_options)
+void ARM::find_gadget_in_memory(
+    const unsigned char *p_memory, const unsigned long long size, const unsigned long long vaddr,
+    const unsigned int depth, std::multiset<std::shared_ptr<Gadget>, Gadget::Sort> &gadgets, unsigned int disass_engine_options,
+    std::mutex &m
+)
 {
 	ArmCapstone capstone_engine(disass_engine_options);
     DisassEngineWrapper &engine = capstone_engine;
-    find_rop_gadgets(p_memory, size, vaddr, depth, gadgets, engine);
+    find_rop_gadgets(p_memory, size, vaddr, depth, gadgets, engine, m);
 }
 
 unsigned int ARM::get_size_biggest_instruction(void)

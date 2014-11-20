@@ -22,6 +22,7 @@
 
 #include <string>
 #include <set>
+#include <mutex>
 
 #include "gadget.hpp"
 #include "disassenginewrapper.hpp"
@@ -65,7 +66,8 @@ class CPU
             const unsigned long long vaddr,
             const unsigned int depth,
             std::multiset<std::shared_ptr<Gadget>, Gadget::Sort> &gadgets,
-			unsigned int disass_engine_options
+			unsigned int disass_engine_options,
+            std::mutex &m
         ) = 0;
 
         /*! The different architectures RP++ handles */

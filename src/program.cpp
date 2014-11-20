@@ -22,6 +22,10 @@
 #include <iostream>
 #include <map>
 #include <sstream>
+#include <future>
+#include <queue>
+#include <mutex>
+#include <thread>
 
 #include "executable_format.hpp"
 #include "raw.hpp"
@@ -34,7 +38,7 @@
 #include "toolbox.hpp"
 
 Program::Program(const std::string & program_path, CPU::E_CPU arch)
-: m_cpu(nullptr), m_exformat(NULL)
+: m_cpu(nullptr), m_exformat(nullptr)
 {
     unsigned int magic_dword = 0;
 
@@ -97,39 +101,66 @@ void Program::display_information(VerbosityLevel lvl)
 
 void Program::find_gadgets(unsigned int depth, std::multiset<std::shared_ptr<Gadget>, Gadget::Sort> &gadgets_found, unsigned int disass_engine_options)
 {
-    unsigned long long counter = 0;
+    const size_t n_max_thread = 4;
 
     /* To do a ROP gadget research, we need to know the executable section */
     std::vector<std::shared_ptr<Section>> executable_sections = m_exformat->get_executables_section(m_file);
     if(executable_sections.size() == 0)
         std::cout << "It seems your binary haven't executable sections." << std::endl;
 
-    /* Walk the executable sections */
-    for(auto executable_section : executable_sections)
+    std::queue<std::shared_ptr<Section>> jobs_queue;
+    for (auto &executable_section : executable_sections)
+        jobs_queue.push(executable_section);
+
+    std::vector<std::future<void>> thread_pool;
+    std::mutex m;
+    while (jobs_queue.size() != 0)
     {
-        std::cout << "in " << executable_section->get_name() << std::endl;
-        unsigned long long va_section = executable_section->get_vaddr();
-
-        m_cpu->find_gadget_in_memory(
-            executable_section->get_section_buffer(),
-            executable_section->get_size(),
-            va_section,
-            depth,
-            gadgets_found,
-			disass_engine_options
-        );
-
-        std::cout << (gadgets_found.size() - counter) << " found." << std::endl << std::endl;
-        counter = gadgets_found.size();
-
-        /* 
-            XXX: 
-                If at&t syntax is enabled, BeaEngine doesn't seem to handle the prefix:
-                \xf0\x00\x00 => addb %al, (%eax) ; -- and in intel -- lock add byte [eax], al ; ret  ;
-
-                It will introduce differences between the number of unique gadgets found!
-        */
+        if (thread_pool.size() < n_max_thread)
+        {
+            std::shared_ptr<Section> section = jobs_queue.front();
+            unsigned long long va_section = section->get_vaddr();
+            thread_pool.emplace_back(
+                std::async(
+                    std::launch::async,
+                    &CPU::find_gadget_in_memory, m_cpu,
+                    section->get_section_buffer(),
+                    section->get_size(),
+                    va_section,
+                    depth,
+                    std::ref(gadgets_found),
+                    disass_engine_options,
+                    std::ref(m)
+                )
+            );
+            jobs_queue.pop();
+        }
+        else
+        {
+            // Wait for a thread to finish
+            for (auto &it = thread_pool.begin(); it != thread_pool.end();)
+            {
+                if (it->wait_for(std::chrono::milliseconds(1)) == std::future_status::ready)
+                {
+                    it->get();
+                    it = thread_pool.erase(it);
+                }
+                else
+                    it++;
+            }
+        }
     }
+
+    // Wait for potentially unfinished threads
+    for (std::future<void> &f : thread_pool)
+            f.get();
+
+    // XXX: 
+    //     If at&t syntax is enabled, BeaEngine doesn't seem to handle the prefix:
+    //     \xf0\x00\x00 => addb %al, (%eax) ; -- and in intel -- lock add byte [eax], al ; ret  ;
+    //
+    //     It will introduce differences between the number of unique gadgets found!
+
 }
 
 void Program::search_and_display(const unsigned char* hex_values, unsigned int size)

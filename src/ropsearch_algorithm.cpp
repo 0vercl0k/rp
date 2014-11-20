@@ -135,10 +135,12 @@ void find_rop_gadgets(
     unsigned long long size,
     unsigned long long vaddr,
     unsigned int depth,
-    std::multiset<std::shared_ptr<Gadget>, Gadget::Sort> &merged_gadgets,
-    DisassEngineWrapper &disass_engine
+    std::multiset<std::shared_ptr<Gadget>, Gadget::Sort> &merged_gadgets_final,
+    DisassEngineWrapper &disass_engine,
+    std::mutex &m
 )
 {
+    std::multiset<std::shared_ptr<Gadget>, Gadget::Sort> merged_gadgets;
     unsigned int alignement = disass_engine.get_alignement();
     for(unsigned long long offset = 0; offset < size; offset += alignement)
     {
@@ -189,4 +191,8 @@ void find_rop_gadgets(
             }
         }
     }
+
+    m.lock();
+    merged_gadgets_final.insert(merged_gadgets.begin(), merged_gadgets.end());
+    m.unlock();
 }

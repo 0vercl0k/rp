@@ -22,6 +22,7 @@
 
 #include <set>
 #include <memory>
+#include <mutex>
 #include "gadget.hpp"
 #include "disassenginewrapper.hpp"
 
@@ -31,8 +32,8 @@ void find_rop_gadgets(
     unsigned long long vaddr,
     unsigned int depth,
     std::multiset<std::shared_ptr<Gadget>, Gadget::Sort> &merged_gadgets,
-    DisassEngineWrapper &disass_engine
+    DisassEngineWrapper &disass_engine,
+    std::mutex &m
 );
-
 
 #endif
