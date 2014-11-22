@@ -36,6 +36,7 @@ int main(int argc, char* argv[])
     struct arg_str  *raw      = arg_str0(nullptr, "raw", "<archi>", "find gadgets in a raw file, 'archi' must be in the following list: x86, x64, arm");
     struct arg_lit  *unique   = arg_lit0(nullptr, "unique", "display only unique gadget");
     struct arg_str  *shexa    = arg_str0(nullptr, "search-hexa", "<\\x90A\\x90>", "try to find hex values");
+    struct arg_str  *maxth    = arg_str0(nullptr, "max-thread", "<int>", "set the maximum number of threads that can be used (default: 2)");
     struct arg_str  *badbytes = arg_str0(nullptr, "bad-bytes", "<\\x90A\\x90>", "the bytes you don't want to see in the gadgets' addresses");
     struct arg_str  *sint     = arg_str0(nullptr, "search-int", "<int in hex>", "try to find a pointer on a specific integer value");
     struct arg_lit  *help     = arg_lit0("h", "help", "print this help and exit");
@@ -44,7 +45,7 @@ int main(int argc, char* argv[])
     struct arg_lit  *thumb    = arg_lit0(nullptr, "thumb", "enable thumb mode when looking for ARM gadgets");
 	struct arg_str  *rva      = arg_str0(nullptr, "rva", "<0xdeadbeef>", "don't use the image base of the binary, but yours instead");
     struct arg_end  *end      = arg_end(20);
-    void* argtable[] {file, display, rop, raw, unique, shexa, sint, help, version, colors, rva, badbytes, thumb, end};
+    void* argtable[] {file, display, rop, raw, unique, shexa, sint, help, version, colors, rva, badbytes, thumb, maxth, end};
 
     if(arg_nullcheck(argtable) != 0)
         RAISE_EXCEPTION("Cannot allocate long option structures");
@@ -127,9 +128,16 @@ int main(int argc, char* argv[])
 				if(thumb->count > 0)
 					options = 1;
 
+                size_t n_max_thread = 2;
+                if(maxth->count > 0)
+                    n_max_thread = atoi(maxth->sval[0]);
+                
+                if(n_max_thread == 0)
+                    n_max_thread = 2;
+
                 std::cout << std::endl << "Wait a few seconds, rp++ is looking for gadgets.." << std::endl;
                 std::multiset<std::shared_ptr<Gadget>, Gadget::Sort> all_gadgets;
-                p.find_gadgets(rop->ival[0], all_gadgets, options);
+                p.find_gadgets(rop->ival[0], all_gadgets, options, n_max_thread);
 
                 // Here we set the base beeing 0 if we want to have absolute virtual memory address displayed
                 unsigned long long base = 0;
