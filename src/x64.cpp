@@ -18,7 +18,6 @@
     along with rp++.  If not, see <http://www.gnu.org/licenses/>.
 */
 #include "x64.hpp"
-#include "bearopgadgetfinder.hpp"
 #include "intelbeaengine.hpp"
 #include "ropsearch_algorithm.hpp"
 

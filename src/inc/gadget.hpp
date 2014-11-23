@@ -37,10 +37,18 @@
 class Gadget
 {
     public:
+        
+        struct Info
+        {
+            unsigned long long m_offset;
+            unsigned long long m_va_section;
 
-        explicit Gadget();
+            Info(unsigned long long offset, unsigned long long va_section)
+            : m_offset(offset), m_va_section(va_section)
+            {}
+        };
 
-        ~Gadget(void);
+        explicit Gadget(unsigned long long offset_start);
 
         /*!
          *  \brief Get the entire disassembly of your gadget
@@ -120,15 +128,15 @@ class Gadget
 
     private:
 
+        unsigned long long m_start_offset; /*!< this is where the gadget is starting from in memory */
+
         std::string m_disassembly; /*!< the disassembly of the gadget*/
 
         unsigned int m_size; /*!< the size in byte of the gadget*/
 
         std::list<std::shared_ptr<Instruction>> m_instructions; /*!< the list of the different instructions composing the gadget*/
 
-        std::vector<unsigned long long> m_offsets; /*!< the vector which stores where you can find the same gadget ; those offsets are relative to m_va_section*/
-        
-        std::vector<unsigned long long> m_va_sections; /*!< the virtual address of the section where the instructions were found*/
+        std::vector<Info> m_info_gadgets; /*!< the vector which stores where you can find the same gadget ; those offsets are relative to m_va_section*/
 };
 
 #endif

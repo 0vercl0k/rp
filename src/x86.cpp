@@ -19,7 +19,6 @@
 */
 #include "x86.hpp"
 #include "rpexception.hpp"
-#include "bearopgadgetfinder.hpp"
 #include "disassenginewrapper.hpp"
 #include "safeint.hpp"
 #include "intelbeaengine.hpp"

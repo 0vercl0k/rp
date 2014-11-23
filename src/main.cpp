@@ -135,7 +135,7 @@ int main(int argc, char* argv[])
                 if(n_max_thread == 0)
                     n_max_thread = 2;
 
-                std::cout << std::endl << "Wait a few seconds, rp++ is looking for gadgets.." << std::endl;
+                std::cout << std::endl << "Wait a few seconds, rp++ is looking for gadgets (" << n_max_thread << " threads max).." << std::endl;
                 std::multiset<std::shared_ptr<Gadget>, Gadget::Sort> all_gadgets;
                 p.find_gadgets(rop->ival[0], all_gadgets, options, n_max_thread);
 

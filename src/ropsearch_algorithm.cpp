@@ -57,6 +57,7 @@ void find_all_gadget_from_ret(
     while(EIP < ending_instr_disasm.address)
     {
         std::list<Instruction> list_of_instr;
+        unsigned long long gadget_start_address = 0;
 
         /* save where we were in memory */
         uintptr_t saved_eip  = EIP;
@@ -74,25 +75,26 @@ void find_all_gadget_from_ret(
                 VirtualAddr,
                 ret
             );
-                
 
             /* if the instruction isn't valid, ends this function */
             if(ret == UnknownInstruction || disass_engine.is_valid_instruction(instr) == false)
                 break;
 
-            list_of_instr.push_back(Instruction(
+            if (list_of_instr.size() == 0)
+                gadget_start_address = EIP - (uintptr_t)data;
+
+            list_of_instr.emplace_back(
                 std::string(instr.disassembly),
                 std::string(instr.mnemonic),
-                EIP - (uintptr_t)data,
                 instr.size
-            ));
+            );
             
             EIP += instr.size;
             VirtualAddr += instr.size;
 
             /* if the address of the latest instruction found points on the ending one, we have a winner */
             if(EIP == ending_instr_disasm.address)
-            {
+            {    
                 is_a_valid_gadget = true;
                 /* NB: I reach the ending instruction without depth instruction */
                 break;
@@ -108,15 +110,13 @@ void find_all_gadget_from_ret(
             /* we have a valid gadget, time to build it ; add the instructions found & finally add the ending instruction */
             
             /* Don't forget to include the ending instruction in the chain of instruction */
-            list_of_instr.push_back(Instruction(
+            list_of_instr.emplace_back(
                 std::string(ending_instr_disasm.disassembly),
                 std::string(ending_instr_disasm.mnemonic),
-                ending_instr_disasm.address - (uintptr_t)data,
                 ending_instr_disasm.size
-            ));
+            );
 
-
-            std::shared_ptr<Gadget> gadget = std::make_shared<Gadget>();
+            std::shared_ptr<Gadget> gadget = std::make_shared<Gadget>(gadget_start_address);
 
             /* Now we populate our gadget with the instructions previously found.. */
             gadget->add_instructions(list_of_instr, vaddr);
@@ -168,11 +168,10 @@ void find_rop_gadgets(
             only_ending_instr.push_back(Instruction(
                 std::string(ret_instr.disassembly),
                 std::string(ret_instr.mnemonic),
-                offset,
                 ret_instr.size
             ));
 
-            std::shared_ptr<Gadget> gadget_with_one_instr = std::make_shared<Gadget>();
+            std::shared_ptr<Gadget> gadget_with_one_instr = std::make_shared<Gadget>(offset);
 
             /* the gadget will only have 1 ending instruction */
             gadget_with_one_instr->add_instructions(only_ending_instr, vaddr);

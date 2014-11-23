@@ -82,11 +82,9 @@ bool IntelBeaEngine::is_valid_ending_instruction(InstructionInformation &instr)
     {
         unsigned int branch_type = instr.bea_branch_type;
         unsigned long long addr_value = instr.bea_addr_value;
+        const char *mnemonic_s = instr.mnemonic.c_str();
 
-        std::string mnemonic = instr.mnemonic;
-        const char *mnemonic_s = mnemonic.c_str();
-
-        std::string disass = instr.disassembly;
+        std::string &disass = instr.disassembly;
         const char *disass_s = disass.c_str();
 
         bool is_good_branch_type = (

@@ -21,12 +21,8 @@
 #include "coloshell.hpp"
 #include "toolbox.hpp"
 
-Gadget::Gadget()
-: m_size(0)
-{
-}
-
-Gadget::~Gadget(void)
+Gadget::Gadget(unsigned long long offset_start)
+: m_start_offset(offset_start), m_size(0)
 {
 }
 
@@ -50,11 +46,8 @@ void Gadget::add_instructions(std::list<Instruction> &instrs, unsigned long long
          * 
          * XXX: Yeah I'm aware that passing the va_section is a bit weird
          */
-        if(m_offsets.size() == 0)
-        {
-            m_offsets.push_back(instr.get_offset());
-            m_va_sections.push_back(va_section);
-        }
+        if(m_info_gadgets.size() == 0)
+            m_info_gadgets.emplace_back(m_start_offset, va_section);
         
         std::shared_ptr<Instruction> instr_copy = std::make_shared<Instruction>(instr);
 
@@ -71,12 +64,12 @@ void Gadget::add_instructions(std::list<Instruction> &instrs, unsigned long long
 
 unsigned long long Gadget::get_first_offset(void) const
 {
-    return m_instructions.front()->get_offset();
+    return m_info_gadgets.front().m_offset;
 }
 
 unsigned long long Gadget::get_first_va_section(void) const
 {
-    return m_va_sections.front();
+    return m_info_gadgets.front().m_va_section;
 }
 
 unsigned long long Gadget::get_first_absolute_address(void) const
@@ -86,13 +79,12 @@ unsigned long long Gadget::get_first_absolute_address(void) const
 
 size_t Gadget::get_nb(void) const
 {
-    return m_offsets.size();
+    return m_info_gadgets.size();
 }
 
 void Gadget::add_new_one(unsigned long long offset, unsigned long long va_section)
 {
-    m_offsets.push_back(offset);
-    m_va_sections.push_back(va_section);
+    m_info_gadgets.emplace_back(offset, va_section);
 }
 
 std::list<std::shared_ptr<Instruction>> Gadget::get_instructions(void)
