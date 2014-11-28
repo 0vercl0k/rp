@@ -56,6 +56,8 @@ class Gadget
          */
         std::string get_disassembly(void) const;
 
+        void display_disassembly(void) const;
+
         /*!
          *  \brief Get the size of your gadget
          *  \return the size of the whole gadget
@@ -69,13 +71,13 @@ class Gadget
          *  \param instrs: It is a list of Instruction to create our gadget (NB: the method copy in its memory those instructions for futur usage)
          *  \param va_section: It is the va section of the instructions ; a bit weird to pass it here yeah
          */
-        void add_instructions(std::list<Instruction> &instrs, unsigned long long va_section);
+        void add_instructions(std::vector<Instruction> &instrs, unsigned long long va_section);
 
         /*!
          *  \brief Get the size of your gadget
          *  \return the size of the whole gadget
          */
-        std::list<std::shared_ptr<Instruction>> get_instructions(void);
+        std::vector<std::shared_ptr<Instruction>> get_instructions(void);
 
         /*!
          *  \brief Get the first offset of this gadget (first offset because a gadget instance stores other offset with the same disassembly in memory)
@@ -115,9 +117,9 @@ class Gadget
         std::shared_ptr<Instruction> get_ending_instruction(void);
 
         /*!
-         * \brief This structure can be used for sorting Gadgets instance
-         * \return
-         */
+        * \brief This structure can be used for sorting Gadgets instance
+        * \return
+        */
         struct Sort
         {
             bool operator()(const std::shared_ptr<Gadget> g, const std::shared_ptr<Gadget> d) const
@@ -130,11 +132,9 @@ class Gadget
 
         unsigned long long m_start_offset; /*!< this is where the gadget is starting from in memory */
 
-        std::string m_disassembly; /*!< the disassembly of the gadget*/
-
         unsigned int m_size; /*!< the size in byte of the gadget*/
 
-        std::list<std::shared_ptr<Instruction>> m_instructions; /*!< the list of the different instructions composing the gadget*/
+        std::vector<std::shared_ptr<Instruction>> m_instructions; /*!< the list of the different instructions composing the gadget*/
 
         std::vector<Info> m_info_gadgets; /*!< the vector which stores where you can find the same gadget ; those offsets are relative to m_va_section*/
 };

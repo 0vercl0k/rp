@@ -31,7 +31,7 @@ void find_rop_gadgets(
     unsigned long long size,
     unsigned long long vaddr,
     unsigned int depth,
-    std::multiset<std::shared_ptr<Gadget>, Gadget::Sort> &merged_gadgets,
+    std::multiset<std::shared_ptr<Gadget>> &merged_gadgets,
     DisassEngineWrapper &disass_engine,
     std::mutex &m
 );

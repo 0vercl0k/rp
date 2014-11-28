@@ -61,7 +61,7 @@ class Program
          *  \param disass_engine_options: Options you want to pass to the disassembly engine
 		 *
          */
-        void find_gadgets(unsigned int depth, std::multiset<std::shared_ptr<Gadget>, Gadget::Sort> &gadgets, unsigned int disass_engine_options, size_t n_max_thread);
+        void find_gadgets(unsigned int depth, std::multiset<std::shared_ptr<Gadget>> &gadgets, unsigned int disass_engine_options, size_t n_max_thread);
 
         /*!
          *  \brief Find hex values in the section of the program

@@ -37,7 +37,7 @@ class x64 : public CPU
 			const unsigned long long size,
 			const unsigned long long vaddr,
 			const unsigned int depth,
-			std::multiset<std::shared_ptr<Gadget>, Gadget::Sort> &gadgets,
+			std::multiset<std::shared_ptr<Gadget>> &gadgets,
             unsigned int disass_engine_options,
             std::mutex &m
 		);

@@ -95,7 +95,7 @@ bool is_hex_char(char c);
  * \param unique_gadgets: The list of unique gadgets
  *
  */
-void only_unique_gadgets(std::multiset<std::shared_ptr<Gadget>, Gadget::Sort> &list_gadgets, std::set<std::shared_ptr<Gadget>, Gadget::Sort> &unique_gadgets);
+void only_unique_gadgets(std::multiset<std::shared_ptr<Gadget>> &list_gadgets, std::set<std::shared_ptr<Gadget>, Gadget::Sort> &unique_gadgets);
 
 
 /**

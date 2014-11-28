@@ -42,7 +42,7 @@ std::string x86::get_class_name(void) const
 
 void x86::find_gadget_in_memory(
     const unsigned char *p_memory, const unsigned long long size, const unsigned long long vaddr,
-    const unsigned int depth, std::multiset<std::shared_ptr<Gadget>, Gadget::Sort> &gadgets, unsigned int disass_engine_option,
+    const unsigned int depth, std::multiset<std::shared_ptr<Gadget>> &gadgets, unsigned int disass_engine_option,
     std::mutex &m
 )
 {

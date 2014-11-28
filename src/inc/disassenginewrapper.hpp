@@ -38,6 +38,12 @@ struct InstructionInformation
     // BeaEngine fields
     unsigned int bea_branch_type; // This is used by BeaEngine ; and this will hold DISASM.Instruction.BranchType
     unsigned long long bea_addr_value; // This is used by BeaEngine, DISASM.Instruction
+
+    explicit InstructionInformation()
+    {}
+
+    ~InstructionInformation()
+    {}
 };
 
 enum DisassEngineReturn

@@ -136,7 +136,7 @@ int main(int argc, char* argv[])
                     n_max_thread = 2;
 
                 std::cout << std::endl << "Wait a few seconds, rp++ is looking for gadgets (" << n_max_thread << " threads max).." << std::endl;
-                std::multiset<std::shared_ptr<Gadget>, Gadget::Sort> all_gadgets;
+                std::multiset<std::shared_ptr<Gadget>> all_gadgets;
                 p.find_gadgets(rop->ival[0], all_gadgets, options, n_max_thread);
 
                 // Here we set the base beeing 0 if we want to have absolute virtual memory address displayed

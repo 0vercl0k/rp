@@ -19,8 +19,8 @@
 */
 #include "instruction.hpp"
 
-Instruction::Instruction(std::string &disass, std::string &mnemonic, unsigned int size)
-: m_disass(disass), m_mnemonic(mnemonic), m_size(size)
+Instruction::Instruction(const std::string &disass, unsigned int size)
+: m_disass(std::move(disass)), m_size(size)
 {
 }
 
@@ -29,12 +29,7 @@ unsigned int Instruction::get_size(void) const
     return m_size;
 }
 
-std::string Instruction::get_disassembly(void) const
+const std::string &Instruction::get_disassembly(void) const
 {
-    return m_disass;
-}
-
-std::string Instruction::get_mnemonic(void) const
-{
-    return m_mnemonic;
+    return m_disass.get();
 }

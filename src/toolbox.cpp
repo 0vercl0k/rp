@@ -141,7 +141,7 @@ std::vector<unsigned char> string_to_hex(const char* hex)
     return bytes;
 }
 
-void only_unique_gadgets(std::multiset<std::shared_ptr<Gadget>, Gadget::Sort> &list_gadgets, std::set<std::shared_ptr<Gadget>, Gadget::Sort> &unique_gadgets)
+void only_unique_gadgets(std::multiset<std::shared_ptr<Gadget>> &list_gadgets, std::set<std::shared_ptr<Gadget>, Gadget::Sort> &unique_gadgets)
 {
      /* Now we have a list of gadget, cool, but we want to keep only the unique! */
     for(const auto &gadget : list_gadgets)

@@ -99,7 +99,7 @@ void Program::display_information(VerbosityLevel lvl)
     m_exformat->display_information(lvl);
 }
 
-void Program::find_gadgets(unsigned int depth, std::multiset<std::shared_ptr<Gadget>, Gadget::Sort> &gadgets_found, unsigned int disass_engine_options, size_t n_max_thread)
+void Program::find_gadgets(unsigned int depth, std::multiset<std::shared_ptr<Gadget>> &gadgets_found, unsigned int disass_engine_options, size_t n_max_thread)
 {
     /* To do a ROP gadget research, we need to know the executable section */
     std::vector<std::shared_ptr<Section>> executable_sections = m_exformat->get_executables_section(m_file);

@@ -21,6 +21,7 @@
 #define INSTRUCTION_HPP
 
 #include <string>
+#include <boost/flyweight.hpp>
 
 /*! \class Instruction
  *
@@ -38,7 +39,7 @@ class Instruction
          *  \param offset: A raw offset (relative to a section) where you can find this instruction
          *  \param size: It is the size of the instruction
          */
-        explicit Instruction(std::string &disass, std::string &mnemonic, /*unsigned long long offset,*/ unsigned int size);
+        explicit Instruction(const std::string &disass, unsigned int size);
 
         /*!
          *  \brief Obtain the absolute address of the instruction thanks to the VA of the section where it was found
@@ -59,20 +60,11 @@ class Instruction
          *
          *  \return the disassembly of the instruction
          */
-        std::string get_disassembly(void) const;
-
-        /*!
-         *  \brief Get the mnemonic of the instruction
-         *
-         *  \return the mnemonic of the instruction
-         */
-        std::string get_mnemonic(void) const;
+        const std::string &get_disassembly(void) const;
 
     private:
 
-        std::string m_disass; /*!< the disassembly of the instruction */
-        
-        std::string m_mnemonic; /*!< the mnemonic of the instruction */
+        boost::flyweight<std::string> m_disass; /*!< the disassembly of the instruction */
         
         unsigned int m_size; /*!< the size of the instruction */
 };

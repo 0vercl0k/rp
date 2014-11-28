@@ -28,7 +28,7 @@ void find_all_gadget_from_ret(
     unsigned long long vaddr,
     const InstructionInformation &ending_instr_disasm,
     unsigned int depth,
-    std::multiset<std::shared_ptr<Gadget>, Gadget::Sort> &gadgets,
+    std::multiset<std::shared_ptr<Gadget>> &gadgets,
     DisassEngineWrapper &disass_engine
 )
 {
@@ -56,7 +56,8 @@ void find_all_gadget_from_ret(
 
     while(EIP < ending_instr_disasm.address)
     {
-        std::list<Instruction> list_of_instr;
+        std::vector<Instruction> list_of_instr;
+
         unsigned long long gadget_start_address = 0;
 
         /* save where we were in memory */
@@ -84,8 +85,7 @@ void find_all_gadget_from_ret(
                 gadget_start_address = EIP - (uintptr_t)data;
 
             list_of_instr.emplace_back(
-                std::string(instr.disassembly),
-                std::string(instr.mnemonic),
+                instr.disassembly,
                 instr.size
             );
             
@@ -111,8 +111,7 @@ void find_all_gadget_from_ret(
             
             /* Don't forget to include the ending instruction in the chain of instruction */
             list_of_instr.emplace_back(
-                std::string(ending_instr_disasm.disassembly),
-                std::string(ending_instr_disasm.mnemonic),
+                ending_instr_disasm.disassembly,
                 ending_instr_disasm.size
             );
 
@@ -135,12 +134,12 @@ void find_rop_gadgets(
     unsigned long long size,
     unsigned long long vaddr,
     unsigned int depth,
-    std::multiset<std::shared_ptr<Gadget>, Gadget::Sort> &merged_gadgets_final,
+    std::multiset<std::shared_ptr<Gadget>> &merged_gadgets_final,
     DisassEngineWrapper &disass_engine,
     std::mutex &m
 )
 {
-    std::multiset<std::shared_ptr<Gadget>, Gadget::Sort> merged_gadgets;
+    std::multiset<std::shared_ptr<Gadget>> merged_gadgets;
     unsigned int alignement = disass_engine.get_alignement();
     for(unsigned long long offset = 0; offset < size; offset += alignement)
     {
@@ -163,13 +162,12 @@ void find_rop_gadgets(
             InstructionInformation ret_instr(instr);
             
             /* Do not forget to add the ending instruction only -- we give to the user all gadget with < depth instruction */
-            std::list<Instruction> only_ending_instr;
+            std::vector<Instruction> only_ending_instr;
 
-            only_ending_instr.push_back(Instruction(
-                std::string(ret_instr.disassembly),
-                std::string(ret_instr.mnemonic),
+            only_ending_instr.emplace_back(
+                ret_instr.disassembly,
                 ret_instr.size
-            ));
+            );
 
             std::shared_ptr<Gadget> gadget_with_one_instr = std::make_shared<Gadget>(offset);
 

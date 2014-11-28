@@ -42,7 +42,7 @@ std::string ARM::get_class_name(void) const
 
 void ARM::find_gadget_in_memory(
     const unsigned char *p_memory, const unsigned long long size, const unsigned long long vaddr,
-    const unsigned int depth, std::multiset<std::shared_ptr<Gadget>, Gadget::Sort> &gadgets, unsigned int disass_engine_options,
+    const unsigned int depth, std::multiset<std::shared_ptr<Gadget>> &gadgets, unsigned int disass_engine_options,
     std::mutex &m
 )
 {

@@ -28,7 +28,12 @@ Gadget::Gadget(unsigned long long offset_start)
 
 std::string Gadget::get_disassembly(void) const
 {
-    return m_disassembly;
+    // Computing the disassembly is cheaper than keeping it in memory
+    // Otherwise with big binaries you end up with a *lot* of memory being used
+    std::string disassembly;
+    for (std::shared_ptr<Instruction> i : m_instructions)
+        disassembly += i->get_disassembly() + " ; ";
+    return disassembly;
 }
 
 unsigned int Gadget::get_size(void) const
@@ -36,7 +41,7 @@ unsigned int Gadget::get_size(void) const
     return m_size;
 }
 
-void Gadget::add_instructions(std::list<Instruction> &instrs, unsigned long long va_section)
+void Gadget::add_instructions(std::vector<Instruction> &instrs, unsigned long long va_section)
 {
     for(const auto &instr : instrs)
     {
@@ -56,9 +61,6 @@ void Gadget::add_instructions(std::list<Instruction> &instrs, unsigned long long
 
         /* Don't forget to increment the size */
         m_size += instr.get_size();
-
-        /* Build the disassembly instruction per instruction */
-        m_disassembly += instr.get_disassembly() + " ; ";
     }
 }
 
@@ -87,9 +89,9 @@ void Gadget::add_new_one(unsigned long long offset, unsigned long long va_sectio
     m_info_gadgets.emplace_back(offset, va_section);
 }
 
-std::list<std::shared_ptr<Instruction>> Gadget::get_instructions(void)
+std::vector<std::shared_ptr<Instruction>> Gadget::get_instructions(void)
 {
-    std::list<std::shared_ptr<Instruction>> instrs(m_instructions);
+    std::vector<std::shared_ptr<Instruction>> instrs(m_instructions);
     /* We don't want the ending instruction in the list */
     instrs.pop_back();
 
@@ -99,4 +101,10 @@ std::list<std::shared_ptr<Instruction>> Gadget::get_instructions(void)
 std::shared_ptr<Instruction> Gadget::get_ending_instruction(void)
 {
     return m_instructions.back();
+}
+
+void Gadget::display_disassembly(void) const
+{
+    for(std::shared_ptr<Instruction> i : m_instructions)
+        std::cout << i->get_disassembly() << " ; ";
 }
