@@ -59,7 +59,7 @@ int main(int argc, char* argv[])
     }
 
     if(colors->count > 0)
-        g_are_colors_enabled = true;
+        g_colors_desired = true;
 
     try
     {
