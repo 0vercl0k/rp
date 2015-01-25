@@ -19,4 +19,4 @@
 */
 #include "coloshell.hpp"
 
-bool g_are_colors_enabled = false;
+bool g_colors_desired = false;
