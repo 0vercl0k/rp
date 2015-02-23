@@ -86,7 +86,8 @@ void find_all_gadget_from_ret(
 
             list_of_instr.emplace_back(
                 instr.disassembly,
-                instr.size
+                instr.size,
+                instr.bytes
             );
             
             EIP += instr.size;
@@ -112,7 +113,8 @@ void find_all_gadget_from_ret(
             /* Don't forget to include the ending instruction in the chain of instruction */
             list_of_instr.emplace_back(
                 ending_instr_disasm.disassembly,
-                ending_instr_disasm.size
+                ending_instr_disasm.size,
+                ending_instr_disasm.bytes
             );
 
             std::shared_ptr<Gadget> gadget = std::make_shared<Gadget>(gadget_start_address);
@@ -166,7 +168,8 @@ void find_rop_gadgets(
 
             only_ending_instr.emplace_back(
                 ret_instr.disassembly,
-                ret_instr.size
+                ret_instr.size,
+                ret_instr.bytes
             );
 
             std::shared_ptr<Gadget> gadget_with_one_instr = std::make_shared<Gadget>(offset);

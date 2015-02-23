@@ -21,6 +21,7 @@
 #define DISASSENGINEWRAPPER_HPP
 
 #include <string>
+#include <vector>
 
 struct InstructionInformation
 {
@@ -30,6 +31,8 @@ struct InstructionInformation
     unsigned int size;
     uintptr_t address;
     uintptr_t virtual_address_in_memory;
+
+    std::vector<unsigned char> bytes;
 
 	// Capstone field
 	bool cap_is_branch;
@@ -43,7 +46,8 @@ struct InstructionInformation
     {}
 
     ~InstructionInformation()
-    {}
+    {
+    }
 };
 
 enum DisassEngineReturn

@@ -108,3 +108,9 @@ void Gadget::display_disassembly(void) const
     for(std::shared_ptr<Instruction> i : m_instructions)
         std::cout << i->get_disassembly() << " ; ";
 }
+
+void Gadget::print_bytes()
+{
+    for (std::shared_ptr<Instruction> i : m_instructions)
+        i->print_bytes();
+}

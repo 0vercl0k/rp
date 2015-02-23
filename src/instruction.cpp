@@ -19,8 +19,14 @@
 */
 #include "instruction.hpp"
 
-Instruction::Instruction(const std::string &disass, unsigned int size)
+Instruction::Instruction(const std::string &disass, unsigned int size, std::vector<unsigned char> b)
 : m_disass(std::move(disass)), m_size(size)
+{
+    for (auto i : b)
+        bytes.push_back(i);
+}
+
+Instruction::~Instruction()
 {
 }
 
@@ -32,4 +38,10 @@ unsigned int Instruction::get_size(void) const
 const std::string &Instruction::get_disassembly(void) const
 {
     return m_disass.get();
+}
+
+void Instruction::print_bytes(void)
+{
+    for (size_t i = 0; i < m_size; ++i)
+        printf("\\x%.2x", bytes.at(i));
 }

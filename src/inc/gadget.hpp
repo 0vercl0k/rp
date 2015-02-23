@@ -128,6 +128,8 @@ class Gadget
             }
         };
 
+        void print_bytes();
+
     private:
 
         unsigned long long m_start_offset; /*!< this is where the gadget is starting from in memory */

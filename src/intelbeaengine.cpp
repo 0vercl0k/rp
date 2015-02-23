@@ -65,6 +65,9 @@ InstructionInformation IntelBeaEngine::disass(const unsigned char *data, unsigne
     instr.mnemonic = std::string(m_disasm.Instruction.Mnemonic);
     instr.size = len_instr;
 
+    for (size_t i = 0; i < len_instr; ++i)
+        instr.bytes.push_back(data[i]);
+
     instr.bea_branch_type = m_disasm.Instruction.BranchType;
     instr.bea_addr_value = m_disasm.Instruction.AddrValue;
     

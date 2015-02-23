@@ -332,6 +332,8 @@ static void coloshell(const T t, const Colors colo)
         std::cout << ": ";                                                                                              \
         enable_color(COLO_GREEN);                                                                                       \
         (gadget)->display_disassembly();                                                                                \
+        std::cout << " "; \
+(gadget)->print_bytes(); \
         std::cout << " (" << std::dec << (gadget)->get_nb() << " found)" << std::endl;   \
         disable_color();                                                                                                \
     }                                                                                                                   \

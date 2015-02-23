@@ -22,6 +22,7 @@
 
 #include <string>
 #include <boost/flyweight.hpp>
+#include <vector>
 
 /*! \class Instruction
  *
@@ -39,8 +40,8 @@ class Instruction
          *  \param offset: A raw offset (relative to a section) where you can find this instruction
          *  \param size: It is the size of the instruction
          */
-        explicit Instruction(const std::string &disass, unsigned int size);
-
+        explicit Instruction(const std::string &disass, unsigned int size, std::vector<unsigned char> b);
+        ~Instruction();
         /*!
          *  \brief Obtain the absolute address of the instruction thanks to the VA of the section where it was found
          *
@@ -62,7 +63,11 @@ class Instruction
          */
         const std::string &get_disassembly(void) const;
 
+        void print_bytes(void);
+
     private:
+
+        std::vector<unsigned char> bytes;
 
         boost::flyweight<std::string> m_disass; /*!< the disassembly of the instruction */
         
