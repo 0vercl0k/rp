@@ -27,9 +27,12 @@
 
 #ifdef WINDOWS
 #include <windows.h>
+#include <fileapi.h>
+#else
+#include <unistd.h>
 #endif
 
-extern bool g_are_colors_enabled;
+extern bool g_colors_desired;
 
 /* Here you will find all you need to display the data in a cute way on a windows/unix terminal */
 
@@ -52,6 +55,19 @@ extern bool g_are_colors_enabled;
     };
 
 #endif
+
+/**
+ * \def should_emit_color(void)
+ * Return whether or not the caller should enable colorized output. For
+ * example, if stdout is redirected to a file then the output won't be colored.
+ */
+#ifdef WINDOWS
+#define should_emit_color() (GetFileType(GetStdHandle(STD_OUTPUT_HANDLE)) == FILE_TYPE_CHAR)
+#else
+#define should_emit_color() (isatty(STDOUT_FILENO))
+#endif
+
+#define g_are_colors_enabled()  (g_colors_desired && should_emit_color())
 
 /**
  * \fn static void enable_color_(const Colors colo)
@@ -87,7 +103,7 @@ static inline void enable_color_(const Colors colo)
  */
 static inline void enable_color(const Colors colo)
 {
-    if(g_are_colors_enabled)
+    if(g_are_colors_enabled())
         enable_color_(colo);
 }
 
@@ -121,7 +137,7 @@ static void disable_color_(void)
  */
 static inline void disable_color(void)
 {
-    if(g_are_colors_enabled)
+    if(g_are_colors_enabled())
         disable_color_();
 }
 
