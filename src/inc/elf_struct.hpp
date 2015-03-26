@@ -361,27 +361,29 @@ struct ELFLayout : public ExecutableLinkingFormatLayout
             RAISE_EXCEPTION("Cannot allocate string_table_section");
 
         file.read(string_table_section, (std::streamsize)size_string_table);
-
-        /* 3.3] Goto the first Section Header, and dump them !*/
-        file.seekg((std::streamoff)elfHeader.e_shoff, std::ios::beg);
-        for(unsigned int i = 0; i < elfHeader.e_shnum; ++i)
+        if (file)
         {
-            Elf_Shdr_Abstraction<T>* pElfSectionHeader = new (std::nothrow) Elf_Shdr_Abstraction<T>;
-            if(pElfSectionHeader == NULL)
-                RAISE_EXCEPTION("Cannot allocate pElfSectionHeader");
-            
-            file.read((char*)&pElfSectionHeader->header, sizeof(Elf_Shdr<T>));
-
-            /* 3.4] Resolve the name of the section */
-            if(pElfSectionHeader->header.sh_name < size_string_table)
+            /* 3.3] Goto the first Section Header, and dump them !*/
+            file.seekg((std::streamoff)elfHeader.e_shoff, std::ios::beg);
+            for(unsigned int i = 0; i < elfHeader.e_shnum; ++i)
             {
-                /* Yeah we know where is the string */
-                char *name_section = string_table_section + pElfSectionHeader->header.sh_name;
-                std::string s(name_section, std::strlen(name_section));
-                pElfSectionHeader->name = (s == "") ? std::string("unknown section") : s;
-            }
+                Elf_Shdr_Abstraction<T>* pElfSectionHeader = new (std::nothrow) Elf_Shdr_Abstraction<T>;
+                if(pElfSectionHeader == NULL)
+                    RAISE_EXCEPTION("Cannot allocate pElfSectionHeader");
+                
+                file.read((char*)&pElfSectionHeader->header, sizeof(Elf_Shdr<T>));
 
-            elfSectionHeaders.push_back(pElfSectionHeader);
+                /* 3.4] Resolve the name of the section */
+                if(pElfSectionHeader->header.sh_name < size_string_table)
+                {
+                    /* Yeah we know where is the string */
+                    char *name_section = string_table_section + pElfSectionHeader->header.sh_name;
+                    std::string s(name_section, std::strlen(name_section));
+                    pElfSectionHeader->name = (s == "") ? std::string("unknown section") : s;
+                }
+
+                elfSectionHeaders.push_back(pElfSectionHeader);
+            }
         }
 
         /* Set correctly the pointer */

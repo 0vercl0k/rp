@@ -73,7 +73,7 @@
  *
  * \param colo: the color you want to activate
  */
-static void enable_color(const Colors colo)
+static inline void enable_color(const Colors colo)
 {
 #ifdef COLORS_ENABLED
     if (!should_emit_color())
@@ -104,7 +104,7 @@ static void enable_color(const Colors colo)
  * \fn static void disable_color(const Colors colo)
  * \brief Unset the color you have previously set
  */
-static void disable_color(void)
+static inline void disable_color(void)
 {
 #ifdef COLORS_ENABLED
     if (!should_emit_color())
