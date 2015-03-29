@@ -50,7 +50,7 @@ unsigned char* Section::get_section_buffer(void) const
     return m_section;
 }
 
-const unsigned long long Section::get_offset(void) const
+unsigned long long Section::get_offset(void) const
 {
     return m_offset;
 }

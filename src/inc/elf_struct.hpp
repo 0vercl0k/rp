@@ -332,8 +332,11 @@ struct ELFLayout : public ExecutableLinkingFormatLayout
     {
         /* Remember where the caller was in the file */
         std::streampos off = file.tellg();
+        std::streampos fsize = 0;
 
         /* 1] Dump the Elf Header */
+        file.seekg(0, std::ios::end);
+        fsize = file.tellg();
         file.seekg(0, std::ios::beg);
         file.read((char*)&elfHeader, sizeof(Elf_Ehdr<T>));
 
@@ -356,11 +359,18 @@ struct ELFLayout : public ExecutableLinkingFormatLayout
 
         /* 3.2] Keep the string table in memory */
         file.seekg((std::streamoff)offset_string_table, std::ios::beg);
+
+        if ((unsigned long long)size_string_table > fsize)
+            size_string_table = (unsigned long long)fsize - elfHeader.e_shoff;
+
         char* string_table_section = new (std::nothrow) char[(unsigned int)size_string_table];
         if(string_table_section == NULL)
             RAISE_EXCEPTION("Cannot allocate string_table_section");
 
+
         file.read(string_table_section, (std::streamsize)size_string_table);
+        if (!file)
+            RAISE_EXCEPTION("Cannot read string_table_section");
 
         /* 3.3] Goto the first Section Header, and dump them !*/
         file.seekg((std::streamoff)elfHeader.e_shoff, std::ios::beg);
@@ -369,7 +379,7 @@ struct ELFLayout : public ExecutableLinkingFormatLayout
             Elf_Shdr_Abstraction<T>* pElfSectionHeader = new (std::nothrow) Elf_Shdr_Abstraction<T>;
             if(pElfSectionHeader == NULL)
                 RAISE_EXCEPTION("Cannot allocate pElfSectionHeader");
-            
+
             file.read((char*)&pElfSectionHeader->header, sizeof(Elf_Shdr<T>));
 
             /* 3.4] Resolve the name of the section */

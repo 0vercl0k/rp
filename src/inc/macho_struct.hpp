@@ -296,6 +296,9 @@ struct MachoArchLayout : public MachoLayout
         bool is_all_section_walked = false;
         std::streampos off = file.tellg();
 
+        if (off == -1)
+            RAISE_EXCEPTION("Error while using file.tellg().");
+
         /* 1] Fill the header structure */
         file.seekg(0, std::ios::beg);
         file.read((char*)&header, sizeof(RP_MACH_HEADER<T>));
@@ -303,7 +306,7 @@ struct MachoArchLayout : public MachoLayout
         /* 2] The load commands now */
         for(unsigned int i = 0; i < header.ncmds; ++i)
         {
-            RP_LOAD_COMMAND loadcmd = {0};
+            RP_LOAD_COMMAND loadcmd = {0, 0};
 
             file.read((char*)&loadcmd, sizeof(RP_LOAD_COMMAND));
             switch(loadcmd.cmd)

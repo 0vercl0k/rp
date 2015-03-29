@@ -78,7 +78,7 @@ class Section
          *   
          *  \return the offset where the section was found in the binary
          */
-        const unsigned long long get_offset(void) const;
+        unsigned long long get_offset(void) const;
 
         /*!
          *  \brief Search in memory a sequence of bytes
