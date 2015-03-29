@@ -297,7 +297,7 @@ struct MachoArchLayout : public MachoLayout
         std::streampos off = file.tellg();
 
         if (off == -1)
-            RAISE_EXCEPTION("Error while using file.tellg() in fill_structures.");
+            RAISE_EXCEPTION("Error while using file.tellg().");
 
         /* 1] Fill the header structure */
         file.seekg(0, std::ios::beg);
