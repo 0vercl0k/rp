@@ -37,7 +37,7 @@ Screenshots
 ============
 
 rp++ on Win7 x64 / Debian Squeeze x64 / FreeBSD x64 / Mac OSX Lion x64:
-<img src="http://img194.imageshack.us/img194/7567/ropmosaic.png">
+<img src="http://image.noelshack.com/fichiers/2014/31/1406551461-rop-mosaic.png">
 
 How to use it ?
 ===============
