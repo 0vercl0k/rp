@@ -62,7 +62,7 @@ if(MSVC)
 endif()
 
 if(CMAKE_COMPILER_IS_GNUCXX OR CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -O2 -static -s -std=c++0x ${FLAG_CXX}")
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -O2 -static -s -std=c++0x -pthread ${FLAG_CXX}")
 endif()
 
 include_directories("./src/inc/")
