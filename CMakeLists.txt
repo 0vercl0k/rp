@@ -1,4 +1,4 @@
-# unix => cd build/ && cmake .. && make
+# unix => mkdir build ; cd build && cmake .. && make
 cmake_minimum_required(VERSION 2.6)
 project(rp++)
 
