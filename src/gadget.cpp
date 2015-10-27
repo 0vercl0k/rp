@@ -31,7 +31,7 @@ std::string Gadget::get_disassembly(void) const
     // Computing the disassembly is cheaper than keeping it in memory
     // Otherwise with big binaries you end up with a *lot* of memory being used
     std::string disassembly;
-    for (std::shared_ptr<Instruction> i : m_instructions)
+    for (const auto &i : m_instructions)
         disassembly += i->get_disassembly() + " ; ";
     return disassembly;
 }
@@ -43,7 +43,7 @@ unsigned int Gadget::get_size(void) const
 
 void Gadget::add_instructions(std::vector<Instruction> &instrs, unsigned long long va_section)
 {
-    for(const auto &instr : instrs)
+    for (const auto &instr : instrs)
     {
         /* 
          * If we haven't any offset yet, it means this instruction is the first one added
@@ -105,12 +105,12 @@ std::shared_ptr<Instruction> Gadget::get_ending_instruction(void)
 
 void Gadget::display_disassembly(void) const
 {
-    for(std::shared_ptr<Instruction> i : m_instructions)
+    for (const auto &i : m_instructions)
         std::cout << i->get_disassembly() << " ; ";
 }
 
 void Gadget::print_bytes()
 {
-    for (std::shared_ptr<Instruction> i : m_instructions)
+    for (const auto &i : m_instructions)
         i->print_bytes();
 }

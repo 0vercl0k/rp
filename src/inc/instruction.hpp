@@ -41,8 +41,8 @@ class Instruction
          *  \param size: It is the size of the instruction
          */
         explicit Instruction(const std::string &disass, unsigned int size, std::vector<unsigned char> b);
-        ~Instruction();
-        /*!
+
+		/*!
          *  \brief Obtain the absolute address of the instruction thanks to the VA of the section where it was found
          *
          *  \return the VA of the instruction

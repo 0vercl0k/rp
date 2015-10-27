@@ -27,10 +27,6 @@ class ARM : public CPU
 {
     public:
 
-        explicit ARM(void);
-        
-        ~ARM(void);
-
         std::string get_class_name(void) const;
         
         void find_gadget_in_memory(

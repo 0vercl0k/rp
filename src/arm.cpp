@@ -27,14 +27,6 @@
 #include <cstring>
 #include <list>
 
-ARM::ARM(void)
-{
-}
-
-ARM::~ARM(void)
-{
-}
-
 std::string ARM::get_class_name(void) const
 {
     return std::string("ARM");

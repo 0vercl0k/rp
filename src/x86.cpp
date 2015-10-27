@@ -27,14 +27,6 @@
 #include <cstring>
 #include <list>
 
-x86::x86(void)
-{
-}
-
-x86::~x86(void)
-{
-}
-
 std::string x86::get_class_name(void) const
 {
     return std::string("x86");

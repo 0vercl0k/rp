@@ -37,11 +37,6 @@ ArmCapstone::ArmCapstone(unsigned int thumb_mode)
 	cs_option(m_handle, CS_OPT_DETAIL, CS_OPT_ON);
 }
 
-ArmCapstone::~ArmCapstone()
-{
-	cs_close(&m_handle);
-}
-
 InstructionInformation ArmCapstone::disass(const unsigned char *data, unsigned long long len, unsigned long long vaddr, DisassEngineReturn &ret)
 {
 	InstructionInformation instr;

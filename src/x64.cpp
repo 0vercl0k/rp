@@ -21,14 +21,6 @@
 #include "intelbeaengine.hpp"
 #include "ropsearch_algorithm.hpp"
 
-x64::x64(void)
-{
-}
-
-x64::~x64(void)
-{
-}
-
 std::string x64::get_class_name(void) const
 {
     return std::string("x64");

@@ -21,14 +21,6 @@
 #include "x86.hpp"
 #include "x64.hpp"
 
-Macho::Macho(void)
-{
-}
-
-Macho::~Macho(void)
-{
-}
-
 std::shared_ptr<CPU> Macho::get_cpu(std::ifstream &file)
 {
     std::shared_ptr<CPU> cpu(nullptr);
@@ -85,8 +77,7 @@ std::vector<std::shared_ptr<Section>> Macho::get_executables_section(std::ifstre
 
 unsigned long long Macho::raw_offset_to_va(const unsigned long long absolute_raw_offset, const unsigned long long absolute_raw_offset_section) const
 {
-    unsigned long long r = 0;
-    return r;
+	return 0ULL;
 }
 
 CPU::E_CPU Macho::extract_information_from_binary(std::ifstream &file)

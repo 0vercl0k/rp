@@ -26,10 +26,6 @@ Instruction::Instruction(const std::string &disass, unsigned int size, std::vect
         bytes.push_back(i);
 }
 
-Instruction::~Instruction()
-{
-}
-
 unsigned int Instruction::get_size(void) const
 {
     return m_size;

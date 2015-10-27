@@ -20,14 +20,6 @@
 #include "raw.hpp"
 #include "rpexception.hpp"
 
-Raw::Raw(void)
-{
-}
-
-Raw::~Raw(void)
-{
-}
-
 std::string Raw::get_class_name(void) const
 {
     return std::string("raw");

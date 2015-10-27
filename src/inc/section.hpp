@@ -51,8 +51,6 @@ class Section
          */
         explicit Section(const char *name, const unsigned long long offset, const unsigned long long vaddr, const unsigned long long size);
         
-        ~Section(void);
-        
         /*!
          *  \brief Get the name of the section
          *   

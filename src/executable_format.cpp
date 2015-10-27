@@ -22,14 +22,6 @@
 #include "elf.hpp"
 #include "macho.hpp"
 
-ExecutableFormat::ExecutableFormat(void)
-{
-}
-
-ExecutableFormat::~ExecutableFormat(void)
-{   
-}
-
 std::shared_ptr<ExecutableFormat> ExecutableFormat::GetExecutableFormat(unsigned int magic_dword)
 {
     std::shared_ptr<ExecutableFormat> exe_format(nullptr);

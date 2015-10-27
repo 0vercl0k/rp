@@ -47,7 +47,7 @@
 // Calculate the byte offset of a field in a structure of type type.
 //
 
-#define RP_FIELD_OFFSET(type, field)    ((unsigned int)(ptr_t)&(((type *)0)->field))
+#define RP_FIELD_OFFSET(type, field)    ((unsigned int)(uintptr_t)&(((type *)0)->field))
 
 
 #define RP_IMAGE_DOS_SIGNATURE                 0x5A4D      // MZ
@@ -372,9 +372,9 @@ struct RP_IMAGE_NT_HEADERS {
     /* Keep in mind this offset is relative to the NT Header ! 
      * So if you want the PA of the first section: get_offset_first_section() + IMAGE_DOS_HEADER.e_lfanew
      */
-    ptr_t get_offset_first_section() const
+    uintptr_t get_offset_first_section() const
     {
-        return (ptr_t)(RP_FIELD_OFFSET(RP_IMAGE_NT_HEADERS<T>, OptionalHeader) + FileHeader.SizeOfOptionalHeader);
+        return (uintptr_t)(RP_FIELD_OFFSET(RP_IMAGE_NT_HEADERS<T>, OptionalHeader) + FileHeader.SizeOfOptionalHeader);
     }
 
     void display(VerbosityLevel lvl = VERBOSE_LEVEL_1) const

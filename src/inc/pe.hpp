@@ -27,10 +27,6 @@
 class PE : public ExecutableFormat
 {
     public:
-        
-        explicit PE(void);
-        
-        ~PE(void);
 
         std::shared_ptr<CPU> get_cpu(std::ifstream &file);
 

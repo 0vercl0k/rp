@@ -77,12 +77,4 @@
 #define x86Version unsigned int
 #define x64Version unsigned long long
 
-
-/* This type will have the same size that your CPU registers */
-#ifdef ARCH_X86
-#define ptr_t unsigned int
-#else
-#define ptr_t unsigned long long
-#endif
-
 #endif

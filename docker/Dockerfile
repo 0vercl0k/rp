@@ -45,3 +45,19 @@ WORKDIR /home/over/dev/rp/buildx64
 RUN cmake .. && make
 
 WORKDIR /home/over/dev/rp/bin
+RUN mv rp-lin-x86 rp.v1-lin-x86 && mv rp-lin-x64 rp.v1-lin-x64
+RUN rm -rf /home/over/dev/rp/buildx86 && rm -rf /home/over/dev/rp/buildx64
+
+WORKDIR /home/over/dev/rp
+RUN git checkout next
+RUN mkdir buildx86 buildx64
+
+WORKDIR /home/over/dev/rp/buildx86
+RUN cmake .. -DoptX86BUILD=ON && make
+
+WORKDIR /home/over/dev/rp/buildx64
+RUN cmake .. && make
+RUN rm -rf /home/over/dev/rp/buildx86 && rm -rf /home/over/dev/rp/buildx64
+
+WORKDIR /home/over/dev/rp/bin
+RUN mv rp-lin-x86 rp.v2-lin-x86 && mv rp-lin-x64 rp.v2-lin-x64

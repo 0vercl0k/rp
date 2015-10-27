@@ -26,7 +26,7 @@
 
 std::string verbosity_to_string(const VerbosityLevel lvl)
 {
-    std::string s("");
+	std::string s{ "" };
 
     switch(lvl)
     {
@@ -59,7 +59,7 @@ std::streampos get_file_size(std::ifstream &file)
     file.seekg(0, std::ios::beg);
     std::streampos fsize = file.tellg();
 
-    file.seekg(0, std::ios::end );
+    file.seekg(0, std::ios::end);
     fsize = file.tellg() - fsize;
     
     file.seekg(backup);
@@ -69,13 +69,13 @@ std::streampos get_file_size(std::ifstream &file)
 /* this function is completely inspirated from the previous work of jonathan salwan */
 bool is_matching(std::string &str, const char* p)
 {
-    std::string pattern(p);
+	std::string pattern{ p };
 
     /* we have to check the *entire* pattern */
     if(pattern.size() > str.size())
         return false;
 
-    size_t i = 0, max = (str.length() >= pattern.length()) ? pattern.length() : str.length();
+	size_t i = 0, max = std::min(str.length(), pattern.length());
     bool it_matches = true;
 
     while(i < max)

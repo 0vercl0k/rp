@@ -25,10 +25,6 @@
 class x64 : public CPU
 {
     public:
-        
-        explicit x64(void);
-        
-        ~x64(void);
 
         std::string get_class_name(void) const;
 

@@ -25,10 +25,6 @@
 class Raw : public ExecutableFormat
 {
     public:
-        
-        explicit Raw(void);
-
-        ~Raw(void);
 
         std::shared_ptr<CPU> get_cpu(std::ifstream &file)
         {

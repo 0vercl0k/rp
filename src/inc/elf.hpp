@@ -28,10 +28,6 @@ class Elf : public ExecutableFormat
 {
     public:
 
-        explicit Elf(void);
-        
-        ~Elf(void);
-
         std::shared_ptr<CPU> get_cpu(std::ifstream &file);
 
         void display_information(const VerbosityLevel lvl) const;

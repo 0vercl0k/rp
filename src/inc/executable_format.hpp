@@ -48,10 +48,6 @@ class ExecutableFormat
             FORMAT_UNKNOWN
         };
 
-        explicit ExecutableFormat(void);
-
-        virtual ~ExecutableFormat(void);
-
         /*!
          *  \brief Obtain the CPU ; for that it parses the executable format of your binary
          *   

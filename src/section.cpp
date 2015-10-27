@@ -29,10 +29,6 @@ Section::Section(const char *name, const unsigned long long offset, const unsign
 {
 }
 
-Section::~Section(void)
-{
-}
-
 std::string Section::get_name(void) const
 {
     return m_name;

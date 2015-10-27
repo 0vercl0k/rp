@@ -27,10 +27,6 @@ class x86 : public CPU
 {
     public:
 
-        explicit x86(void);
-        
-        ~x86(void);
-
         std::string get_class_name(void) const;
         
         void find_gadget_in_memory(

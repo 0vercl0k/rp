@@ -25,14 +25,6 @@
 
 #include <iostream>
 
-Elf::Elf(void)
-{
-}
-
-Elf::~Elf(void)
-{   
-}
-
 std::string Elf::get_class_name(void) const
 {
     return std::string("Elf");

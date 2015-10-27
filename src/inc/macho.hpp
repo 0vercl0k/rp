@@ -27,10 +27,6 @@ class Macho : public ExecutableFormat
 {
     public:
 
-        explicit Macho(void);
-
-        ~Macho(void);
-
         std::shared_ptr<CPU> get_cpu(std::ifstream &file);
 
         std::string get_class_name(void) const;

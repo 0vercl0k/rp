@@ -35,10 +35,6 @@ class CPU
 {
     public:
 
-        explicit CPU(void);
-        
-        virtual ~CPU(void);
-
         /*!
          *  \brief Obtain the name of the class (useful when you use the polymorphism)
          *   

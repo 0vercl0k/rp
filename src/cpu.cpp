@@ -18,11 +18,3 @@
     along with rp++.  If not, see <http://www.gnu.org/licenses/>.
 */
 #include "cpu.hpp"
-
-CPU::CPU(void)
-{
-}
-
-CPU::~CPU(void)
-{
-}

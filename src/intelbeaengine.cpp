@@ -60,12 +60,12 @@ InstructionInformation IntelBeaEngine::disass(const unsigned char *data, unsigne
     
 
     instr.address = m_disasm.EIP;
-    instr.virtual_address_in_memory = m_disasm.VirtualAddr;
+    instr.virtual_address_in_memory = static_cast<uintptr_t>(m_disasm.VirtualAddr);
     instr.disassembly = std::string(m_disasm.CompleteInstr);
     instr.mnemonic = std::string(m_disasm.Instruction.Mnemonic);
     instr.size = len_instr;
 
-    for (size_t i = 0; i < len_instr; ++i)
+    for (size_t i = 0; i < instr.size; ++i)
         instr.bytes.push_back(data[i]);
 
     instr.bea_branch_type = m_disasm.Instruction.BranchType;
