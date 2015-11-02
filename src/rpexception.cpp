@@ -21,7 +21,7 @@
 
 #include <sstream>
 
-RpException::RpException(const char *filename, unsigned int line, const char* funct, const char* msg)
+RpException::RpException(const char *filename, uint32_t line, const char* funct, const char* msg)
 : m_filename(filename), m_msg(msg), m_function_name(funct), m_line(line)
 {
     std::ostringstream oss;

@@ -22,7 +22,7 @@
 #include "elf.hpp"
 #include "macho.hpp"
 
-std::shared_ptr<ExecutableFormat> ExecutableFormat::GetExecutableFormat(unsigned int magic_dword)
+std::shared_ptr<ExecutableFormat> ExecutableFormat::GetExecutableFormat(uint32_t magic_dword)
 {
     std::shared_ptr<ExecutableFormat> exe_format(nullptr);
     if((magic_dword & 0xffff) == 0x5A4D)

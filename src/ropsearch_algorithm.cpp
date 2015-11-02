@@ -27,13 +27,13 @@ void find_all_gadget_from_ret(
     const unsigned char* data,
     unsigned long long vaddr,
     const InstructionInformation &ending_instr_disasm,
-    unsigned int depth,
+    uint32_t depth,
     std::multiset<std::shared_ptr<Gadget>> &gadgets,
     DisassEngineWrapper &disass_engine
 )
 {
-    unsigned int alignement = disass_engine.get_alignement();
-    unsigned int size_biggest_instruction = disass_engine.get_size_biggest_instruction();
+    uint32_t alignement = disass_engine.get_alignement();
+    uint32_t size_biggest_instruction = disass_engine.get_size_biggest_instruction();
 
     // We go back, trying to create the longuest gadget possible with the longuest instructions
     uintptr_t EIP         = ending_instr_disasm.address - (depth * size_biggest_instruction);
@@ -67,7 +67,7 @@ void find_all_gadget_from_ret(
         bool is_a_valid_gadget = false;
 
         /* now we'll try to find suitable sequence */
-        for(unsigned int nb_ins = 0; nb_ins < depth; nb_ins++)
+        for(uint32_t nb_ins = 0; nb_ins < depth; nb_ins++)
         {
             DisassEngineReturn ret;
             InstructionInformation instr = disass_engine.disass(
@@ -135,14 +135,14 @@ void find_rop_gadgets(
     const unsigned char* data,
     unsigned long long size,
     unsigned long long vaddr,
-    unsigned int depth,
+    uint32_t depth,
     std::multiset<std::shared_ptr<Gadget>> &merged_gadgets_final,
     DisassEngineWrapper &disass_engine,
     std::mutex &m
 )
 {
     std::multiset<std::shared_ptr<Gadget>> merged_gadgets;
-    unsigned int alignement = disass_engine.get_alignement();
+    uint32_t alignement = disass_engine.get_alignement();
     for(unsigned long long offset = 0; offset < size; offset += alignement)
     {
         DisassEngineReturn ret;

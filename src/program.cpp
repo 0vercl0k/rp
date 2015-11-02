@@ -40,7 +40,7 @@
 Program::Program(const std::string & program_path, CPU::E_CPU arch)
 : m_cpu(nullptr), m_exformat(nullptr)
 {
-    unsigned int magic_dword = 0;
+    uint32_t magic_dword = 0;
 
     std::cout << "Trying to open '" << program_path << "'.." << std::endl;
     m_file.open(program_path.c_str(), std::ios::binary);
@@ -99,7 +99,7 @@ void Program::display_information(VerbosityLevel lvl)
     m_exformat->display_information(lvl);
 }
 
-void Program::find_gadgets(unsigned int depth, std::multiset<std::shared_ptr<Gadget>> &gadgets_found, unsigned int disass_engine_options, size_t n_max_thread)
+void Program::find_gadgets(uint32_t depth, std::multiset<std::shared_ptr<Gadget>> &gadgets_found, uint32_t disass_engine_options, size_t n_max_thread)
 {
     /* To do a ROP gadget research, we need to know the executable section */
     std::vector<std::shared_ptr<Section>> executable_sections = m_exformat->get_executables_section(m_file);
@@ -161,7 +161,7 @@ void Program::find_gadgets(unsigned int depth, std::multiset<std::shared_ptr<Gad
 
 }
 
-void Program::search_and_display(const unsigned char* hex_values, unsigned int size)
+void Program::search_and_display(const unsigned char* hex_values, uint32_t size)
 {
     std::vector<std::shared_ptr<Section>> executable_sections = m_exformat->get_executables_section(m_file);
     if(executable_sections.size() == 0)

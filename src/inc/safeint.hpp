@@ -23,7 +23,7 @@
 #include "rpexception.hpp"
 #include <numeric>
 
-#define SafeAddU32(a, b) SafeIntAdd<unsigned int>(a, b)
+#define SafeAddU32(a, b) SafeIntAdd<uint32_t>(a, b)
 #define SafeAddU64(a, b) SafeIntAdd<unsigned long long>(a, b)
 
 /*

@@ -19,14 +19,14 @@
 */
 #include "instruction.hpp"
 
-Instruction::Instruction(const std::string &disass, unsigned int size, std::vector<unsigned char> b)
+Instruction::Instruction(const std::string &disass, uint32_t size, std::vector<unsigned char> b)
 : m_disass(std::move(disass)), m_size(size)
 {
     for (auto i : b)
         bytes.push_back(i);
 }
 
-unsigned int Instruction::get_size(void) const
+uint32_t Instruction::get_size(void) const
 {
     return m_size;
 }

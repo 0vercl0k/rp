@@ -30,7 +30,7 @@ void find_rop_gadgets(
     const unsigned char* data,
     unsigned long long size,
     unsigned long long vaddr,
-    unsigned int depth,
+    uint32_t depth,
     std::multiset<std::shared_ptr<Gadget>> &merged_gadgets,
     DisassEngineWrapper &disass_engine,
     std::mutex &m

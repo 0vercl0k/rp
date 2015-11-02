@@ -43,15 +43,15 @@ class IntelBeaEngine : public DisassEngineWrapper
 
         bool is_valid_instruction(InstructionInformation &instr);
 
-        unsigned int get_size_biggest_instruction(void);
+        uint32_t get_size_biggest_instruction(void);
 
-        unsigned int get_alignement(void);
+        uint32_t get_alignement(void);
 
     private:
 
         DISASM m_disasm;
 
-        unsigned int m_arch; /*!< architecture the BeaEngine will use to disassemble*/
+        uint32_t m_arch; /*!< architecture the BeaEngine will use to disassemble*/
 };
 
 #endif

@@ -47,7 +47,7 @@ class RpException : public std::exception
          *  \param funct: The function name where the exception has been raised
          *  \param msg: It is a message that describes the reason of the exception
          */
-        explicit RpException(const char *filename, unsigned int line, const char* funct, const char* msg);
+        explicit RpException(const char *filename, uint32_t line, const char* funct, const char* msg);
 
         ~RpException(void) throw();
 
@@ -65,7 +65,7 @@ class RpException : public std::exception
             m_function_name, /*!< the function name where the exception has been raised */
             m_report; /*!< the name of the file where the exception has been raised */
 
-        unsigned int m_line; /*!< the line where the exception has been raised */
+        uint32_t m_line; /*!< the line where the exception has been raised */
 };
 
 #endif

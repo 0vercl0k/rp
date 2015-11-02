@@ -21,7 +21,7 @@
 #include "arm.hpp"
 #include "rpexception.hpp"
 
-ArmCapstone::ArmCapstone(unsigned int thumb_mode)
+ArmCapstone::ArmCapstone(uint32_t thumb_mode)
 : is_thumb(true)
 {
 	cs_mode mode = CS_MODE_THUMB;
@@ -139,12 +139,12 @@ bool ArmCapstone::is_valid_instruction(InstructionInformation &instr)
 	return instr.cap_is_branch == false;
 }
 
-unsigned int ArmCapstone::get_size_biggest_instruction(void)
+uint32_t ArmCapstone::get_size_biggest_instruction(void)
 {
 	return ARM::get_size_biggest_instruction();
 }
 
-unsigned int ArmCapstone::get_alignement(void)
+uint32_t ArmCapstone::get_alignement(void)
 {
 	if(is_thumb)
 		return 2;

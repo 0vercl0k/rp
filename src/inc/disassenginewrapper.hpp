@@ -28,7 +28,7 @@ struct InstructionInformation
     // Generic fields
     std::string disassembly;
     std::string mnemonic;
-    unsigned int size;
+    uint32_t size;
     uintptr_t address;
     uintptr_t virtual_address_in_memory;
 
@@ -39,7 +39,7 @@ struct InstructionInformation
 	bool cap_is_valid_ending_instr;
 
     // BeaEngine fields
-    unsigned int bea_branch_type; // This is used by BeaEngine ; and this will hold DISASM.Instruction.BranchType
+    uint32_t bea_branch_type; // This is used by BeaEngine ; and this will hold DISASM.Instruction.BranchType
     unsigned long long bea_addr_value; // This is used by BeaEngine, DISASM.Instruction
 };
 
@@ -56,8 +56,8 @@ class DisassEngineWrapper
         virtual InstructionInformation disass(const unsigned char *data, unsigned long long len, unsigned long long vaddr, DisassEngineReturn &ret) = 0;
         virtual bool is_valid_ending_instruction(InstructionInformation &instr) = 0;
         virtual bool is_valid_instruction(InstructionInformation &instr) = 0;
-        virtual unsigned int get_size_biggest_instruction(void) = 0;
-        virtual unsigned int get_alignement(void) = 0;
+        virtual uint32_t get_size_biggest_instruction(void) = 0;
+        virtual uint32_t get_alignement(void) = 0;
 };
 
 #endif

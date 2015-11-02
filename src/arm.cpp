@@ -34,7 +34,7 @@ std::string ARM::get_class_name(void) const
 
 void ARM::find_gadget_in_memory(
     const unsigned char *p_memory, const unsigned long long size, const unsigned long long vaddr,
-    const unsigned int depth, std::multiset<std::shared_ptr<Gadget>> &gadgets, unsigned int disass_engine_options,
+    const uint32_t depth, std::multiset<std::shared_ptr<Gadget>> &gadgets, uint32_t disass_engine_options,
     std::mutex &m
 )
 {
@@ -43,12 +43,12 @@ void ARM::find_gadget_in_memory(
     find_rop_gadgets(p_memory, size, vaddr, depth, gadgets, engine, m);
 }
 
-unsigned int ARM::get_size_biggest_instruction(void)
+uint32_t ARM::get_size_biggest_instruction(void)
 {
     return 4;
 }
 
-unsigned int ARM::get_alignement(void)
+uint32_t ARM::get_alignement(void)
 {
 	//XXX: Thumb/Thumb2?
     return 4;

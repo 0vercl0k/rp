@@ -61,7 +61,7 @@ class Program
          *  \param disass_engine_options: Options you want to pass to the disassembly engine
 		 *
          */
-        void find_gadgets(unsigned int depth, std::multiset<std::shared_ptr<Gadget>> &gadgets, unsigned int disass_engine_options, size_t n_max_thread);
+        void find_gadgets(uint32_t depth, std::multiset<std::shared_ptr<Gadget>> &gadgets, uint32_t disass_engine_options, size_t n_max_thread);
 
         /*!
          *  \brief Find hex values in the section of the program
@@ -69,7 +69,7 @@ class Program
          *  \param hex_values: It is a pointer on where it can find the bytes to find in memory
          *  \param size: It is the size of the buffer hex_values
          */
-        void search_and_display(const unsigned char *hex_values, unsigned int size);
+        void search_and_display(const unsigned char *hex_values, uint32_t size);
 
         /*!
          *  \brief Get the base address of the program

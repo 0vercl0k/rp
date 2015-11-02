@@ -28,7 +28,7 @@ std::string x64::get_class_name(void) const
 
 void x64::find_gadget_in_memory(
     const unsigned char *p_memory, const unsigned long long size, const unsigned long long vaddr,
-    const unsigned int depth, std::multiset<std::shared_ptr<Gadget>> &gadgets, unsigned int disass_engine_options,
+    const uint32_t depth, std::multiset<std::shared_ptr<Gadget>> &gadgets, uint32_t disass_engine_options,
     std::mutex &m
 )
 {
@@ -39,13 +39,13 @@ void x64::find_gadget_in_memory(
     find_rop_gadgets(p_memory, size, vaddr, depth, gadgets, engine, m);
 }
 
-unsigned int x64::get_size_biggest_instruction(void)
+uint32_t x64::get_size_biggest_instruction(void)
 {
     // "On INTEL processors, (in IA-32 or intel 64 modes), instruction never exceeds 15 bytes." -- beaengine.org
     return 15;
 }
 
-unsigned int x64::get_alignement(void)
+uint32_t x64::get_alignement(void)
 {
     return 1;
 }

@@ -57,7 +57,7 @@ CPU::E_CPU PE::extract_information_from_binary(std::ifstream &file)
      * Yeah, in fact, we don't know yet if it is a x86/x64 PE ; 
      * so just we grab the signature field, FILE_HEADER and the field Magic 
      */
-    file.read((char*)&imgNtHeaders32, sizeof(unsigned int) + sizeof(RP_IMAGE_FILE_HEADER) + sizeof(unsigned int));
+    file.read((char*)&imgNtHeaders32, sizeof(uint32_t) + sizeof(RP_IMAGE_FILE_HEADER) + sizeof(uint32_t));
     
     if(imgNtHeaders32.Signature != RP_IMAGE_NT_SIGNATURE)
         RAISE_EXCEPTION("This file doesn't seem to be a correct PE (bad IMAGE_NT_SIGNATURE)");

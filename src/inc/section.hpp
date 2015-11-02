@@ -87,7 +87,7 @@ class Section
          *
          *  \return a list of offset (relative to the section) where it found the sequence of bytes
          */
-        std::list<unsigned long long> search_in_memory(const unsigned char *val, const unsigned int size);
+        std::list<unsigned long long> search_in_memory(const unsigned char *val, const uint32_t size);
         
         /*!
          *  \brief Dump the raw section of your file

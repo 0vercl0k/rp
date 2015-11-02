@@ -36,7 +36,7 @@ std::string Gadget::get_disassembly(void) const
     return disassembly;
 }
 
-unsigned int Gadget::get_size(void) const
+uint32_t Gadget::get_size(void) const
 {
     return m_size;
 }

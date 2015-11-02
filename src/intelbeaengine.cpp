@@ -24,10 +24,8 @@
 #include <cstring>
 
 IntelBeaEngine::IntelBeaEngine(E_Arch arch)
-: m_arch(arch)
+: m_arch{ static_cast<uint32_t>(arch) }, m_disasm{ }
 {
-    memset(&m_disasm, 0, sizeof(DISASM));
-
     /* those options are mostly display option for the disassembler engine */
     m_disasm.Options = PrefixedNumeral + NasmSyntax;
 
@@ -40,7 +38,7 @@ InstructionInformation IntelBeaEngine::disass(const unsigned char *data, unsigne
     InstructionInformation instr;
     m_disasm.EIP = (UIntPtr)data;
     m_disasm.VirtualAddr = vaddr;
-    m_disasm.SecurityBlock = (unsigned int)len;
+    m_disasm.SecurityBlock = (uint32_t)len;
  
     int len_instr = Disasm(&m_disasm);
     if(len_instr == OUT_OF_BLOCK)
@@ -65,8 +63,7 @@ InstructionInformation IntelBeaEngine::disass(const unsigned char *data, unsigne
     instr.mnemonic = std::string(m_disasm.Instruction.Mnemonic);
     instr.size = len_instr;
 
-    for (size_t i = 0; i < instr.size; ++i)
-        instr.bytes.push_back(data[i]);
+    instr.bytes.insert(instr.bytes.begin(), data, data + instr.size);
 
     instr.bea_branch_type = m_disasm.Instruction.BranchType;
     instr.bea_addr_value = m_disasm.Instruction.AddrValue;
@@ -83,7 +80,7 @@ bool IntelBeaEngine::is_valid_ending_instruction(InstructionInformation &instr)
     */
     if(instr.disassembly != "")
     {
-        unsigned int branch_type = instr.bea_branch_type;
+        uint32_t branch_type = instr.bea_branch_type;
         unsigned long long addr_value = instr.bea_addr_value;
         const char *mnemonic_s = instr.mnemonic.c_str();
 
@@ -156,18 +153,16 @@ bool IntelBeaEngine::is_valid_instruction(InstructionInformation &instr)
     );
 }
 
-unsigned int IntelBeaEngine::get_size_biggest_instruction(void)
+uint32_t IntelBeaEngine::get_size_biggest_instruction(void)
 {
     if(m_arch == x86)
         return x86::get_size_biggest_instruction();
-    else
-        return x64::get_size_biggest_instruction();
+    return x64::get_size_biggest_instruction();
 }
 
-unsigned int IntelBeaEngine::get_alignement(void)
+uint32_t IntelBeaEngine::get_alignement(void)
 {
     if(m_arch == x86)
         return x86::get_alignement();
-    else
-        return x64::get_alignement();
+    return x64::get_alignement();
 }

@@ -19,7 +19,7 @@
 */
 #include "elf_struct.hpp"
 
-std::string type_to_str(const unsigned int p_type)
+std::string type_to_str(const uint32_t p_type)
 {
     std::string ret("unknown type");
 
@@ -97,7 +97,7 @@ std::string type_to_str(const unsigned int p_type)
     return ret;
 }
 
-std::string flags_to_str(const unsigned int p_flags)
+std::string flags_to_str(const uint32_t p_flags)
 {
     std::string ret(3, '-');
 

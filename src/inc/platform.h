@@ -74,7 +74,7 @@
 #ifdef LINUX
 #endif
 
-#define x86Version unsigned int
+#define x86Version uint32_t
 #define x64Version unsigned long long
 
 #endif

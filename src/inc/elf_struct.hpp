@@ -49,11 +49,11 @@ struct Elf_Ehdr
     unsigned char  e_ident[EI_NIDENT];
     unsigned short e_type;
     unsigned short e_machine;
-    unsigned int   e_version;
+    uint32_t       e_version;
     T              e_entry;  /* Entry point */
     T              e_phoff;
     T              e_shoff;
-    unsigned int   e_flags;
+    uint32_t       e_flags;
     unsigned short e_ehsize;
     unsigned short e_phentsize;
     unsigned short e_phnum;
@@ -81,8 +81,8 @@ __attribute__((packed))
 ;
 
 
-typedef Elf_Ehdr<x86Version> Elf32_Ehdr;
-typedef Elf_Ehdr<x64Version> Elf64_Ehdr;
+using Elf32_Ehdr = Elf_Ehdr<x86Version>;
+using Elf64_Ehdr = Elf_Ehdr<x64Version>;
 
 #define EI_OSABI 7
 #define EI_CLASS 4
@@ -98,21 +98,21 @@ __attribute__((packed))
 #endif
 ;
 
-std::string type_to_str(const unsigned int p_type);
+std::string type_to_str(const uint32_t p_type);
 
-std::string flags_to_str(const unsigned int p_flags);
+std::string flags_to_str(const uint32_t p_flags);
 
 template<>
 struct Elf_Phdr<x86Version>
 {
-    unsigned int p_type;
-    unsigned int p_offset;
-    unsigned int p_vaddr;
-    unsigned int p_paddr;
-    unsigned int p_filesz;
-    unsigned int p_memsz;
-    unsigned int p_flags;
-    unsigned int p_align;
+    uint32_t p_type;
+    uint32_t p_offset;
+    uint32_t p_vaddr;
+    uint32_t p_paddr;
+    uint32_t p_filesz;
+    uint32_t p_memsz;
+    uint32_t p_flags;
+    uint32_t p_align;
 
     explicit Elf_Phdr()
     {}
@@ -143,8 +143,8 @@ __attribute__((packed))
 template<>
 struct Elf_Phdr<x64Version>
 {
-    unsigned int       p_type;
-    unsigned int       p_flags;
+    uint32_t           p_type;
+    uint32_t           p_flags;
     unsigned long long p_offset;
     unsigned long long p_vaddr;
     unsigned long long p_paddr;
@@ -184,16 +184,16 @@ typedef Elf_Phdr<x64Version> Elf64_Phdr;
 template<class T>
 struct Elf_Shdr
 {
-    unsigned int sh_name;
-    unsigned int sh_type;
-    T            sh_flags;
-    T            sh_addr;
-    T            sh_offset;
-    T            sh_size;
-    unsigned int sh_link;
-    unsigned int sh_info;
-    T            sh_addralign;
-    T            sh_entsize;
+    uint32_t sh_name;
+    uint32_t sh_type;
+    T        sh_flags;
+    T        sh_addr;
+    T        sh_offset;
+    T        sh_size;
+    uint32_t sh_link;
+    uint32_t sh_info;
+    T        sh_addralign;
+    T        sh_entsize;
 }
 #ifdef LINUX
 __attribute__((packed))
@@ -282,7 +282,7 @@ struct ELFLayout : public ExecutableLinkingFormatLayout
 
     void display(VerbosityLevel lvl = VERBOSE_LEVEL_1) const
     {
-        unsigned int i = 0;
+        uint32_t i = 0;
         elfHeader.display(lvl);
 
         for(auto &programheader : elfProgramHeaders)
@@ -313,7 +313,7 @@ struct ELFLayout : public ExecutableLinkingFormatLayout
 
         file.seekg((std::streamoff)elfHeader.e_shoff, std::ios::beg);
 
-        for(unsigned int i = 0; i < elfHeader.e_shnum; ++i)
+        for(uint32_t i = 0; i < elfHeader.e_shnum; ++i)
         {
             file.read((char*)&elf_shdr, sizeof(Elf_Shdr<T>));
             if(elf_shdr.sh_addr == 0 && elf_shdr.sh_type == SHT_STRTAB)
@@ -339,7 +339,7 @@ struct ELFLayout : public ExecutableLinkingFormatLayout
 
         /* 2] Goto the first Program Header, and dump them */
         file.seekg((std::streamoff)elfHeader.e_phoff, std::ios::beg);
-        for(unsigned int i = 0; i < elfHeader.e_phnum; ++i)
+        for(uint32_t i = 0; i < elfHeader.e_phnum; ++i)
         {
             std::shared_ptr<Elf_Phdr<T>> pElfProgramHeader = std::make_shared<Elf_Phdr<T>>();
 
@@ -362,13 +362,13 @@ struct ELFLayout : public ExecutableLinkingFormatLayout
         /* 3.2] Keep the string table in memory */
         file.seekg((std::streamoff)offset_string_table, std::ios::beg);
         
-        std::vector<char> string_table_section((unsigned int)size_string_table);
+        std::vector<char> string_table_section((uint32_t)size_string_table);
 
         file.read(string_table_section.data(), (std::streamsize)size_string_table);
 
         /* 3.3] Goto the first Section Header, and dump them !*/
         file.seekg((std::streamoff)elfHeader.e_shoff, std::ios::beg);
-        for(unsigned int i = 0; i < elfHeader.e_shnum; ++i)
+        for(uint32_t i = 0; i < elfHeader.e_shnum; ++i)
         {
             std::shared_ptr<Elf_Shdr_Abstraction<T>> pElfSectionHeader = std::make_shared<Elf_Shdr_Abstraction<T>>();
             

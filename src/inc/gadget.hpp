@@ -62,7 +62,7 @@ class Gadget
          *  \brief Get the size of your gadget
          *  \return the size of the whole gadget
          */
-        unsigned int get_size(void) const;
+        uint32_t get_size(void) const;
         
         /*!
          *  \brief Add a list of instructions to your gadget ; don't forget it's back pushed in the instruction list
@@ -134,7 +134,7 @@ class Gadget
 
         unsigned long long m_start_offset; /*!< this is where the gadget is starting from in memory */
 
-        unsigned int m_size; /*!< the size in byte of the gadget*/
+        uint32_t m_size; /*!< the size in byte of the gadget*/
 
         std::vector<std::shared_ptr<Instruction>> m_instructions; /*!< the list of the different instructions composing the gadget*/
 

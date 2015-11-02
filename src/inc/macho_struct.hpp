@@ -43,13 +43,13 @@ struct RP_MACH_HEADER
 template<>
 struct RP_MACH_HEADER<x86Version>
 {
-    unsigned int magic;
-    unsigned int cputype;
-    unsigned int cpusubtype;
-    unsigned int filetype;
-    unsigned int ncmds;
-    unsigned int sizeofcmds;
-    unsigned int flags;
+    uint32_t magic;
+    uint32_t cputype;
+    uint32_t cpusubtype;
+    uint32_t filetype;
+    uint32_t ncmds;
+    uint32_t sizeofcmds;
+    uint32_t flags;
 
     void display(VerbosityLevel lvl) const
     {
@@ -77,14 +77,14 @@ __attribute__((packed))
 template<>
 struct RP_MACH_HEADER<x64Version>
 {
-    unsigned int magic;
-    unsigned int cputype;
-    unsigned int cpusubtype;
-    unsigned int filetype;
-    unsigned int ncmds;
-    unsigned int sizeofcmds;
-    unsigned int flags;
-    unsigned int reserved;
+    uint32_t magic;
+    uint32_t cputype;
+    uint32_t cpusubtype;
+    uint32_t filetype;
+    uint32_t ncmds;
+    uint32_t sizeofcmds;
+    uint32_t flags;
+    uint32_t reserved;
 
     void display(VerbosityLevel lvl) const
     {
@@ -115,8 +115,8 @@ __attribute__((packed))
 
 struct RP_LOAD_COMMAND
 {
-    unsigned int cmd;
-    unsigned int cmdsize;
+    uint32_t cmd;
+    uint32_t cmdsize;
 }
 #ifdef LINUX
 __attribute__((packed))
@@ -133,10 +133,10 @@ struct RP_SEGMENT_COMMAND
     T             vmsize;
     T             fileoff;
     T             filesize;
-    unsigned int maxprot;
-    unsigned int initprot;
-    unsigned int nsects;
-    unsigned int flags;
+    uint32_t      maxprot;
+    uint32_t      initprot;
+    uint32_t      nsects;
+    uint32_t      flags;
 
     explicit RP_SEGMENT_COMMAND()
     {}
@@ -166,8 +166,8 @@ __attribute__((packed))
 #endif
 ;
 
-typedef RP_SEGMENT_COMMAND<x86Version> SegmentCommand32;
-typedef RP_SEGMENT_COMMAND<x64Version> SegmentCommand64;
+using SegmentCommand32 = RP_SEGMENT_COMMAND<x86Version>;
+using SegmentCommand64 = RP_SEGMENT_COMMAND<x64Version>;
 
 #define S_ATTR_PURE_INSTRUCTIONS 0x80000000
 #define S_ATTR_SOME_INSTRUCTIONS 0x400
@@ -182,15 +182,15 @@ struct RP_SECTION<x86Version>
 {
     unsigned char sectname[16];
     unsigned char segname[16];
-    unsigned int  addr;
-    unsigned int  size;
-    unsigned int  offset;
-    unsigned int  align;
-    unsigned int  reloff;
-    unsigned int  nreloc;
-    unsigned int  flags;
-    unsigned int  reserved1;
-    unsigned int  reserved2;
+    uint32_t      addr;
+    uint32_t      size;
+    uint32_t      offset;
+    uint32_t      align;
+    uint32_t      reloff;
+    uint32_t      nreloc;
+    uint32_t      flags;
+    uint32_t      reserved1;
+    uint32_t      reserved2;
 
     explicit RP_SECTION()
     {}
@@ -225,14 +225,14 @@ struct RP_SECTION<x64Version>
     unsigned char      segname[16];
     unsigned long long addr;
     unsigned long long size;
-    unsigned int       offset;
-    unsigned int       align;
-    unsigned int       reloff;
-    unsigned int       nreloc;
-    unsigned int       flags;
-    unsigned int       reserved1;
-    unsigned int       reserved2;
-    unsigned int       reserved3;
+    uint32_t           offset;
+    uint32_t           align;
+    uint32_t           reloff;
+    uint32_t           nreloc;
+    uint32_t           flags;
+    uint32_t           reserved1;
+    uint32_t           reserved2;
+    uint32_t           reserved3;
 
     explicit RP_SECTION()
     {}
@@ -269,7 +269,7 @@ __attribute__((packed))
 struct MachoLayout
 {  
     virtual void fill_structures(std::ifstream &file)  = 0;
-    virtual unsigned int get_size_mach_header(void) const = 0;
+    virtual uint32_t get_size_mach_header(void) const = 0;
     virtual void display(VerbosityLevel lvl = VERBOSE_LEVEL_1) const = 0;
     virtual std::vector<std::shared_ptr<Section>> get_executable_section(std::ifstream &file) = 0;
     virtual unsigned long long get_image_base_address(void) = 0;
@@ -287,7 +287,7 @@ struct MachoArchLayout : public MachoLayout
     : MachoLayout(), base(0)
     {}
 
-    unsigned int get_size_mach_header(void) const
+    uint32_t get_size_mach_header(void) const
     {
         return sizeof(RP_MACH_HEADER<T>);
     }
@@ -302,7 +302,7 @@ struct MachoArchLayout : public MachoLayout
         file.read((char*)&header, sizeof(RP_MACH_HEADER<T>));
 
         /* 2] The load commands now */
-        for(unsigned int i = 0; i < header.ncmds; ++i)
+        for(uint32_t i = 0; i < header.ncmds; ++i)
         {
             RP_LOAD_COMMAND loadcmd {0};
 
@@ -326,7 +326,7 @@ struct MachoArchLayout : public MachoLayout
                        structures, with the exact count determined by the nsects field of the segment_command
                        structure.
                     */
-                    for(unsigned int j = 0; j < seg_cmd->nsects; ++j)
+                    for(uint32_t j = 0; j < seg_cmd->nsects; ++j)
                     {
                         std::shared_ptr<RP_SECTION<T>> sect = std::make_shared<RP_SECTION<T>>();
 

@@ -33,15 +33,15 @@ class ARM : public CPU
 			const unsigned char *p_memory,
 			const unsigned long long size,
 			const unsigned long long vaddr,
-			const unsigned int depth,
+			const uint32_t depth,
 			std::multiset<std::shared_ptr<Gadget>> &gadgets,
-            unsigned int disass_engine_options,
+            uint32_t disass_engine_options,
             std::mutex &m
 		);
 
-        static unsigned int get_size_biggest_instruction(void);
+        static uint32_t get_size_biggest_instruction(void);
 
-        static unsigned int get_alignement(void);
+        static uint32_t get_alignement(void);
 };
 
 #endif

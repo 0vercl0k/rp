@@ -49,7 +49,7 @@ const unsigned long long Section::get_offset(void) const
     return m_offset;
 }
 
-std::list<unsigned long long> Section::search_in_memory(const unsigned char *val, const unsigned int size)
+std::list<unsigned long long> Section::search_in_memory(const unsigned char *val, const uint32_t size)
 {
     std::list<unsigned long long> val_found;
 
@@ -74,10 +74,10 @@ void Section::dump(std::ifstream &file)
 
     std::streampos backup = file.tellg();
 
-    file.seekg((unsigned int)m_offset, std::ios::beg);
-    m_section.resize((unsigned int)m_size);
+    file.seekg((uint32_t)m_offset, std::ios::beg);
+    m_section.resize((uint32_t)m_size);
 
-    file.read((char*)m_section.data(), (unsigned int)m_size);
+    file.read((char*)m_section.data(), (uint32_t)m_size);
 
     file.seekg(backup);
 }

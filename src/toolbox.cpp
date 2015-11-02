@@ -103,7 +103,7 @@ bool is_hex_char(char c)
 
 std::vector<unsigned char> string_to_hex(const char* hex)
 {
-    unsigned int len = (unsigned int)std::strlen(hex), i = 0, byte = 0;
+    uint32_t len = (uint32_t)std::strlen(hex), i = 0, byte = 0;
     std::vector<unsigned char> bytes;
 
     if(len == 0)

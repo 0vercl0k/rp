@@ -88,7 +88,7 @@ class ExecutableFormat
          *
          *  \return A pointer on the correct ExecutableFormat deduced thanks to the magic_dword argument
          */
-        static std::shared_ptr<ExecutableFormat> GetExecutableFormat(unsigned int magic_dword);
+        static std::shared_ptr<ExecutableFormat> GetExecutableFormat(uint32_t magic_dword);
 
         /*!
          *  \brief Give you the base address of the executable 

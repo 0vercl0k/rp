@@ -27,13 +27,13 @@
 class ArmCapstone : public DisassEngineWrapper
 {
     public:
-        explicit ArmCapstone(unsigned int thumb_mode);
+        explicit ArmCapstone(uint32_t thumb_mode);
 
         InstructionInformation disass(const unsigned char *data, unsigned long long len, unsigned long long vaddr, DisassEngineReturn &ret);
         bool is_valid_ending_instruction(InstructionInformation &instr);
         bool is_valid_instruction(InstructionInformation &instr);
-        unsigned int get_size_biggest_instruction(void);
-        unsigned int get_alignement(void);
+        uint32_t get_size_biggest_instruction(void);
+        uint32_t get_alignement(void);
 
 	private:
 		csh m_handle;

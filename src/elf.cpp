@@ -39,7 +39,7 @@ void Elf::display_information(const VerbosityLevel lvl) const
 
 CPU::E_CPU Elf::extract_information_from_binary(std::ifstream &file)
 {
-	unsigned int size_init = 0;
+	uint32_t size_init = 0;
     unsigned char buf[EI_NIDENT] {0};
     CPU::E_CPU cpu = CPU::CPU_UNKNOWN;
     std::cout << "Loading ELF information.." << std::endl;

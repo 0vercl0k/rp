@@ -124,7 +124,7 @@ int main(int argc, char* argv[])
                 if(rop->ival[0] > MAXIMUM_INSTRUCTION_PER_GADGET)
                     RAISE_EXCEPTION("You specified a maximum number of instruction too important for the --rop option");
 
-				unsigned int options = 0;
+				uint32_t options = 0;
 				if(thumb->count > 0)
 					options = 1;
 
@@ -180,13 +180,13 @@ int main(int argc, char* argv[])
             if(shexa->count > 0)
             {
                 std::vector<unsigned char> hex_values = string_to_hex(shexa->sval[0]);
-                p.search_and_display(hex_values.data(), (unsigned int)hex_values.size());
+                p.search_and_display(hex_values.data(), (uint32_t)hex_values.size());
             }
             
             if(sint->count > 0)
             {
-                unsigned int val = std::strtoul(sint->sval[0], nullptr, 16);
-                p.search_and_display((const unsigned char*)&val, sizeof(unsigned int));
+                uint32_t val = std::strtoul(sint->sval[0], nullptr, 16);
+                p.search_and_display((const unsigned char*)&val, sizeof(uint32_t));
             }
         }
     }
