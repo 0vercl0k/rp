@@ -28,7 +28,7 @@ class ArmCapstone : public DisassEngineWrapper
 {
     public:
         explicit ArmCapstone(uint32_t thumb_mode);
-
+        ~ArmCapstone();
         InstructionInformation disass(const unsigned char *data, unsigned long long len, unsigned long long vaddr, DisassEngineReturn &ret);
         bool is_valid_ending_instruction(InstructionInformation &instr);
         bool is_valid_instruction(InstructionInformation &instr);
