@@ -1,5 +1,5 @@
 # unix => cd build/ && cmake .. && make
-cmake_minimum_required(VERSION 3.0.0)
+cmake_minimum_required(VERSION 2.8.0)
 project(rp++)
 
 option (optX86BUILD "Generate an x86 executable" OFF)
