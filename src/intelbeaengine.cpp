@@ -20,6 +20,7 @@
 #include "intelbeaengine.hpp"
 #include "x64.hpp"
 #include "x86.hpp"
+#include "rpexception.hpp"
 
 #include <cstring>
 
@@ -80,7 +81,8 @@ bool IntelBeaEngine::is_valid_ending_instruction(InstructionInformation &instr) 
 		XXX: BeaEngine has received a lot of recent commits recently, let's remove the branch to see if it's gone
     */
     if(instr.disassembly == "")
-		__debugbreak();
+		RAISE_EXCEPTION("BeaEngine bug coming back?");
+
     uint32_t branch_type = instr.bea_branch_type;
     uint64_t addr_value = instr.bea_addr_value;
     const char *mnemonic_s = instr.mnemonic.c_str();
@@ -120,7 +122,7 @@ bool IntelBeaEngine::is_valid_instruction(InstructionInformation &instr) const
 	XXX: Something tells me it's not here anymore
 	*/
 	if(instr.disassembly == "")
-		__debugbreak();
+		RAISE_EXCEPTION("BeaEngine bug coming back?");
 
     return (
         branch_type != RetType && 
