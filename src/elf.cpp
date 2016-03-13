@@ -40,7 +40,7 @@ void Elf::display_information(const VerbosityLevel lvl) const
 CPU::E_CPU Elf::extract_information_from_binary(std::ifstream &file)
 {
 	uint32_t size_init = 0;
-    unsigned char buf[EI_NIDENT] {0};
+    uint8_t buf[EI_NIDENT] {0};
     CPU::E_CPU cpu = CPU::CPU_UNKNOWN;
     std::cout << "Loading ELF information.." << std::endl;
 
@@ -148,7 +148,7 @@ std::vector<std::shared_ptr<Section>> Elf::get_executables_section(std::ifstream
     return m_ELFLayout->get_executable_section(file);
 }
 
-unsigned long long Elf::get_image_base_address(void)
+uint64_t Elf::get_image_base_address(void)
 {
     return m_ELFLayout->get_image_base_address();
 }

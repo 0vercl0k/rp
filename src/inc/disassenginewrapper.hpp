@@ -32,7 +32,7 @@ struct InstructionInformation
     uintptr_t address;
     uintptr_t virtual_address_in_memory;
 
-    std::vector<unsigned char> bytes;
+    std::vector<uint8_t> bytes;
 
 	// Capstone field
 	bool cap_is_branch;
@@ -40,7 +40,7 @@ struct InstructionInformation
 
     // BeaEngine fields
     uint32_t bea_branch_type; // This is used by BeaEngine ; and this will hold DISASM.Instruction.BranchType
-    unsigned long long bea_addr_value; // This is used by BeaEngine, DISASM.Instruction
+    uint64_t bea_addr_value; // This is used by BeaEngine, DISASM.Instruction
 };
 
 enum DisassEngineReturn
@@ -53,7 +53,7 @@ enum DisassEngineReturn
 class DisassEngineWrapper
 {
     public:
-        virtual InstructionInformation disass(const unsigned char *data, unsigned long long len, unsigned long long vaddr, DisassEngineReturn &ret) = 0;
+        virtual InstructionInformation disass(const uint8_t *data, uint64_t len, uint64_t vaddr, DisassEngineReturn &ret) = 0;
         virtual bool is_valid_ending_instruction(InstructionInformation &instr) = 0;
         virtual bool is_valid_instruction(InstructionInformation &instr) = 0;
         virtual uint32_t get_size_biggest_instruction(void) = 0;

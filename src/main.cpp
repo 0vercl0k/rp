@@ -140,8 +140,8 @@ int main(int argc, char* argv[])
                 p.find_gadgets(rop->ival[0], all_gadgets, options, n_max_thread);
 
                 // Here we set the base beeing 0 if we want to have absolute virtual memory address displayed
-                unsigned long long base = 0;
-                unsigned long long new_base = 0;
+                uint64_t base = 0;
+                uint64_t new_base = 0;
                 if(rva->count > 0)
                 {
                     // If not we will substract the base address to every gadget to keep only offsets
@@ -151,11 +151,11 @@ int main(int argc, char* argv[])
                 }
 
                 std::cout << "A total of " << all_gadgets.size() << " gadgets found." << std::endl;
-                std::vector<unsigned char> badbyte_list;
+                std::vector<uint8_t> badbyte_list;
                 if(badbytes->count > 0)
                     badbyte_list = string_to_hex(badbytes->sval[0]);
 
-                unsigned long long nb_gadgets_filtered = 0;
+                uint64_t nb_gadgets_filtered = 0;
                 if(unique->count > 0)
                 {
                     std::set<std::shared_ptr<Gadget>, Gadget::Sort> unique_gadgets;
@@ -179,14 +179,14 @@ int main(int argc, char* argv[])
 
             if(shexa->count > 0)
             {
-                std::vector<unsigned char> hex_values = string_to_hex(shexa->sval[0]);
+                std::vector<uint8_t> hex_values = string_to_hex(shexa->sval[0]);
                 p.search_and_display(hex_values.data(), (uint32_t)hex_values.size());
             }
             
             if(sint->count > 0)
             {
                 uint32_t val = std::strtoul(sint->sval[0], nullptr, 16);
-                p.search_and_display((const unsigned char*)&val, sizeof(uint32_t));
+                p.search_and_display((const uint8_t*)&val, sizeof(uint32_t));
             }
         }
     }

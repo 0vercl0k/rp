@@ -56,14 +56,14 @@ std::string verbosity_to_string(VerbosityLevel lvl);
 std::streampos get_file_size(std::ifstream &file);
 
 /**
- * \fn std::vector<unsigned char> string_to_hex(const char* hex)
+ * \fn std::vector<uint8_t> string_to_hex(const char* hex)
  * \brief Enable a color in your shell
  *
  * \param hex: The string that represents your raw hex values -- for example \x41BC\x90 => we want [0x41, 0x42, 0x43, 0x90] in memory
  *
  * \return a vector that contains the converted bytes
  */
-std::vector<unsigned char> string_to_hex(const char* hex);
+std::vector<uint8_t> string_to_hex(const char* hex);
 
 /**
  * \fn bool is_matching(std::string &disass, const char* p)
@@ -99,7 +99,7 @@ void only_unique_gadgets(std::multiset<std::shared_ptr<Gadget>> &list_gadgets, s
 
 
 /**
- * \fn bool does_badbytes_filter_apply(unsigned long long va, std::vector<unsigned char> &badbytes)
+ * \fn bool does_badbytes_filter_apply(uint64_t va, std::vector<uint8_t> &badbytes)
  * \brief Return true if va has a bad byte (taken from badbytes)
  *
  * \param va: It is the VA to check
@@ -107,6 +107,6 @@ void only_unique_gadgets(std::multiset<std::shared_ptr<Gadget>> &list_gadgets, s
  *
  * \return true if va has at least one bad byte, else false
  */
-bool does_badbytes_filter_apply(unsigned long long va, std::vector<unsigned char> &badbytes);
+bool does_badbytes_filter_apply(uint64_t va, std::vector<uint8_t> &badbytes);
 
 #endif

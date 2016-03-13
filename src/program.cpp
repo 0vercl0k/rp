@@ -117,7 +117,7 @@ void Program::find_gadgets(uint32_t depth, std::multiset<std::shared_ptr<Gadget>
         if (thread_pool.size() < n_max_thread)
         {
             std::shared_ptr<Section> section = jobs_queue.front();
-            unsigned long long va_section = section->get_vaddr();
+            uint64_t va_section = section->get_vaddr();
             thread_pool.emplace_back(
                 std::async(
                     std::launch::async,
@@ -161,7 +161,7 @@ void Program::find_gadgets(uint32_t depth, std::multiset<std::shared_ptr<Gadget>
 
 }
 
-void Program::search_and_display(const unsigned char* hex_values, uint32_t size)
+void Program::search_and_display(const uint8_t* hex_values, uint32_t size)
 {
     std::vector<std::shared_ptr<Section>> executable_sections = m_exformat->get_executables_section(m_file);
     if(executable_sections.size() == 0)
@@ -169,18 +169,18 @@ void Program::search_and_display(const unsigned char* hex_values, uint32_t size)
 
     for(auto &executable_section : executable_sections)
     {
-        std::list<unsigned long long> offsets = executable_section->search_in_memory(hex_values, size);
+        std::list<uint64_t> offsets = executable_section->search_in_memory(hex_values, size);
         for(auto &offset : offsets)
         {
-            unsigned long long va_section = executable_section->get_vaddr();
-            unsigned long long va = va_section + offset;
+            uint64_t va_section = executable_section->get_vaddr();
+            uint64_t va = va_section + offset;
             
             display_offset_lf(va, hex_values, size); 
         }
     }
 }
 
-unsigned long long Program::get_image_base_address(void)
+uint64_t Program::get_image_base_address(void)
 {
     return m_exformat->get_image_base_address();
 }

@@ -171,7 +171,7 @@ std::vector<std::shared_ptr<Section>> PE::get_executables_section(std::ifstream 
     return exec_sections;
 }
 
-unsigned long long PE::get_image_base_address(void)
+uint64_t PE::get_image_base_address(void)
 {
     return m_pPELayout->get_image_base_address();
 }

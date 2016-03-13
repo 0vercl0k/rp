@@ -19,7 +19,7 @@
 */
 #include "instruction.hpp"
 
-Instruction::Instruction(const std::string &disass, uint32_t size, std::vector<unsigned char> b)
+Instruction::Instruction(const std::string &disass, uint32_t size, std::vector<uint8_t> b)
 : m_disass(std::move(disass)), m_size(size)
 {
     for (auto i : b)

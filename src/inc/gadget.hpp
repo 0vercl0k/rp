@@ -40,15 +40,15 @@ class Gadget
         
         struct Info
         {
-            unsigned long long m_offset;
-            unsigned long long m_va_section;
+            uint64_t m_offset;
+            uint64_t m_va_section;
 
-            Info(unsigned long long offset, unsigned long long va_section)
+            Info(uint64_t offset, uint64_t va_section)
             : m_offset(offset), m_va_section(va_section)
             {}
         };
 
-        explicit Gadget(unsigned long long offset_start);
+        explicit Gadget(uint64_t offset_start);
 
         /*!
          *  \brief Get the entire disassembly of your gadget
@@ -71,7 +71,7 @@ class Gadget
          *  \param instrs: It is a list of Instruction to create our gadget (NB: the method copy in its memory those instructions for futur usage)
          *  \param va_section: It is the va section of the instructions ; a bit weird to pass it here yeah
          */
-        void add_instructions(std::vector<Instruction> &instrs, unsigned long long va_section);
+        void add_instructions(std::vector<Instruction> &instrs, uint64_t va_section);
 
         /*!
          *  \brief Get the size of your gadget
@@ -83,19 +83,19 @@ class Gadget
          *  \brief Get the first offset of this gadget (first offset because a gadget instance stores other offset with the same disassembly in memory)
          *  \return the offset (relative to m_va_section)
          */
-        unsigned long long get_first_offset(void) const;
+        uint64_t get_first_offset(void) const;
 
         /*!
          *  \brief Get the first va section of this gadget (first offset because a gadget instance stores other offset with the same disassembly in memory)
          *  \return the va section
          */
-        unsigned long long get_first_va_section(void) const;
+        uint64_t get_first_va_section(void) const;
 
         /*!
          *  \brief Get the first absolute address of this gadget
          *  \return the absolute address (computed like this: m_va_section + offset)
          */
-        unsigned long long get_first_absolute_address(void) const;
+        uint64_t get_first_absolute_address(void) const;
 
         /*!
          *  \brief Get the number of other equivalent gadget
@@ -108,7 +108,7 @@ class Gadget
          *
          *  \param offset: the offset where you can find the same gadget
          */
-        void add_new_one(unsigned long long offset, unsigned long long va_section);
+        void add_new_one(uint64_t offset, uint64_t va_section);
 
         /*!
          *  \brief Get the ending instruction of this gadget
@@ -132,7 +132,7 @@ class Gadget
 
     private:
 
-        unsigned long long m_start_offset; /*!< this is where the gadget is starting from in memory */
+        uint64_t m_start_offset; /*!< this is where the gadget is starting from in memory */
 
         uint32_t m_size; /*!< the size in byte of the gadget*/
 

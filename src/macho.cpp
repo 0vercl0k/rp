@@ -75,7 +75,7 @@ std::vector<std::shared_ptr<Section>> Macho::get_executables_section(std::ifstre
     return m_MachoLayout->get_executable_section(file);
 }
 
-unsigned long long Macho::raw_offset_to_va(const unsigned long long absolute_raw_offset, const unsigned long long absolute_raw_offset_section) const
+uint64_t Macho::raw_offset_to_va(const uint64_t absolute_raw_offset, const uint64_t absolute_raw_offset_section) const
 {
 	return 0ULL;
 }
@@ -91,7 +91,7 @@ void Macho::display_information(const VerbosityLevel lvl) const
     m_MachoLayout->display(lvl);
 }
 
-unsigned long long Macho::get_image_base_address(void)
+uint64_t Macho::get_image_base_address(void)
 {
     return m_MachoLayout->get_image_base_address();
 }

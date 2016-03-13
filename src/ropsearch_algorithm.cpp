@@ -24,8 +24,8 @@
 #include <cstring>
 
 void find_all_gadget_from_ret(
-    const unsigned char* data,
-    unsigned long long vaddr,
+    const uint8_t* data,
+    uint64_t vaddr,
     const InstructionInformation &ending_instr_disasm,
     uint32_t depth,
     std::multiset<std::shared_ptr<Gadget>> &gadgets,
@@ -58,7 +58,7 @@ void find_all_gadget_from_ret(
     {
         std::vector<Instruction> list_of_instr;
 
-        unsigned long long gadget_start_address = 0;
+        uint64_t gadget_start_address = 0;
 
         /* save where we were in memory */
         uintptr_t saved_eip  = EIP;
@@ -71,7 +71,7 @@ void find_all_gadget_from_ret(
         {
             DisassEngineReturn ret;
             InstructionInformation instr = disass_engine.disass(
-                (const unsigned char*)EIP,
+                (const uint8_t*)EIP,
                 0,
                 VirtualAddr,
                 ret
@@ -132,9 +132,9 @@ void find_all_gadget_from_ret(
 }
 
 void find_rop_gadgets(
-    const unsigned char* data,
-    unsigned long long size,
-    unsigned long long vaddr,
+    const uint8_t* data,
+    uint64_t size,
+    uint64_t vaddr,
     uint32_t depth,
     std::multiset<std::shared_ptr<Gadget>> &merged_gadgets_final,
     DisassEngineWrapper &disass_engine,
@@ -143,7 +143,7 @@ void find_rop_gadgets(
 {
     std::multiset<std::shared_ptr<Gadget>> merged_gadgets;
     uint32_t alignement = disass_engine.get_alignement();
-    for(unsigned long long offset = 0; offset < size; offset += alignement)
+    for(uint64_t offset = 0; offset < size; offset += alignement)
     {
         DisassEngineReturn ret;
         InstructionInformation instr = disass_engine.disass(

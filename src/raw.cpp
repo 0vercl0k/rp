@@ -29,7 +29,7 @@ std::vector<std::shared_ptr<Section>> Raw::get_executables_section(std::ifstream
 {
     std::vector<std::shared_ptr<Section>> executable_sections;
 
-    unsigned long long raw_file_size = get_file_size(file);
+    uint64_t raw_file_size = get_file_size(file);
     
     /* It is a raw file -> we have only one "virtual" section */
     std::shared_ptr<Section> sect = std::make_shared<Section>(
@@ -47,12 +47,12 @@ std::vector<std::shared_ptr<Section>> Raw::get_executables_section(std::ifstream
     return executable_sections;
 }
 
-unsigned long long Raw::raw_offset_to_va(const unsigned long long absolute_raw_offset, const unsigned long long absolute_raw_offset_section) const
+uint64_t Raw::raw_offset_to_va(const uint64_t absolute_raw_offset, const uint64_t absolute_raw_offset_section) const
 {
     return absolute_raw_offset;
 }
 
-unsigned long long Raw::get_image_base_address(void)
+uint64_t Raw::get_image_base_address(void)
 {
     return 0;
 }

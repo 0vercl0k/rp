@@ -23,11 +23,11 @@
 
 std::string x64::get_class_name(void) const
 {
-    return std::string("x64");
+    return "x64";
 }
 
 void x64::find_gadget_in_memory(
-    const unsigned char *p_memory, const unsigned long long size, const unsigned long long vaddr,
+    const uint8_t *p_memory, const uint64_t size, const uint64_t vaddr,
     const uint32_t depth, std::multiset<std::shared_ptr<Gadget>> &gadgets, uint32_t disass_engine_options,
     std::mutex &m
 )

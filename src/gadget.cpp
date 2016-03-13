@@ -21,7 +21,7 @@
 #include "coloshell.hpp"
 #include "toolbox.hpp"
 
-Gadget::Gadget(unsigned long long offset_start)
+Gadget::Gadget(uint64_t offset_start)
 : m_start_offset(offset_start), m_size(0)
 {
 }
@@ -41,7 +41,7 @@ uint32_t Gadget::get_size(void) const
     return m_size;
 }
 
-void Gadget::add_instructions(std::vector<Instruction> &instrs, unsigned long long va_section)
+void Gadget::add_instructions(std::vector<Instruction> &instrs, uint64_t va_section)
 {
     for (const auto &instr : instrs)
     {
@@ -64,17 +64,17 @@ void Gadget::add_instructions(std::vector<Instruction> &instrs, unsigned long lo
     }
 }
 
-unsigned long long Gadget::get_first_offset(void) const
+uint64_t Gadget::get_first_offset(void) const
 {
     return m_info_gadgets.front().m_offset;
 }
 
-unsigned long long Gadget::get_first_va_section(void) const
+uint64_t Gadget::get_first_va_section(void) const
 {
     return m_info_gadgets.front().m_va_section;
 }
 
-unsigned long long Gadget::get_first_absolute_address(void) const
+uint64_t Gadget::get_first_absolute_address(void) const
 {
     return get_first_offset() + get_first_va_section();
 }
@@ -84,7 +84,7 @@ size_t Gadget::get_nb(void) const
     return m_info_gadgets.size();
 }
 
-void Gadget::add_new_one(unsigned long long offset, unsigned long long va_section)
+void Gadget::add_new_one(uint64_t offset, uint64_t va_section)
 {
     m_info_gadgets.emplace_back(offset, va_section);
 }

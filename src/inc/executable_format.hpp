@@ -95,7 +95,7 @@ class ExecutableFormat
          *
          *  \return The prefered base address of the executable
          */
-        virtual unsigned long long get_image_base_address(void) = 0;
+        virtual uint64_t get_image_base_address(void) = 0;
 
     private:
 

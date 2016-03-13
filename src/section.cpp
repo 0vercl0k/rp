@@ -24,7 +24,7 @@
 
 #include <cstring>
 
-Section::Section(const char *name, const unsigned long long offset, const unsigned long long vaddr, const unsigned long long size)
+Section::Section(const char *name, const uint64_t offset, const uint64_t vaddr, const uint64_t size)
 : m_name(name), m_offset(offset), m_size(size), m_vaddr(vaddr)
 {
 }
@@ -34,26 +34,26 @@ std::string Section::get_name(void) const
     return m_name;
 }
 
-unsigned long long Section::get_size(void) const
+uint64_t Section::get_size(void) const
 {
     return m_size;
 }
 
-const unsigned char* Section::get_section_buffer(void) const
+const uint8_t* Section::get_section_buffer(void) const
 {
     return m_section.data();
 }
 
-const unsigned long long Section::get_offset(void) const
+const uint64_t Section::get_offset(void) const
 {
     return m_offset;
 }
 
-std::list<unsigned long long> Section::search_in_memory(const unsigned char *val, const uint32_t size)
+std::list<uint64_t> Section::search_in_memory(const uint8_t *val, const uint32_t size)
 {
-    std::list<unsigned long long> val_found;
+    std::list<uint64_t> val_found;
 
-    for(unsigned long long offset = 0; offset < m_size; ++offset)
+    for(uint64_t offset = 0; offset < m_size; ++offset)
         if(std::memcmp(m_section.data() + offset, val, size) == 0)
             val_found.push_back(offset);
 
@@ -68,7 +68,7 @@ void Section::set_props(Properties props)
 void Section::dump(std::ifstream &file)
 {
     /* NB: std::streampos performs unsigned check */
-    unsigned long long fsize = get_file_size(file);
+    uint64_t fsize = get_file_size(file);
     if(SafeAddU64(m_offset, m_size) > fsize)
         RAISE_EXCEPTION("Your file seems to be fucked up");
 
@@ -82,7 +82,7 @@ void Section::dump(std::ifstream &file)
     file.seekg(backup);
 }
 
-unsigned long long Section::get_vaddr(void) const
+uint64_t Section::get_vaddr(void) const
 {
     return m_vaddr;
 }

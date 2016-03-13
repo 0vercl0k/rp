@@ -33,7 +33,7 @@ IntelBeaEngine::IntelBeaEngine(E_Arch arch)
     m_disasm.Archi = m_arch;
 }
 
-InstructionInformation IntelBeaEngine::disass(const unsigned char *data, unsigned long long len, unsigned long long vaddr, DisassEngineReturn &ret)
+InstructionInformation IntelBeaEngine::disass(const uint8_t *data, uint64_t len, uint64_t vaddr, DisassEngineReturn &ret)
 {
     InstructionInformation instr;
     m_disasm.EIP = (UIntPtr)data;
@@ -81,7 +81,7 @@ bool IntelBeaEngine::is_valid_ending_instruction(InstructionInformation &instr)
     if(instr.disassembly != "")
     {
         uint32_t branch_type = instr.bea_branch_type;
-        unsigned long long addr_value = instr.bea_addr_value;
+        uint64_t addr_value = instr.bea_addr_value;
         const char *mnemonic_s = instr.mnemonic.c_str();
 
         std::string &disass = instr.disassembly;
@@ -115,7 +115,7 @@ bool IntelBeaEngine::is_valid_ending_instruction(InstructionInformation &instr)
 bool IntelBeaEngine::is_valid_instruction(InstructionInformation &instr)
 {
     Int32 branch_type = instr.bea_branch_type;
-    unsigned long long addr_value = instr.bea_addr_value;
+    uint64_t addr_value = instr.bea_addr_value;
     return (
         /*
             Work Around, BeaEngine in x64 mode disassemble "\xDE\xDB" as an instruction without disassembly

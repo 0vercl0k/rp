@@ -128,7 +128,7 @@ struct RP_SEGMENT_COMMAND
 {
     //RP_LOAD_COMMAND command;
 
-    unsigned char segname[16];
+    uint8_t segname[16];
     T             vmaddr;
     T             vmsize;
     T             fileoff;
@@ -180,8 +180,8 @@ struct RP_SECTION
 template<>
 struct RP_SECTION<x86Version>
 {
-    unsigned char sectname[16];
-    unsigned char segname[16];
+    uint8_t sectname[16];
+    uint8_t segname[16];
     uint32_t      addr;
     uint32_t      size;
     uint32_t      offset;
@@ -221,10 +221,10 @@ __attribute__((packed))
 template<>
 struct RP_SECTION<x64Version>
 {
-    unsigned char      sectname[16];
-    unsigned char      segname[16];
-    unsigned long long addr;
-    unsigned long long size;
+    uint8_t      sectname[16];
+    uint8_t      segname[16];
+    uint64_t addr;
+    uint64_t size;
     uint32_t           offset;
     uint32_t           align;
     uint32_t           reloff;
@@ -272,13 +272,13 @@ struct MachoLayout
     virtual uint32_t get_size_mach_header(void) const = 0;
     virtual void display(VerbosityLevel lvl = VERBOSE_LEVEL_1) const = 0;
     virtual std::vector<std::shared_ptr<Section>> get_executable_section(std::ifstream &file) = 0;
-    virtual unsigned long long get_image_base_address(void) = 0;
+    virtual uint64_t get_image_base_address(void) = 0;
 };
 
 template<class T>
 struct MachoArchLayout : public MachoLayout
 {
-    unsigned long long base;
+    uint64_t base;
     RP_MACH_HEADER<T> header;
     std::vector<std::shared_ptr<RP_SEGMENT_COMMAND<T>>> seg_commands;
     std::vector<std::shared_ptr<RP_SECTION<T>>> sections;
@@ -319,7 +319,7 @@ struct MachoArchLayout : public MachoLayout
 
                     if(strcasecmp((char*)seg_cmd->segname, "__TEXT") == 0)
                         // If this is the __text segment, we populate the base address of the program
-                        base = (unsigned long long)seg_cmd->vmaddr;
+                        base = uint64_t(seg_cmd->vmaddr);
 
                     /* 
                        Directly following a segment_command data structure is an array of section data 
@@ -392,7 +392,7 @@ struct MachoArchLayout : public MachoLayout
             section->display(lvl);
     }
 
-    unsigned long long get_image_base_address(void)
+    uint64_t get_image_base_address(void)
     {
         return base;
     }

@@ -27,9 +27,9 @@
 #include "disassenginewrapper.hpp"
 
 void find_rop_gadgets(
-    const unsigned char* data,
-    unsigned long long size,
-    unsigned long long vaddr,
+    const uint8_t* data,
+    uint64_t size,
+    uint64_t vaddr,
     uint32_t depth,
     std::multiset<std::shared_ptr<Gadget>> &merged_gadgets,
     DisassEngineWrapper &disass_engine,

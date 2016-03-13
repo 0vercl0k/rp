@@ -69,14 +69,14 @@ class Program
          *  \param hex_values: It is a pointer on where it can find the bytes to find in memory
          *  \param size: It is the size of the buffer hex_values
          */
-        void search_and_display(const unsigned char *hex_values, uint32_t size);
+        void search_and_display(const uint8_t *hex_values, uint32_t size);
 
         /*!
          *  \brief Get the base address of the program
          *   
          *  \return size: Base address of the program
          */
-        unsigned long long get_image_base_address(void);
+        uint64_t get_image_base_address(void);
 
     private:
         

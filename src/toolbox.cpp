@@ -101,10 +101,10 @@ bool is_hex_char(char c)
     );
 }
 
-std::vector<unsigned char> string_to_hex(const char* hex)
+std::vector<uint8_t> string_to_hex(const char* hex)
 {
-    uint32_t len = (uint32_t)std::strlen(hex), i = 0, byte = 0;
-    std::vector<unsigned char> bytes;
+    uint32_t len = uint32_t(std::strlen(hex)), i = 0, byte = 0;
+    std::vector<uint8_t> bytes;
 
     if(len == 0)
         return bytes;
@@ -135,7 +135,7 @@ std::vector<unsigned char> string_to_hex(const char* hex)
             i++;
         }
         
-        bytes.push_back((unsigned char)byte);
+        bytes.push_back((uint8_t)byte);
     }
 
     return bytes;
@@ -162,12 +162,12 @@ void only_unique_gadgets(std::multiset<std::shared_ptr<Gadget>> &list_gadgets, s
     }
 }
 
-bool does_badbytes_filter_apply(unsigned long long va, std::vector<unsigned char> &badbytes)
+bool does_badbytes_filter_apply(uint64_t va, std::vector<uint8_t> &badbytes)
 {
-    unsigned char f = (va >> 24) & 0xff;
-    unsigned char s = (va >> 16) & 0xff;
-    unsigned char t = (va >>  8) & 0xff;
-    unsigned char l = (va >>  0) & 0xff;
+    uint8_t f = (va >> 24) & 0xff;
+    uint8_t s = (va >> 16) & 0xff;
+    uint8_t t = (va >>  8) & 0xff;
+    uint8_t l = (va >>  0) & 0xff;
 
     for(const auto &badbyte : badbytes)
         if((f == badbyte) || (s == badbyte) || (t == badbyte) || (l == badbyte))

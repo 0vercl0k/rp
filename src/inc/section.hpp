@@ -49,7 +49,7 @@ class Section
          *  \param vaddr: Virtual address of the section
          *  \param size: It is the size of the section
          */
-        explicit Section(const char *name, const unsigned long long offset, const unsigned long long vaddr, const unsigned long long size);
+        explicit Section(const char *name, const uint64_t offset, const uint64_t vaddr, const uint64_t size);
         
         /*!
          *  \brief Get the name of the section
@@ -63,21 +63,21 @@ class Section
          *   
          *  \return the size of the section
          */
-        unsigned long long get_size(void) const;
+        uint64_t get_size(void) const;
 
         /*!
          *  \brief Get the content of the section (it's the internal copy)
          *   
          *  \return a pointer on the buffer
          */
-        const unsigned char *get_section_buffer(void) const;
+        const uint8_t *get_section_buffer(void) const;
 
         /*!
          *  \brief Get the (raw) offset of the section ; in other word, where it was found in the binary
          *   
          *  \return the offset where the section was found in the binary
          */
-        const unsigned long long get_offset(void) const;
+        const uint64_t get_offset(void) const;
 
         /*!
          *  \brief Search in memory a sequence of bytes
@@ -87,7 +87,7 @@ class Section
          *
          *  \return a list of offset (relative to the section) where it found the sequence of bytes
          */
-        std::list<unsigned long long> search_in_memory(const unsigned char *val, const uint32_t size);
+        std::list<uint64_t> search_in_memory(const uint8_t *val, const uint32_t size);
         
         /*!
          *  \brief Dump the raw section of your file
@@ -103,21 +103,21 @@ class Section
          */
         void set_props(Properties props);
 
-        unsigned long long get_vaddr(void) const;
+        uint64_t get_vaddr(void) const;
 
     private:
 
         std::string m_name; /*!< the name of the section*/
         
-        const unsigned long long m_offset; /*!< the raw offset of the section*/
+        const uint64_t m_offset; /*!< the raw offset of the section*/
         
-        const unsigned long long m_size; /*!< the size of the section of the section*/
+        const uint64_t m_size; /*!< the size of the section of the section*/
         
         Properties m_props; /*!< the properties of the section*/
         
-        std::vector<unsigned char> m_section; /*!< the section content*/
+        std::vector<uint8_t> m_section; /*!< the section content*/
 
-        unsigned long long m_vaddr; /* !< the virtual address of the section*/
+        uint64_t m_vaddr; /* !< the virtual address of the section*/
 };
 
 #endif

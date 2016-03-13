@@ -46,20 +46,20 @@
 template<class T>
 struct Elf_Ehdr
 {
-    unsigned char  e_ident[EI_NIDENT];
-    unsigned short e_type;
-    unsigned short e_machine;
-    uint32_t       e_version;
-    T              e_entry;  /* Entry point */
-    T              e_phoff;
-    T              e_shoff;
-    uint32_t       e_flags;
-    unsigned short e_ehsize;
-    unsigned short e_phentsize;
-    unsigned short e_phnum;
-    unsigned short e_shentsize;
-    unsigned short e_shnum;
-    unsigned short e_shstrndx;
+    uint8_t  e_ident[EI_NIDENT];
+    uint16_t e_type;
+    uint16_t e_machine;
+    uint32_t e_version;
+    T        e_entry;  /* Entry point */
+    T        e_phoff;
+    T        e_shoff;
+    uint32_t e_flags;
+    uint16_t e_ehsize;
+    uint16_t e_phentsize;
+    uint16_t e_phnum;
+    uint16_t e_shentsize;
+    uint16_t e_shnum;
+    uint16_t e_shstrndx;
 
     void display(VerbosityLevel lvl = VERBOSE_LEVEL_1) const
     {
@@ -143,14 +143,14 @@ __attribute__((packed))
 template<>
 struct Elf_Phdr<x64Version>
 {
-    uint32_t           p_type;
-    uint32_t           p_flags;
-    unsigned long long p_offset;
-    unsigned long long p_vaddr;
-    unsigned long long p_paddr;
-    unsigned long long p_filesz;
-    unsigned long long p_memsz;
-    unsigned long long p_align;
+    uint32_t p_type;
+    uint32_t p_flags;
+    uint64_t p_offset;
+    uint64_t p_vaddr;
+    uint64_t p_paddr;
+    uint64_t p_filesz;
+    uint64_t p_memsz;
+    uint64_t p_align;
 
     explicit Elf_Phdr()
     {}
@@ -251,9 +251,9 @@ struct ExecutableLinkingFormatLayout
     
     virtual void fill_structures(std::ifstream &file) = 0;
     virtual void display(VerbosityLevel lvl = VERBOSE_LEVEL_1) const = 0;
-    virtual unsigned long long get_image_base_address(void) = 0;
+    virtual uint64_t get_image_base_address(void) = 0;
     virtual std::vector<std::shared_ptr<Section>> get_executable_section(std::ifstream &file) const = 0;
-	virtual unsigned short get_cpu(void) = 0;
+	virtual uint16_t get_cpu(void) = 0;
 };
 
 #define SHT_SYMTAB      2
@@ -270,7 +270,7 @@ struct ELFLayout : public ExecutableLinkingFormatLayout
     std::vector<std::shared_ptr<Elf_Phdr<T>>> elfProgramHeaders;
     std::vector<std::shared_ptr<Elf_Shdr_Abstraction<T>>> elfSectionHeaders;
     T offset_string_table, size_string_table;
-    unsigned long long base;
+    uint64_t base;
 
     ELFLayout(void)
     : ExecutableLinkingFormatLayout(), base(0)
@@ -419,12 +419,12 @@ struct ELFLayout : public ExecutableLinkingFormatLayout
         return exec_sections;
     }
 
-    unsigned long long get_image_base_address(void)
+    uint64_t get_image_base_address(void)
     {
         return base;
     }
 
-	unsigned short get_cpu(void)
+	uint16_t get_cpu(void)
 	{
 		return elfHeader.e_machine;
 	}

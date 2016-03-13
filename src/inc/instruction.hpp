@@ -40,14 +40,7 @@ class Instruction
          *  \param offset: A raw offset (relative to a section) where you can find this instruction
          *  \param size: It is the size of the instruction
          */
-        explicit Instruction(const std::string &disass, uint32_t size, std::vector<unsigned char> b);
-
-		/*!
-         *  \brief Obtain the absolute address of the instruction thanks to the VA of the section where it was found
-         *
-         *  \return the VA of the instruction
-         */
-        /*unsigned long long get_absolute_address(const unsigned char* va_section);*/
+        explicit Instruction(const std::string &disass, uint32_t size, std::vector<uint8_t> b);
 
         /*!
          *  \brief Get the size of the instruction
@@ -67,7 +60,7 @@ class Instruction
 
     private:
 
-        std::vector<unsigned char> bytes;
+        std::vector<uint8_t> bytes;
 
         boost::flyweight<std::string> m_disass; /*!< the disassembly of the instruction */
         

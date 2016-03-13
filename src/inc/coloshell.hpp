@@ -84,7 +84,7 @@ static inline void enable_color_(const Colors colo)
 
     SetConsoleTextAttribute(
         hStdOutput,
-        (unsigned short)colo
+        uint16_t(colo)
         );
 #else
     const char *colors[] {

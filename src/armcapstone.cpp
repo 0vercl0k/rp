@@ -42,7 +42,7 @@ ArmCapstone::~ArmCapstone()
     cs_close(&m_handle);
 }
 
-InstructionInformation ArmCapstone::disass(const unsigned char *data, unsigned long long len, unsigned long long vaddr, DisassEngineReturn &ret)
+InstructionInformation ArmCapstone::disass(const uint8_t *data, uint64_t len, uint64_t vaddr, DisassEngineReturn &ret)
 {
 	InstructionInformation instr;
 	cs_insn *insn = nullptr;

@@ -24,7 +24,7 @@
 #include <numeric>
 
 #define SafeAddU32(a, b) SafeIntAdd<uint32_t>(a, b)
-#define SafeAddU64(a, b) SafeIntAdd<unsigned long long>(a, b)
+#define SafeAddU64(a, b) SafeIntAdd<uint64_t>(a, b)
 
 /*
     The purpose of this class is to avoid integer overflow ; if one is detected, an exception is raised

@@ -75,6 +75,6 @@
 #endif
 
 #define x86Version uint32_t
-#define x64Version unsigned long long
+#define x64Version uint64_t
 
 #endif
