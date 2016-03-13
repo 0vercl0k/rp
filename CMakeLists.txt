@@ -31,11 +31,9 @@ set(RP_NAME "${RP_NAME}-${RP_PLAT}")
 if(CMAKE_SIZEOF_VOID_P EQUAL 8 AND NOT(optX86BUILD))
     set(FLAG_CXX "-m64")
     set(RP_NAME "${RP_NAME}-x64")
-    set(BEA_LIBRARY "BeaEngine.x64.${RP_PLAT}.${EXTENSION_LIBRARY}")
 else()
     set(FLAG_CXX "-m32")
     set(RP_NAME "${RP_NAME}-x86")
-    set(BEA_LIBRARY "BeaEngine.x86.${RP_PLAT}.${EXTENSION_LIBRARY}")
 endif()
 
 if(MSVC)
@@ -61,7 +59,7 @@ if(CMAKE_CXX_COMPILER_ID MATCHES "Clang")
 endif()
 
 include_directories("./src/inc/")
-include_directories("./lib/beaengine/inc/")
+include_directories("./lib/beaengine/include/")
 include_directories("./lib/capstone/include/")
 include_directories("./lib/argtable3/")
 
@@ -85,20 +83,21 @@ file(
     ./lib/capstone/*.h
 )
 
+file(
+    GLOB_RECURSE
+    beaengine_pp_files
+    ./lib/beaengine/src/*.c
+    ./lib/beaengine/src/*.h
+)
+
 add_executable(
     ${RP_NAME}
     ${ropgadget_pp_files}
     ${capstone_pp_files_arch} ${capstone_pp_files}
+    ${beaengine_pp_files}
     "./lib/argtable3/argtable3.c" "./lib/argtable3/argtable3.h"
-)
-
-add_library(beaengine STATIC IMPORTED)
-set_property(
-    TARGET beaengine PROPERTY
-    IMPORTED_LOCATION ../lib/beaengine/bin/${BEA_LIBRARY}
 )
 
 target_link_libraries(
     ${RP_NAME}
-    beaengine
 )
