@@ -21,7 +21,7 @@
 #include "coloshell.hpp"
 #include "program.hpp"
 #include "toolbox.hpp"
-#include "argtable2.h"
+#include "argtable3.h"
 
 #include <iostream>
 #include <exception>

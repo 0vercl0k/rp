@@ -1,0 +1,3 @@
+[submodule "lib/argtable3"]
+	path = lib/argtable3
+	url = https://github.com/argtable/argtable3
