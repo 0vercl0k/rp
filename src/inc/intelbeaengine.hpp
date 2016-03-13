@@ -36,7 +36,7 @@ class IntelBeaEngine : public DisassEngineWrapper
         };
 
         explicit IntelBeaEngine(E_Arch arch);
-        InstructionInformation disass(const uint8_t *data, uint64_t len, uint64_t vaddr, DisassEngineReturn &ret);
+        InstructionInformation disass(const uint8_t *data, uint64_t len, uint64_t vaddr, DisassEngineReturn &ret) override;
 
         bool is_valid_ending_instruction(InstructionInformation &instr) const override;
 
@@ -48,9 +48,9 @@ class IntelBeaEngine : public DisassEngineWrapper
 
     private:
 
-        DISASM m_disasm;
+		uint32_t m_arch; /*!< architecture the BeaEngine will use to disassemble*/
 
-        uint32_t m_arch; /*!< architecture the BeaEngine will use to disassemble*/
+        DISASM m_disasm;
 };
 
 #endif
