@@ -178,8 +178,8 @@ __attribute__((packed))
 #endif
 ;
 
-typedef Elf_Phdr<x86Version> Elf32_Phdr;
-typedef Elf_Phdr<x64Version> Elf64_Phdr;
+using Elf32_Phdr = Elf_Phdr<x86Version>;
+using Elf64_Phdr = Elf_Phdr<x64Version>;
 
 template<class T>
 struct Elf_Shdr
@@ -200,8 +200,8 @@ __attribute__((packed))
 #endif
 ;
 
-typedef Elf_Shdr<x86Version> Elf32_Shdr;
-typedef Elf_Shdr<x64Version> Elf64_Shdr;
+using Elf32_Shdr = Elf_Shdr<x86Version>;
+using Elf64_Shdr = Elf_Shdr<x64Version>;
 
 #ifdef WINDOWS
 #pragma pack(pop)
