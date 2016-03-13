@@ -77,39 +77,37 @@ bool IntelBeaEngine::is_valid_ending_instruction(InstructionInformation &instr) 
     /*
         Work Around, BeaEngine in x64 mode disassemble "\xDE\xDB" as an instruction without disassembly
         Btw, this is not the only case!
+		XXX: BeaEngine has received a lot of recent commits recently, let's remove the branch to see if it's gone
     */
-    if(instr.disassembly != "")
-    {
-        uint32_t branch_type = instr.bea_branch_type;
-        uint64_t addr_value = instr.bea_addr_value;
-        const char *mnemonic_s = instr.mnemonic.c_str();
+    if(instr.disassembly == "")
+		__debugbreak();
+    uint32_t branch_type = instr.bea_branch_type;
+    uint64_t addr_value = instr.bea_addr_value;
+    const char *mnemonic_s = instr.mnemonic.c_str();
 
-        std::string &disass = instr.disassembly;
-        const char *disass_s = disass.c_str();
+    std::string &disass = instr.disassembly;
+    const char *disass_s = disass.c_str();
 
-        bool is_good_branch_type = (
-            /* We accept all the ret type instructions (except retf/iret) */
-            (branch_type == RetType && (strncmp(mnemonic_s, "retf", 4) != 0) && (strncmp(mnemonic_s, "iretd", 5) != 0)) || 
+    bool is_good_branch_type = (
+        /* We accept all the ret type instructions (except retf/iret) */
+        (branch_type == RetType && (strncmp(mnemonic_s, "retf", 4) != 0) && (strncmp(mnemonic_s, "iretd", 5) != 0)) || 
 
-            /* call reg32 / call [reg32] */
-            (branch_type == CallType && addr_value == 0) ||
+        /* call reg32 / call [reg32] */
+        (branch_type == CallType && addr_value == 0) ||
 
-            /* jmp reg32 / jmp [reg32] */
-            (branch_type == JmpType && addr_value == 0) ||
+        /* jmp reg32 / jmp [reg32] */
+        (branch_type == JmpType && addr_value == 0) ||
 
-            /* int 0x80 & int 0x2e */
-            ((strncmp(disass_s, "int 0x80", 8) == 0) || (strncmp(disass_s, "int 0x2e", 8) == 0) || (strncmp(disass_s, "syscall", 7) == 0))
-        );
+        /* int 0x80 & int 0x2e */
+        ((strncmp(disass_s, "int 0x80", 8) == 0) || (strncmp(disass_s, "int 0x2e", 8) == 0) || (strncmp(disass_s, "syscall", 7) == 0))
+    );
 
-        return (
-            is_good_branch_type && 
+    return (
+        is_good_branch_type && 
 
-            /* Yeah, entrance isn't allowed to the jmp far/call far */
-            disass.find("far") == std::string::npos
-        );
-    }
-
-    return false;
+        /* Yeah, entrance isn't allowed to the jmp far/call far */
+        disass.find("far") == std::string::npos
+    );
 }
 
 bool IntelBeaEngine::is_valid_instruction(InstructionInformation &instr) const
