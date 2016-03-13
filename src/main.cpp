@@ -43,9 +43,9 @@ int main(int argc, char* argv[])
     struct arg_lit  *version  = arg_lit0("v", "version", "print version information and exit");
     struct arg_lit  *colors   = arg_lit0(nullptr, "colors", "enable colors");
     struct arg_lit  *thumb    = arg_lit0(nullptr, "thumb", "enable thumb mode when looking for ARM gadgets");
-	struct arg_str  *rva      = arg_str0(nullptr, "rva", "<0xdeadbeef>", "don't use the image base of the binary, but yours instead");
+	struct arg_str  *va       = arg_str0(nullptr, "va", "<0xdeadbeef>", "don't use the image base of the binary, but yours instead");
     struct arg_end  *end      = arg_end(20);
-    void* argtable[] {file, display, rop, raw, unique, shexa, sint, help, version, colors, rva, badbytes, thumb, maxth, end};
+    void* argtable[] {file, display, rop, raw, unique, shexa, sint, help, version, colors, va, badbytes, thumb, maxth, end};
 
     if(arg_nullcheck(argtable) != 0)
         RAISE_EXCEPTION("Cannot allocate long option structures");
@@ -142,12 +142,12 @@ int main(int argc, char* argv[])
                 // Here we set the base beeing 0 if we want to have absolute virtual memory address displayed
                 uint64_t base = 0;
                 uint64_t new_base = 0;
-                if(rva->count > 0)
+                if(va->count > 0)
                 {
                     // If not we will substract the base address to every gadget to keep only offsets
                     base = p.get_image_base_address();
                     // And we will use your new base address
-                    new_base = strtoul(rva->sval[0], nullptr, 16); //XXX: Only valid with VS2k13 strtoull(rva->sval[0], NULL, 16); 
+                    new_base = strtoul(va->sval[0], nullptr, 16); //XXX: Only valid with VS2k13 strtoull(rva->sval[0], NULL, 16); 
                 }
 
                 std::cout << "A total of " << all_gadgets.size() << " gadgets found." << std::endl;
