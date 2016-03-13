@@ -136,7 +136,7 @@ void Program::find_gadgets(uint32_t depth, std::multiset<std::shared_ptr<Gadget>
         else
         {
             // Wait for a thread to finish
-            for (std::vector<std::future<void>>::iterator it = thread_pool.begin(); it != thread_pool.end();)
+            for (decltype(thread_pool)::iterator it = thread_pool.begin(); it != thread_pool.end();)
             {
                 if (it->wait_for(std::chrono::milliseconds(1)) == std::future_status::ready)
                 {

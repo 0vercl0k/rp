@@ -24,15 +24,16 @@ if(UNIX)
         set(RP_PLAT "lin")
     endif()
     set(EXTENSION_LIBRARY a)
+    set(FLAG_CXX "-DCAPSTONE_HAS_X86 -DCAPSTONE_HAS_ARM -DCAPSTONE_X86_ATT_DISABLE -DCAPSTONE_USE_SYS_DYN_MEM")
 endif()
 
 set(RP_NAME "${RP_NAME}-${RP_PLAT}")
 
 if(CMAKE_SIZEOF_VOID_P EQUAL 8 AND NOT(optX86BUILD))
-    set(FLAG_CXX "-m64")
+    set(FLAG_CXX "${FLAG_CXX} -m64")
     set(RP_NAME "${RP_NAME}-x64")
 else()
-    set(FLAG_CXX "-m32")
+    set(FLAG_CXX "${FLAG_CXX} -m32")
     set(RP_NAME "${RP_NAME}-x86")
 endif()
 
@@ -47,7 +48,7 @@ if(MSVC)
             string(REGEX REPLACE "/MDd" "/MTd" ${flag_var} "${${flag_var}}")
         endif()
 
-        set(${flag_var} "${${flag_var}} /D_CRT_SECURE_NO_WARNINGS /DCAPSTONE_HAS_X86 /DCAPSTONE_HAS_ARM /DCAPSTONE_X86_ATT_DISABLE")
+        set(${flag_var} "${${flag_var}} /D_CRT_SECURE_NO_WARNINGS /DCAPSTONE_HAS_X86 /DCAPSTONE_HAS_ARM /DCAPSTONE_X86_ATT_DISABLE /DCAPSTONE_USE_SYS_DYN_MEM")
     endforeach()
 
     set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} /NODEFAULTLIB:crt64.lib")
@@ -83,18 +84,11 @@ file(
     ./lib/capstone/*.h
 )
 
-file(
-    GLOB_RECURSE
-    beaengine_pp_files
-    ./lib/beaengine/src/*.c
-    ./lib/beaengine/src/*.h
-)
-
 add_executable(
     ${RP_NAME}
     ${ropgadget_pp_files}
     ${capstone_pp_files_arch} ${capstone_pp_files}
-    ${beaengine_pp_files}
+    "./lib/beaengine/src/BeaEngine.c"
     "./lib/argtable3/argtable3.c" "./lib/argtable3/argtable3.h"
 )
 

@@ -24,7 +24,7 @@
 #include <cstring>
 
 IntelBeaEngine::IntelBeaEngine(E_Arch arch)
-: m_arch{ static_cast<uint32_t>(arch) }, m_disasm{ }
+: m_arch{ uint32_t(arch) }, m_disasm{ }
 {
     /* those options are mostly display option for the disassembler engine */
     m_disasm.Options = PrefixedNumeral + NasmSyntax;
@@ -36,9 +36,9 @@ IntelBeaEngine::IntelBeaEngine(E_Arch arch)
 InstructionInformation IntelBeaEngine::disass(const uint8_t *data, uint64_t len, uint64_t vaddr, DisassEngineReturn &ret)
 {
     InstructionInformation instr;
-    m_disasm.EIP = (UIntPtr)data;
+    m_disasm.EIP = UIntPtr(data);
     m_disasm.VirtualAddr = vaddr;
-    m_disasm.SecurityBlock = (uint32_t)len;
+    m_disasm.SecurityBlock = uint32_t(len);
  
     int len_instr = Disasm(&m_disasm);
     if(len_instr == OUT_OF_BLOCK)
@@ -72,7 +72,7 @@ InstructionInformation IntelBeaEngine::disass(const uint8_t *data, uint64_t len,
     return instr;
 }
 
-bool IntelBeaEngine::is_valid_ending_instruction(InstructionInformation &instr)
+bool IntelBeaEngine::is_valid_ending_instruction(InstructionInformation &instr) const
 {
     /*
         Work Around, BeaEngine in x64 mode disassemble "\xDE\xDB" as an instruction without disassembly
@@ -112,7 +112,7 @@ bool IntelBeaEngine::is_valid_ending_instruction(InstructionInformation &instr)
     return false;
 }
 
-bool IntelBeaEngine::is_valid_instruction(InstructionInformation &instr)
+bool IntelBeaEngine::is_valid_instruction(InstructionInformation &instr) const
 {
     Int32 branch_type = instr.bea_branch_type;
     uint64_t addr_value = instr.bea_addr_value;
@@ -153,14 +153,14 @@ bool IntelBeaEngine::is_valid_instruction(InstructionInformation &instr)
     );
 }
 
-uint32_t IntelBeaEngine::get_size_biggest_instruction(void)
+uint32_t IntelBeaEngine::get_size_biggest_instruction(void) const
 {
     if(m_arch == x86)
         return x86::get_size_biggest_instruction();
     return x64::get_size_biggest_instruction();
 }
 
-uint32_t IntelBeaEngine::get_alignement(void)
+uint32_t IntelBeaEngine::get_alignement(void) const
 {
     if(m_arch == x86)
         return x86::get_alignement();

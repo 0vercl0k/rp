@@ -53,11 +53,12 @@ enum DisassEngineReturn
 class DisassEngineWrapper
 {
     public:
+		virtual ~DisassEngineWrapper() { };
         virtual InstructionInformation disass(const uint8_t *data, uint64_t len, uint64_t vaddr, DisassEngineReturn &ret) = 0;
-        virtual bool is_valid_ending_instruction(InstructionInformation &instr) = 0;
-        virtual bool is_valid_instruction(InstructionInformation &instr) = 0;
-        virtual uint32_t get_size_biggest_instruction(void) = 0;
-        virtual uint32_t get_alignement(void) = 0;
+        virtual bool is_valid_ending_instruction(InstructionInformation &instr) const = 0;
+        virtual bool is_valid_instruction(InstructionInformation &instr) const = 0;
+        virtual uint32_t get_size_biggest_instruction(void) const = 0;
+        virtual uint32_t get_alignement(void) const = 0;
 };
 
 #endif

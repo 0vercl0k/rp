@@ -69,7 +69,7 @@ void Section::dump(std::ifstream &file)
 {
     /* NB: std::streampos performs unsigned check */
     uint64_t fsize = get_file_size(file);
-    if(SafeAddU64(m_offset, m_size) > fsize)
+    if(SafeIntAdd(m_offset, m_size) > fsize)
         RAISE_EXCEPTION("Your file seems to be fucked up");
 
     std::streampos backup = file.tellg();

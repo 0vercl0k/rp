@@ -20,7 +20,6 @@
 #ifndef INTELBEAENGINE_HPP
 #define INTELBEAENGINE_HPP
 
-#define BEA_USE_STDCALL
 #define BEA_ENGINE_STATIC
 
 #include "beaengine/BeaEngine.h"
@@ -39,13 +38,13 @@ class IntelBeaEngine : public DisassEngineWrapper
         explicit IntelBeaEngine(E_Arch arch);
         InstructionInformation disass(const uint8_t *data, uint64_t len, uint64_t vaddr, DisassEngineReturn &ret);
 
-        bool is_valid_ending_instruction(InstructionInformation &instr);
+        bool is_valid_ending_instruction(InstructionInformation &instr) const override;
 
-        bool is_valid_instruction(InstructionInformation &instr);
+        bool is_valid_instruction(InstructionInformation &instr) const override;
 
-        uint32_t get_size_biggest_instruction(void);
+        uint32_t get_size_biggest_instruction(void) const override;
 
-        uint32_t get_alignement(void);
+        uint32_t get_alignement(void) const override;
 
     private:
 

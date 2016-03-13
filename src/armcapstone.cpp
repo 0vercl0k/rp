@@ -62,6 +62,7 @@ InstructionInformation ArmCapstone::disass(const uint8_t *data, uint64_t len, ui
 	instr.mnemonic = std::string(insn[0].mnemonic);
 	instr.disassembly = instr.mnemonic + ' ' + std::string(insn[0].op_str);
 	instr.size = insn[0].size;
+	instr.bytes.insert(instr.bytes.begin(), data, data + instr.size);
 
 	instr.cap_is_branch = false;
 	instr.cap_is_valid_ending_instr = false;
@@ -134,22 +135,22 @@ InstructionInformation ArmCapstone::disass(const uint8_t *data, uint64_t len, ui
 	return instr;
 }
 
-bool ArmCapstone::is_valid_ending_instruction(InstructionInformation &instr)
+bool ArmCapstone::is_valid_ending_instruction(InstructionInformation &instr) const
 {
 	return instr.cap_is_valid_ending_instr;
 }
 
-bool ArmCapstone::is_valid_instruction(InstructionInformation &instr)
+bool ArmCapstone::is_valid_instruction(InstructionInformation &instr) const
 {
 	return instr.cap_is_branch == false;
 }
 
-uint32_t ArmCapstone::get_size_biggest_instruction(void)
+uint32_t ArmCapstone::get_size_biggest_instruction(void) const
 {
 	return ARM::get_size_biggest_instruction();
 }
 
-uint32_t ArmCapstone::get_alignement(void)
+uint32_t ArmCapstone::get_alignement(void) const
 {
 	if(is_thumb)
 		return 2;

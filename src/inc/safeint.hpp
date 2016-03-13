@@ -23,9 +23,6 @@
 #include "rpexception.hpp"
 #include <numeric>
 
-#define SafeAddU32(a, b) SafeIntAdd<uint32_t>(a, b)
-#define SafeAddU64(a, b) SafeIntAdd<uint64_t>(a, b)
-
 /*
     The purpose of this class is to avoid integer overflow ; if one is detected, an exception is raised
 */
@@ -34,9 +31,6 @@ T SafeIntAdd(const T a, const T b)
 {
 	if(a > (std::numeric_limits<T>::max() - b))
 		RAISE_EXCEPTION("Integer-overflow detected.");
-
-	if(a < (std::numeric_limits<T>::max() + b))
-		RAISE_EXCEPTION("Integer overflow detected.");
 
 	return a + b;
 }

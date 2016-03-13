@@ -149,7 +149,7 @@ void find_rop_gadgets(
         InstructionInformation instr = disass_engine.disass(
             data + offset,
             size - offset,
-            SafeAddU64(vaddr, offset),
+            SafeIntAdd(vaddr, offset),
             ret
         );
 
