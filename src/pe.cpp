@@ -28,7 +28,7 @@
 
 std::string PE::get_class_name(void) const
 {
-    return std::string("PE");
+    return "PE";
 }
 
 void PE::display_information(const VerbosityLevel lvl) const
@@ -40,9 +40,9 @@ void PE::display_information(const VerbosityLevel lvl) const
 
 CPU::E_CPU PE::extract_information_from_binary(std::ifstream &file)
 {
-    RP_IMAGE_DOS_HEADER imgDosHeader {0};
-    RP_IMAGE_NT_HEADERS32 imgNtHeaders32 {0};
-    CPU::E_CPU cpu = CPU::CPU_UNKNOWN;
+    RP_IMAGE_DOS_HEADER imgDosHeader { };
+    RP_IMAGE_NT_HEADERS32 imgNtHeaders32 { };
+    CPU::E_CPU cpu { CPU::CPU_UNKNOWN };
 
     std::cout << "Loading PE information.." << std::endl;
 
@@ -114,8 +114,8 @@ CPU::E_CPU PE::extract_information_from_binary(std::ifstream &file)
 
 std::shared_ptr<CPU> PE::get_cpu(std::ifstream &file)
 {
-    std::shared_ptr<CPU> cpu(nullptr);
-    CPU::E_CPU cpu_type = extract_information_from_binary(file);
+    std::shared_ptr<CPU> cpu { nullptr };
+    CPU::E_CPU cpu_type { extract_information_from_binary(file) };
 
     switch(cpu_type)
     {
@@ -148,24 +148,23 @@ std::vector<std::shared_ptr<Section>> PE::get_executables_section(std::ifstream 
 {
     std::vector<std::shared_ptr<Section>> exec_sections;
 
-    for(auto &sectionheader : m_pPELayout->imgSectionHeaders)
+    for(const auto &sectionheader : m_pPELayout->imgSectionHeaders)
     {
         if(sectionheader->Characteristics & RP_IMAGE_SCN_MEM_EXECUTE)
         {
-			//XXX: g++ + std::make_shared + packed struct
-            std::shared_ptr<Section> tmp(new Section(
+            std::shared_ptr<Section> sec = std::make_shared<Section>(
                 sectionheader->get_name().c_str(),
                 sectionheader->PointerToRawData,
                 /* in the PE, this field is a RVA, so we need to add it the image base to have a VA */
                 m_pPELayout->get_image_base_address() + sectionheader->VirtualAddress,
                 sectionheader->SizeOfRawData
-            ));
+            );
             
-            tmp->dump(file);
+            sec->dump(file);
 
-            tmp->set_props(Section::Executable);
+            sec->set_props(Section::Executable);
 
-            exec_sections.push_back(tmp);
+            exec_sections.push_back(sec);
         }
     }
     return exec_sections;

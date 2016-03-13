@@ -27,7 +27,7 @@
 
 std::string Elf::get_class_name(void) const
 {
-    return std::string("Elf");
+    return "Elf";
 }
 
 void Elf::display_information(const VerbosityLevel lvl) const
@@ -40,7 +40,7 @@ void Elf::display_information(const VerbosityLevel lvl) const
 CPU::E_CPU Elf::extract_information_from_binary(std::ifstream &file)
 {
 	uint32_t size_init = 0;
-    uint8_t buf[EI_NIDENT] {0};
+    std::array<uint8_t, EI_NIDENT> buf;
     CPU::E_CPU cpu = CPU::CPU_UNKNOWN;
     std::cout << "Loading ELF information.." << std::endl;
 
@@ -48,9 +48,9 @@ CPU::E_CPU Elf::extract_information_from_binary(std::ifstream &file)
     std::streampos off = file.tellg();
 
     file.seekg(0, std::ios::beg);
-    file.read((char*)buf, EI_NIDENT);
+    file.read((char*)buf.data(), EI_NIDENT);
 
-    switch(buf[EI_CLASS])
+    switch(buf.at(EI_CLASS))
     {
         case ELFCLASS32:
         {
@@ -108,8 +108,8 @@ CPU::E_CPU Elf::extract_information_from_binary(std::ifstream &file)
 
 std::shared_ptr<CPU> Elf::get_cpu(std::ifstream &file)
 {
-    std::shared_ptr<CPU> cpu(nullptr);
-    CPU::E_CPU cpu_type = CPU::CPU_UNKNOWN;
+    std::shared_ptr<CPU> cpu { nullptr };
+    CPU::E_CPU cpu_type { CPU::CPU_UNKNOWN };
 
     cpu_type = extract_information_from_binary(file);
 

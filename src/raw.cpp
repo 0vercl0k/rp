@@ -22,7 +22,7 @@
 
 std::string Raw::get_class_name(void) const
 {
-    return std::string("raw");
+    return "raw";
 }
 
 std::vector<std::shared_ptr<Section>> Raw::get_executables_section(std::ifstream & file)

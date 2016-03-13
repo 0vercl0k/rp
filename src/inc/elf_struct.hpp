@@ -46,20 +46,20 @@
 template<class T>
 struct Elf_Ehdr
 {
-    uint8_t  e_ident[EI_NIDENT];
-    uint16_t e_type;
-    uint16_t e_machine;
-    uint32_t e_version;
-    T        e_entry;  /* Entry point */
-    T        e_phoff;
-    T        e_shoff;
-    uint32_t e_flags;
-    uint16_t e_ehsize;
-    uint16_t e_phentsize;
-    uint16_t e_phnum;
-    uint16_t e_shentsize;
-    uint16_t e_shnum;
-    uint16_t e_shstrndx;
+    std::array<uint8_t, EI_NIDENT>  e_ident;
+    uint16_t                        e_type;
+    uint16_t                        e_machine;
+    uint32_t                        e_version;
+    T                               e_entry;  /* Entry point */
+    T                               e_phoff;
+    T                               e_shoff;
+    uint32_t                        e_flags;
+    uint16_t                        e_ehsize;
+    uint16_t                        e_phentsize;
+    uint16_t                        e_phnum;
+    uint16_t                        e_shentsize;
+    uint16_t                        e_shnum;
+    uint16_t                        e_shstrndx;
 
     void display(VerbosityLevel lvl = VERBOSE_LEVEL_1) const
     {
@@ -221,28 +221,11 @@ struct Elf_Shdr_Abstraction
         std::cout << "0x" << std::setw(15) << std::setfill(' ') << std::left << header.sh_addr;
         std::cout << "0x" << std::setw(15) << std::setfill(' ') << std::left << header.sh_size;
         std::cout << std::setw(30) << std::setfill(' ') << std::left << name << std::endl;
-        
-        /* 
-        if(lvl > VERBOSE_LEVEL_1)
-        {
-            std::cout << std::hex << "\t sh_type: " << header.sh_type << std::endl;
-            std::cout << std::hex << "\t sh_flags: " <<header.sh_flags << std::endl;
-            std::cout << std::hex << "\t sh_offset: " << header.sh_offset << std::endl;
-        }
-
-        if(lvl > VERBOSE_LEVEL_2)
-        {
-            std::cout << std::hex << "\t sh_link: " << header.sh_link << std::endl;
-            std::cout << std::hex << "\t sh_info: " << header.sh_info << std::endl;
-            std::cout << std::hex << "\t sh_addralign: " << header.sh_addralign << std::endl;
-            std::cout << std::hex << "\t sh_entsize: " << header.sh_entsize << std::endl;
-        }
-        */
     }
 };
 
-typedef Elf_Shdr_Abstraction<x86Version> Elf_Shdr32_Abstraction;
-typedef Elf_Shdr_Abstraction<x64Version> Elf_Shdr64_Abstraction;
+using Elf_Shdr32_Abstraction = Elf_Shdr_Abstraction<x86Version>;
+using Elf_Shdr64_Abstraction = Elf_Shdr_Abstraction<x64Version>;
 
 struct ExecutableLinkingFormatLayout
 {
@@ -285,7 +268,7 @@ struct ELFLayout : public ExecutableLinkingFormatLayout
         uint32_t i = 0;
         elfHeader.display(lvl);
 
-        for(auto &programheader : elfProgramHeaders)
+        for(const auto &programheader : elfProgramHeaders)
                 programheader->display(lvl);
 
         w_yel_lf("-> Elf Headers:");
@@ -299,7 +282,7 @@ struct ELFLayout : public ExecutableLinkingFormatLayout
         w_gre("name");
         std::cout << std::endl << std::setw(70) << std::setfill('-') << "-" << std::endl;
 
-        for(auto &sectionheader : elfSectionHeaders)
+        for(const auto &sectionheader : elfSectionHeaders)
         {
             std::cout << "0x" << std::setw(10) << std::setfill(' ') << std::left << i++;
             sectionheader->display(lvl);
@@ -311,7 +294,7 @@ struct ELFLayout : public ExecutableLinkingFormatLayout
         Elf_Shdr<T> elf_shdr;
         std::streampos off = file.tellg();
 
-        file.seekg((std::streamoff)elfHeader.e_shoff, std::ios::beg);
+        file.seekg(std::streamoff(elfHeader.e_shoff), std::ios::beg);
 
         for(uint32_t i = 0; i < elfHeader.e_shnum; ++i)
         {
@@ -338,7 +321,7 @@ struct ELFLayout : public ExecutableLinkingFormatLayout
         file.read((char*)&elfHeader, sizeof(Elf_Ehdr<T>));
 
         /* 2] Goto the first Program Header, and dump them */
-        file.seekg((std::streamoff)elfHeader.e_phoff, std::ios::beg);
+        file.seekg(std::streamoff(elfHeader.e_phoff), std::ios::beg);
         for(uint32_t i = 0; i < elfHeader.e_phnum; ++i)
         {
             std::shared_ptr<Elf_Phdr<T>> pElfProgramHeader = std::make_shared<Elf_Phdr<T>>();
@@ -360,14 +343,14 @@ struct ELFLayout : public ExecutableLinkingFormatLayout
         find_string_table(file);
 
         /* 3.2] Keep the string table in memory */
-        file.seekg((std::streamoff)offset_string_table, std::ios::beg);
+        file.seekg(std::streamoff(offset_string_table), std::ios::beg);
         
-        std::vector<char> string_table_section((uint32_t)size_string_table);
-
-        file.read(string_table_section.data(), (std::streamsize)size_string_table);
+        std::vector<char> string_table_section;
+		string_table_section.resize(uint32_t(size_string_table));
+        file.read(string_table_section.data(), std::streamsize(size_string_table));
 
         /* 3.3] Goto the first Section Header, and dump them !*/
-        file.seekg((std::streamoff)elfHeader.e_shoff, std::ios::beg);
+        file.seekg(std::streamoff(elfHeader.e_shoff), std::ios::beg);
         for(uint32_t i = 0; i < elfHeader.e_shnum; ++i)
         {
             std::shared_ptr<Elf_Shdr_Abstraction<T>> pElfSectionHeader = std::make_shared<Elf_Shdr_Abstraction<T>>();
@@ -379,8 +362,8 @@ struct ELFLayout : public ExecutableLinkingFormatLayout
             {
                 /* Yeah we know where is the string */
                 char *name_section = string_table_section.data() + pElfSectionHeader->header.sh_name;
-                std::string s(name_section, std::strlen(name_section));
-                pElfSectionHeader->name = (s == "") ? std::string("unknown section") : s;
+                std::string s { name_section, std::strlen(name_section) };
+                pElfSectionHeader->name = (s == "") ? "unknown section" : s;
             }
 
             elfSectionHeaders.push_back(pElfSectionHeader);
@@ -394,17 +377,17 @@ struct ELFLayout : public ExecutableLinkingFormatLayout
     {
         std::vector<std::shared_ptr<Section>> exec_sections;
 
-        for(auto &programheader : elfProgramHeaders)
+        for(const auto &programheader : elfProgramHeaders)
         {
             if(programheader->p_flags & 1)
             {
 				// XXX: g++ + std::make_shared + packed struct
-                std::shared_ptr<Section> sec(new Section(
+                std::shared_ptr<Section> sec = std::make_shared<Section>(
                     type_to_str(programheader->p_type).c_str(),
                     programheader->p_offset,
                     programheader->p_vaddr,
                     programheader->p_filesz
-                ));
+                );
 
                 if(sec == nullptr)
                     RAISE_EXCEPTION("Cannot alocate a section");

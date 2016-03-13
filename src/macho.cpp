@@ -67,7 +67,7 @@ std::shared_ptr<CPU> Macho::get_cpu(std::ifstream &file)
 
 std::string Macho::get_class_name(void) const
 {
-    return std::string("Mach-o");
+    return "Mach-o";
 }
 
 std::vector<std::shared_ptr<Section>> Macho::get_executables_section(std::ifstream & file)

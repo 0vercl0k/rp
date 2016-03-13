@@ -128,15 +128,15 @@ struct RP_SEGMENT_COMMAND
 {
     //RP_LOAD_COMMAND command;
 
-    uint8_t segname[16];
-    T             vmaddr;
-    T             vmsize;
-    T             fileoff;
-    T             filesize;
-    uint32_t      maxprot;
-    uint32_t      initprot;
-    uint32_t      nsects;
-    uint32_t      flags;
+    std::array<uint8_t, 16> segname;
+    T        vmaddr;
+    T        vmsize;
+    T        fileoff;
+    T        filesize;
+    uint32_t maxprot;
+    uint32_t initprot;
+    uint32_t nsects;
+    uint32_t flags;
 
     explicit RP_SEGMENT_COMMAND()
     {}
@@ -144,7 +144,7 @@ struct RP_SEGMENT_COMMAND
     void display(VerbosityLevel lvl) const
     {
         w_yel_lf("-> segment_command");
-        std::cout << "    " << segname << std::endl;
+        std::cout << "    " << segname.data() << std::endl;
 
         if(lvl > VERBOSE_LEVEL_1)
         {
@@ -180,17 +180,17 @@ struct RP_SECTION
 template<>
 struct RP_SECTION<x86Version>
 {
-    uint8_t sectname[16];
-    uint8_t segname[16];
-    uint32_t      addr;
-    uint32_t      size;
-    uint32_t      offset;
-    uint32_t      align;
-    uint32_t      reloff;
-    uint32_t      nreloc;
-    uint32_t      flags;
-    uint32_t      reserved1;
-    uint32_t      reserved2;
+    std::array<uint8_t, 16> sectname;
+    std::array<uint8_t, 16> segname;
+    uint32_t addr;
+    uint32_t size;
+    uint32_t offset;
+    uint32_t align;
+    uint32_t reloff;
+    uint32_t nreloc;
+    uint32_t flags;
+    uint32_t reserved1;
+    uint32_t reserved2;
 
     explicit RP_SECTION()
     {}
@@ -198,7 +198,7 @@ struct RP_SECTION<x86Version>
     void display(VerbosityLevel lvl) const
     {
         w_yel_lf("-> section32");
-        std::cout << "    " << segname << "." << sectname << std::endl;
+        std::cout << "    " << segname.data() << "." << sectname.data() << std::endl;
 
         if(lvl > VERBOSE_LEVEL_1)
         {
@@ -221,18 +221,18 @@ __attribute__((packed))
 template<>
 struct RP_SECTION<x64Version>
 {
-    uint8_t      sectname[16];
-    uint8_t      segname[16];
+    std::array<uint8_t, 16>  sectname;
+    std::array<uint8_t, 16>  segname;
     uint64_t addr;
     uint64_t size;
-    uint32_t           offset;
-    uint32_t           align;
-    uint32_t           reloff;
-    uint32_t           nreloc;
-    uint32_t           flags;
-    uint32_t           reserved1;
-    uint32_t           reserved2;
-    uint32_t           reserved3;
+    uint32_t offset;
+    uint32_t align;
+    uint32_t reloff;
+    uint32_t nreloc;
+    uint32_t flags;
+    uint32_t reserved1;
+    uint32_t reserved2;
+    uint32_t reserved3;
 
     explicit RP_SECTION()
     {}
@@ -240,7 +240,7 @@ struct RP_SECTION<x64Version>
     void display(VerbosityLevel lvl) const
     {
         w_yel_lf("-> section64");
-        std::cout << "    " << segname << "." << sectname << std::endl;
+        std::cout << "    " << segname.data() << "." << sectname.data() << std::endl;
 
         if(lvl > VERBOSE_LEVEL_1)
         {
@@ -284,7 +284,7 @@ struct MachoArchLayout : public MachoLayout
     std::vector<std::shared_ptr<RP_SECTION<T>>> sections;
 
     explicit MachoArchLayout()
-    : MachoLayout(), base(0)
+    : MachoLayout { }, base { 0 }
     {}
 
     uint32_t get_size_mach_header(void) const
@@ -304,7 +304,7 @@ struct MachoArchLayout : public MachoLayout
         /* 2] The load commands now */
         for(uint32_t i = 0; i < header.ncmds; ++i)
         {
-            RP_LOAD_COMMAND loadcmd {0};
+            RP_LOAD_COMMAND loadcmd { };
 
             file.read((char*)&loadcmd, sizeof(RP_LOAD_COMMAND));
             switch(loadcmd.cmd)
@@ -317,7 +317,7 @@ struct MachoArchLayout : public MachoLayout
                     file.read((char*)seg_cmd.get(), sizeof(RP_SEGMENT_COMMAND<T>));
                     seg_commands.push_back(seg_cmd);
 
-                    if(strcasecmp((char*)seg_cmd->segname, "__TEXT") == 0)
+                    if(strcasecmp((char*)seg_cmd->segname.data(), "__TEXT") == 0)
                         // If this is the __text segment, we populate the base address of the program
                         base = uint64_t(seg_cmd->vmaddr);
 
@@ -359,17 +359,16 @@ struct MachoArchLayout : public MachoLayout
     {
         std::vector<std::shared_ptr<Section>> exc_sect;
 
-        for(auto &section : sections)
+        for(const auto &section : sections)
         {
             if(section->flags & S_ATTR_PURE_INSTRUCTIONS || section->flags & S_ATTR_SOME_INSTRUCTIONS)
             {
-				// XXX: Hum g++ doesn't like make_shared + section being a packed structure
-                std::shared_ptr<Section> s(new Section(
-                    (char*)section->sectname,
+                std::shared_ptr<Section> s = std::make_shared<Section>(
+                    (char*)section->sectname.data(),
                     section->offset,
                     section->addr,
                     section->size
-                ));
+                );
 
                 s->dump(file);
 
@@ -385,10 +384,10 @@ struct MachoArchLayout : public MachoLayout
     {
         header.display(lvl);
 
-        for(auto &segcommand : seg_commands)
+        for(const auto &segcommand : seg_commands)
             segcommand->display(lvl);
 
-        for(auto &section : sections)
+        for(const auto &section : sections)
             section->display(lvl);
     }
 

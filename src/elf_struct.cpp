@@ -21,7 +21,7 @@
 
 std::string type_to_str(const uint32_t p_type)
 {
-    std::string ret("unknown type");
+    std::string ret { "unknown type" };
 
     switch(p_type)
     {
@@ -99,16 +99,16 @@ std::string type_to_str(const uint32_t p_type)
 
 std::string flags_to_str(const uint32_t p_flags)
 {
-    std::string ret(3, '-');
+    std::string ret { 3, '-' };
 
     if(p_flags & 4)
-        ret[0] = 'r';
+        ret.at(0) = 'r';
 
     if(p_flags & 2)
-        ret[1] = 'w';
+        ret.at(1) = 'w';
 
     if(p_flags & 1)
-        ret[2] = 'x';
+        ret.at(2) = 'x';
 
     return ret;
 }

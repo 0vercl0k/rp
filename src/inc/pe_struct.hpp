@@ -48,26 +48,26 @@
 #pragma pack(1)
 #endif
 
-struct RP_IMAGE_DOS_HEADER {      // DOS .EXE header
-    uint16_t e_magic;       // Magic number
-    uint16_t e_cblp;        // Bytes on last page of file
-    uint16_t e_cp;          // Pages in file
-    uint16_t e_crlc;        // Relocations
-    uint16_t e_cparhdr;     // Size of header in paragraphs
-    uint16_t e_minalloc;    // Minimum extra paragraphs needed
-    uint16_t e_maxalloc;    // Maximum extra paragraphs needed
-    uint16_t e_ss;          // Initial (relative) SS value
-    uint16_t e_sp;          // Initial SP value
-    uint16_t e_csum;        // Checksum
-    uint16_t e_ip;          // Initial IP value
-    uint16_t e_cs;          // Initial (relative) CS value
-    uint16_t e_lfarlc;      // File address of relocation table
-    uint16_t e_ovno;        // Overlay number
-    uint16_t e_res[4];      // Reserved words
-    uint16_t e_oemid;       // OEM identifier (for e_oeminfo)
-    uint16_t e_oeminfo;     // OEM information; e_oemid specific
-    uint16_t e_res2[10];    // Reserved words
-    uint32_t       e_lfanew;      // File address of new exe header
+struct RP_IMAGE_DOS_HEADER {         // DOS .EXE header
+    uint16_t e_magic;                // Magic number
+    uint16_t e_cblp;                 // Bytes on last page of file
+    uint16_t e_cp;                   // Pages in file
+    uint16_t e_crlc;                 // Relocations
+    uint16_t e_cparhdr;              // Size of header in paragraphs
+    uint16_t e_minalloc;             // Minimum extra paragraphs needed
+    uint16_t e_maxalloc;             // Maximum extra paragraphs needed
+    uint16_t e_ss;                   // Initial (relative) SS value
+    uint16_t e_sp;                   // Initial SP value
+    uint16_t e_csum;                 // Checksum
+    uint16_t e_ip;                   // Initial IP value
+    uint16_t e_cs;                   // Initial (relative) CS value
+    uint16_t e_lfarlc;               // File address of relocation table
+    uint16_t e_ovno;                 // Overlay number
+    std::array<uint16_t, 4> e_res;   // Reserved words
+    uint16_t e_oemid;                // OEM identifier (for e_oeminfo)
+    uint16_t e_oeminfo;              // OEM information; e_oemid specific
+    std::array<uint16_t, 10> e_res2; // Reserved words
+    uint32_t e_lfanew;               // File address of new exe header
 
     void display(VerbosityLevel lvl =  VERBOSE_LEVEL_1) const
     {
@@ -106,9 +106,9 @@ __attribute__((packed))
 struct RP_IMAGE_FILE_HEADER {
     uint16_t Machine;
     uint16_t NumberOfSections;
-    uint32_t       TimeDateStamp;
-    uint32_t       PointerToSymbolTable;
-    uint32_t       NumberOfSymbols;
+    uint32_t TimeDateStamp;
+    uint32_t PointerToSymbolTable;
+    uint32_t NumberOfSymbols;
     uint16_t SizeOfOptionalHeader;
     uint16_t Characteristics;
 
@@ -169,37 +169,37 @@ struct RP_IMAGE_OPTIONAL_HEADER
 
 template<>
 struct RP_IMAGE_OPTIONAL_HEADER<x86Version> {
-    uint16_t          Magic;
-    uint8_t           MajorLinkerVersion;
-    uint8_t           MinorLinkerVersion;
-    uint32_t                SizeOfCode;
-    uint32_t                SizeOfInitializedData;
-    uint32_t                SizeOfUninitializedData;
-    uint32_t                AddressOfEntryPoint;
-    uint32_t                BaseOfCode;
-    uint32_t                BaseOfData;
-    uint32_t                ImageBase;
-    uint32_t                SectionAlignment;
-    uint32_t                FileAlignment;
-    uint16_t          MajorOperatingSystemVersion;
-    uint16_t          MinorOperatingSystemVersion;
-    uint16_t          MajorImageVersion;
-    uint16_t          MinorImageVersion;
-    uint16_t          MajorSubsystemVersion;
-    uint16_t          MinorSubsystemVersion;
-    uint32_t                Win32VersionValue;
-    uint32_t                SizeOfImage;
-    uint32_t                SizeOfHeaders;
-    uint32_t                CheckSum;
-    uint16_t          Subsystem;
-    uint16_t          DllCharacteristics;
-    uint32_t                SizeOfStackReserve;
-    uint32_t                SizeOfStackCommit;
-    uint32_t                SizeOfHeapReserve;
-    uint32_t                SizeOfHeapCommit;
-    uint32_t                LoaderFlags;
-    uint32_t                NumberOfRvaAndSizes;
-    RP_IMAGE_DATA_DIRECTORY DataDirectory[RP_IMAGE_NUMBEROF_DIRECTORY_ENTRIES];
+    uint16_t Magic;
+    uint8_t  MajorLinkerVersion;
+    uint8_t  MinorLinkerVersion;
+    uint32_t SizeOfCode;
+    uint32_t SizeOfInitializedData;
+    uint32_t SizeOfUninitializedData;
+    uint32_t AddressOfEntryPoint;
+    uint32_t BaseOfCode;
+    uint32_t BaseOfData;
+    uint32_t ImageBase;
+    uint32_t SectionAlignment;
+    uint32_t FileAlignment;
+    uint16_t MajorOperatingSystemVersion;
+    uint16_t MinorOperatingSystemVersion;
+    uint16_t MajorImageVersion;
+    uint16_t MinorImageVersion;
+    uint16_t MajorSubsystemVersion;
+    uint16_t MinorSubsystemVersion;
+    uint32_t Win32VersionValue;
+    uint32_t SizeOfImage;
+    uint32_t SizeOfHeaders;
+    uint32_t CheckSum;
+    uint16_t Subsystem;
+    uint16_t DllCharacteristics;
+    uint32_t SizeOfStackReserve;
+    uint32_t SizeOfStackCommit;
+    uint32_t SizeOfHeapReserve;
+    uint32_t SizeOfHeapCommit;
+    uint32_t LoaderFlags;
+    uint32_t NumberOfRvaAndSizes;
+    std::array<RP_IMAGE_DATA_DIRECTORY, RP_IMAGE_NUMBEROF_DIRECTORY_ENTRIES> DataDirectory;
 
     void display(VerbosityLevel lvl = VERBOSE_LEVEL_1) const
     {
@@ -234,36 +234,36 @@ __attribute__((packed))
 
 template<>
 struct RP_IMAGE_OPTIONAL_HEADER<x64Version> {
-    uint16_t          Magic;
-    uint8_t           MajorLinkerVersion;
-    uint8_t           MinorLinkerVersion;
-    uint32_t                SizeOfCode;
-    uint32_t                SizeOfInitializedData;
-    uint32_t                SizeOfUninitializedData;
-    uint32_t                AddressOfEntryPoint;
-    uint32_t                BaseOfCode;
-    uint64_t      ImageBase;
-    uint32_t                SectionAlignment;
-    uint32_t                FileAlignment;
-    uint16_t          MajorOperatingSystemVersion;
-    uint16_t          MinorOperatingSystemVersion;
-    uint16_t          MajorImageVersion;
-    uint16_t          MinorImageVersion;
-    uint16_t          MajorSubsystemVersion;
-    uint16_t          MinorSubsystemVersion;
-    uint32_t                Win32VersionValue;
-    uint32_t                SizeOfImage;
-    uint32_t                SizeOfHeaders;
-    uint32_t                CheckSum;
-    uint16_t          Subsystem;
-    uint16_t          DllCharacteristics;
-    uint64_t      SizeOfStackReserve;
-    uint64_t      SizeOfStackCommit;
-    uint64_t      SizeOfHeapReserve;
-    uint64_t      SizeOfHeapCommit;
-    uint32_t                LoaderFlags;
-    uint32_t                NumberOfRvaAndSizes;
-    RP_IMAGE_DATA_DIRECTORY DataDirectory[RP_IMAGE_NUMBEROF_DIRECTORY_ENTRIES];
+    uint16_t Magic;
+    uint8_t  MajorLinkerVersion;
+    uint8_t  MinorLinkerVersion;
+    uint32_t SizeOfCode;
+    uint32_t SizeOfInitializedData;
+    uint32_t SizeOfUninitializedData;
+    uint32_t AddressOfEntryPoint;
+    uint32_t BaseOfCode;
+    uint64_t ImageBase;
+    uint32_t SectionAlignment;
+    uint32_t FileAlignment;
+    uint16_t MajorOperatingSystemVersion;
+    uint16_t MinorOperatingSystemVersion;
+    uint16_t MajorImageVersion;
+    uint16_t MinorImageVersion;
+    uint16_t MajorSubsystemVersion;
+    uint16_t MinorSubsystemVersion;
+    uint32_t Win32VersionValue;
+    uint32_t SizeOfImage;
+    uint32_t SizeOfHeaders;
+    uint32_t CheckSum;
+    uint16_t Subsystem;
+    uint16_t DllCharacteristics;
+    uint64_t SizeOfStackReserve;
+    uint64_t SizeOfStackCommit;
+    uint64_t SizeOfHeapReserve;
+    uint64_t SizeOfHeapCommit;
+    uint32_t LoaderFlags;
+    uint32_t NumberOfRvaAndSizes;
+    std::array<RP_IMAGE_DATA_DIRECTORY, RP_IMAGE_NUMBEROF_DIRECTORY_ENTRIES> DataDirectory;
 
     void display(VerbosityLevel lvl = VERBOSE_LEVEL_1) const
     {
@@ -307,19 +307,19 @@ using RP_IMAGE_OPTIONAL_HEADER64 = RP_IMAGE_OPTIONAL_HEADER<x64Version>;
 #define RP_IMAGE_SCN_MEM_EXECUTE   0x00000020
 
 struct RP_IMAGE_SECTION_HEADER {
-    uint8_t    Name[RP_IMAGE_SIZEOF_SHORT_NAME];
+    std::array<uint8_t, RP_IMAGE_SIZEOF_SHORT_NAME> Name;
     union {
         uint32_t PhysicalAddress;
         uint32_t VirtualSize;
     } Misc;
-    uint32_t   VirtualAddress;
-    uint32_t   SizeOfRawData;
-    uint32_t   PointerToRawData;
-    uint32_t   PointerToRelocations;
-    uint32_t   PointerToLinenumbers;
+    uint32_t VirtualAddress;
+    uint32_t SizeOfRawData;
+    uint32_t PointerToRawData;
+    uint32_t PointerToRelocations;
+    uint32_t PointerToLinenumbers;
     uint16_t NumberOfRelocations;
     uint16_t NumberOfLinenumbers;
-    uint32_t   Characteristics;
+    uint32_t Characteristics;
 
     explicit RP_IMAGE_SECTION_HEADER()
     {}
@@ -328,7 +328,7 @@ struct RP_IMAGE_SECTION_HEADER {
     {
         uint8_t name_null_terminated[RP_IMAGE_SIZEOF_SHORT_NAME + 1] {0};
         /* Yeah sometimes you don't have null byte after the name -- I try to be clean */
-        memcpy(name_null_terminated, Name, RP_IMAGE_SIZEOF_SHORT_NAME * sizeof(uint8_t));
+        memcpy(name_null_terminated, Name.data(), RP_IMAGE_SIZEOF_SHORT_NAME * sizeof(uint8_t));
 
         return std::string((char*)name_null_terminated);
     }
@@ -445,7 +445,7 @@ struct PELayout : public PortableExecutableLayout
         imgNtHeaders.display(lvl);
         if(lvl > VERBOSE_LEVEL_1)
         {
-            for(auto &sectionheader : imgSectionHeaders)
+            for(const auto &sectionheader : imgSectionHeaders)
                 sectionheader->display();
         }
     }
