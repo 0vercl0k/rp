@@ -51,7 +51,7 @@ if(MSVC)
             string(REGEX REPLACE "/MDd" "/MTd" ${flag_var} "${${flag_var}}")
         endif()
 
-        set(${flag_var} "${${flag_var}} /D_CRT_SECURE_NO_WARNINGS")
+        set(${flag_var} "${${flag_var}} /D_CRT_SECURE_NO_WARNINGS /DCAPSTONE_HAS_X86 /DCAPSTONE_HAS_ARM /DCAPSTONE_X86_ATT_DISABLE")
     endforeach()
 
     set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} /NODEFAULTLIB:crt64.lib")
@@ -64,13 +64,21 @@ endif()
 
 include_directories("./src/inc/")
 include_directories("./lib/beaengine/inc/")
-include_directories("./lib/capstone/inc/")
+include_directories("./lib/capstone/include/")
 include_directories("./lib/argtable3/")
 
 file(
     GLOB_RECURSE
     ropgadget_pp_files
     ./src/*
+)
+
+file(
+    GLOB_RECURSE
+    ropgadget_pp_files
+    ./lib/capstone/arch/*
+    ./lib/capstone/*.c
+    ./lib/capstone/*.h
 )
 
 add_executable(
@@ -82,12 +90,6 @@ add_library(beaengine STATIC IMPORTED)
 set_property(
     TARGET beaengine PROPERTY
     IMPORTED_LOCATION ../lib/beaengine/bin/${BEA_LIBRARY}
-)
-
-add_library(capstone STATIC IMPORTED)
-set_property(
-    TARGET capstone PROPERTY
-    IMPORTED_LOCATION ../lib/capstone/bin/${CAPSTONE_LIBRARY}
 )
 
 target_link_libraries(
