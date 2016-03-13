@@ -268,11 +268,11 @@ __attribute__((packed))
 
 struct MachoLayout
 {  
-    virtual void fill_structures(std::ifstream &file)  = 0;
+    virtual void fill_structures(std::ifstream &file) = 0;
     virtual uint32_t get_size_mach_header(void) const = 0;
     virtual void display(VerbosityLevel lvl = VERBOSE_LEVEL_1) const = 0;
-    virtual std::vector<std::shared_ptr<Section>> get_executable_section(std::ifstream &file) = 0;
-    virtual uint64_t get_image_base_address(void) = 0;
+    virtual std::vector<std::shared_ptr<Section>> get_executable_section(std::ifstream &file) const = 0;
+    virtual uint64_t get_image_base_address(void) const = 0;
 };
 
 template<class T>
@@ -287,12 +287,12 @@ struct MachoArchLayout : public MachoLayout
     : MachoLayout { }, base { 0 }
     {}
 
-    uint32_t get_size_mach_header(void) const
+    uint32_t get_size_mach_header(void) const override
     {
         return sizeof(RP_MACH_HEADER<T>);
     }
 
-    void fill_structures(std::ifstream &file)
+    void fill_structures(std::ifstream &file) override
     {
         bool is_all_section_walked = false;
         std::streampos off = file.tellg();
@@ -355,7 +355,7 @@ struct MachoArchLayout : public MachoLayout
 		file.seekg(off);
     }
 
-    std::vector<std::shared_ptr<Section>> get_executable_section(std::ifstream &file)
+    std::vector<std::shared_ptr<Section>> get_executable_section(std::ifstream &file) const override
     {
         std::vector<std::shared_ptr<Section>> exc_sect;
 
@@ -380,7 +380,7 @@ struct MachoArchLayout : public MachoLayout
         return exc_sect;
     }
 
-    void display(VerbosityLevel lvl = VERBOSE_LEVEL_1) const
+    void display(VerbosityLevel lvl = VERBOSE_LEVEL_1) const override
     {
         header.display(lvl);
 
@@ -391,7 +391,7 @@ struct MachoArchLayout : public MachoLayout
             section->display(lvl);
     }
 
-    uint64_t get_image_base_address(void)
+    uint64_t get_image_base_address(void) const override
     {
         return base;
     }

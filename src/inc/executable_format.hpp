@@ -79,7 +79,7 @@ class ExecutableFormat
          *
          *  \return A vector of Section instances
          */
-        virtual std::vector<std::shared_ptr<Section>> get_executables_section(std::ifstream & file) = 0;
+        virtual std::vector<std::shared_ptr<Section>> get_executables_section(std::ifstream & file) const = 0;
 
         /*!
          *  \brief Give you a PE/ELF instance (based mostly on the magic signature) 
@@ -95,7 +95,7 @@ class ExecutableFormat
          *
          *  \return The prefered base address of the executable
          */
-        virtual uint64_t get_image_base_address(void) = 0;
+        virtual uint64_t get_image_base_address(void) const = 0;
 
     private:
 

@@ -34,13 +34,13 @@ class Elf : public ExecutableFormat
 
         std::string get_class_name(void) const override;
 
-        std::vector<std::shared_ptr<Section>> get_executables_section(std::ifstream & file) override;
+        std::vector<std::shared_ptr<Section>> get_executables_section(std::ifstream & file) const override;
 
-        uint64_t get_image_base_address(void) override;
+        uint64_t get_image_base_address(void) const override;
 
     private:
 
-        CPU::E_CPU extract_information_from_binary(std::ifstream &file);
+        CPU::E_CPU extract_information_from_binary(std::ifstream &file) override;
 
         template<class T>
         void init_properly_ELFLayout(void)

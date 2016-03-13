@@ -228,15 +228,12 @@ using Elf_Shdr32_Abstraction = Elf_Shdr_Abstraction<x86Version>;
 using Elf_Shdr64_Abstraction = Elf_Shdr_Abstraction<x64Version>;
 
 struct ExecutableLinkingFormatLayout
-{
-    virtual ~ExecutableLinkingFormatLayout(void)
-    {}
-    
+{   
     virtual void fill_structures(std::ifstream &file) = 0;
     virtual void display(VerbosityLevel lvl = VERBOSE_LEVEL_1) const = 0;
-    virtual uint64_t get_image_base_address(void) = 0;
+    virtual uint64_t get_image_base_address(void) const = 0;
     virtual std::vector<std::shared_ptr<Section>> get_executable_section(std::ifstream &file) const = 0;
-	virtual uint16_t get_cpu(void) = 0;
+	virtual uint16_t get_cpu(void) const = 0;
 };
 
 #define SHT_SYMTAB      2
@@ -256,16 +253,12 @@ struct ELFLayout : public ExecutableLinkingFormatLayout
     uint64_t base;
 
     ELFLayout(void)
-    : ExecutableLinkingFormatLayout(), base(0)
+    : ExecutableLinkingFormatLayout { }, base { 0 }
     {}
 
-    ~ELFLayout(void)
+    void display(VerbosityLevel lvl = VERBOSE_LEVEL_1) const override
     {
-    }
-
-    void display(VerbosityLevel lvl = VERBOSE_LEVEL_1) const
-    {
-        uint32_t i = 0;
+        uint32_t i { 0 };
         elfHeader.display(lvl);
 
         for(const auto &programheader : elfProgramHeaders)
@@ -311,7 +304,7 @@ struct ELFLayout : public ExecutableLinkingFormatLayout
         return offset_string_table;
     }
 
-    void fill_structures(std::ifstream &file)
+    void fill_structures(std::ifstream &file) override
     {
         /* Remember where the caller was in the file */
         std::streampos off = file.tellg();
@@ -373,7 +366,7 @@ struct ELFLayout : public ExecutableLinkingFormatLayout
         file.seekg(off);
     }
 
-    std::vector<std::shared_ptr<Section>> get_executable_section(std::ifstream &file) const
+    std::vector<std::shared_ptr<Section>> get_executable_section(std::ifstream &file) const override
     {
         std::vector<std::shared_ptr<Section>> exec_sections;
 
@@ -402,12 +395,12 @@ struct ELFLayout : public ExecutableLinkingFormatLayout
         return exec_sections;
     }
 
-    uint64_t get_image_base_address(void)
+    uint64_t get_image_base_address(void) const override
     {
         return base;
     }
 
-	uint16_t get_cpu(void)
+	uint16_t get_cpu(void) const override
 	{
 		return elfHeader.e_machine;
 	}

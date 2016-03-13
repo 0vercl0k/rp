@@ -143,12 +143,12 @@ std::shared_ptr<CPU> Elf::get_cpu(std::ifstream &file)
     return cpu;
 }
 
-std::vector<std::shared_ptr<Section>> Elf::get_executables_section(std::ifstream & file)
+std::vector<std::shared_ptr<Section>> Elf::get_executables_section(std::ifstream & file) const
 {
     return m_ELFLayout->get_executable_section(file);
 }
 
-uint64_t Elf::get_image_base_address(void)
+uint64_t Elf::get_image_base_address(void) const
 {
     return m_ELFLayout->get_image_base_address();
 }

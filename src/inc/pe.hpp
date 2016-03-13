@@ -28,19 +28,19 @@ class PE : public ExecutableFormat
 {
     public:
 
-        std::shared_ptr<CPU> get_cpu(std::ifstream &file);
+        std::shared_ptr<CPU> get_cpu(std::ifstream &file) override;
 
-        void display_information(const VerbosityLevel lvl) const;
+        void display_information(const VerbosityLevel lvl) const override;
 
-        std::string get_class_name(void) const;
+        std::string get_class_name(void) const override;
 
-        std::vector<std::shared_ptr<Section>> get_executables_section(std::ifstream & file);
+        std::vector<std::shared_ptr<Section>> get_executables_section(std::ifstream & file) const override;
 
-        uint64_t get_image_base_address(void);
+        uint64_t get_image_base_address(void) const override;
 
     private:
 
-        CPU::E_CPU extract_information_from_binary(std::ifstream &file);
+        CPU::E_CPU extract_information_from_binary(std::ifstream &file) override;
         
         template<class T>
         void init_properly_PELayout()

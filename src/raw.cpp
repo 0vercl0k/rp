@@ -25,7 +25,7 @@ std::string Raw::get_class_name(void) const
     return "raw";
 }
 
-std::vector<std::shared_ptr<Section>> Raw::get_executables_section(std::ifstream & file)
+std::vector<std::shared_ptr<Section>> Raw::get_executables_section(std::ifstream & file) const
 {
     std::vector<std::shared_ptr<Section>> executable_sections;
 
@@ -52,7 +52,7 @@ uint64_t Raw::raw_offset_to_va(const uint64_t absolute_raw_offset, const uint64_
     return absolute_raw_offset;
 }
 
-uint64_t Raw::get_image_base_address(void)
+uint64_t Raw::get_image_base_address(void) const
 {
     return 0;
 }

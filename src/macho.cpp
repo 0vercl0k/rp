@@ -70,7 +70,7 @@ std::string Macho::get_class_name(void) const
     return "Mach-o";
 }
 
-std::vector<std::shared_ptr<Section>> Macho::get_executables_section(std::ifstream & file)
+std::vector<std::shared_ptr<Section>> Macho::get_executables_section(std::ifstream & file) const
 {
     return m_MachoLayout->get_executable_section(file);
 }
@@ -91,7 +91,7 @@ void Macho::display_information(const VerbosityLevel lvl) const
     m_MachoLayout->display(lvl);
 }
 
-uint64_t Macho::get_image_base_address(void)
+uint64_t Macho::get_image_base_address(void) const
 {
     return m_MachoLayout->get_image_base_address();
 }

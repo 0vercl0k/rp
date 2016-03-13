@@ -144,7 +144,7 @@ std::shared_ptr<CPU> PE::get_cpu(std::ifstream &file)
     return cpu;
 }
 
-std::vector<std::shared_ptr<Section>> PE::get_executables_section(std::ifstream & file)
+std::vector<std::shared_ptr<Section>> PE::get_executables_section(std::ifstream & file) const
 {
     std::vector<std::shared_ptr<Section>> exec_sections;
 
@@ -170,7 +170,7 @@ std::vector<std::shared_ptr<Section>> PE::get_executables_section(std::ifstream 
     return exec_sections;
 }
 
-uint64_t PE::get_image_base_address(void)
+uint64_t PE::get_image_base_address(void) const
 {
     return m_pPELayout->get_image_base_address();
 }

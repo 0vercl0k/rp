@@ -403,10 +403,6 @@ struct PortableExecutableLayout
     RP_IMAGE_DOS_HEADER                                   imgDosHeader;
     std::vector<std::shared_ptr<RP_IMAGE_SECTION_HEADER>> imgSectionHeaders;
 
-    virtual ~PortableExecutableLayout(void)
-    {
-    }
-
     virtual void display(VerbosityLevel lvl = VERBOSE_LEVEL_1) const
     {
         imgDosHeader.display(lvl);
@@ -434,12 +430,12 @@ struct PELayout : public PortableExecutableLayout
 {
     RP_IMAGE_NT_HEADERS<T> imgNtHeaders;
        
-    uint32_t get_nt_headers_size(void) const
+    uint32_t get_nt_headers_size(void) const override
     {
         return sizeof(RP_IMAGE_NT_HEADERS<T>);
     }
 
-    void display(VerbosityLevel lvl = VERBOSE_LEVEL_1) const
+    void display(VerbosityLevel lvl = VERBOSE_LEVEL_1) const override
     {
         PortableExecutableLayout::display(lvl);
         imgNtHeaders.display(lvl);
@@ -450,7 +446,7 @@ struct PELayout : public PortableExecutableLayout
         }
     }
 
-    void fill_nt_structures(std::ifstream &file)
+    void fill_nt_structures(std::ifstream &file) override
     {
         /* Remember where the caller was in the file */
         std::streampos off = file.tellg();
@@ -473,7 +469,7 @@ struct PELayout : public PortableExecutableLayout
         file.seekg(off);
     }
 
-    uint64_t get_image_base_address(void) const
+    uint64_t get_image_base_address(void) const override
     {
         return imgNtHeaders.OptionalHeader.ImageBase;
     }
