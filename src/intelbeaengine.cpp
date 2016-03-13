@@ -24,7 +24,7 @@
 #include <cstring>
 
 IntelBeaEngine::IntelBeaEngine(E_Arch arch)
-: m_arch{ uint32_t(arch) }, m_disasm{ }
+: m_arch { uint32_t(arch) }, m_disasm { }
 {
     /* those options are mostly display option for the disassembler engine */
     m_disasm.Options = PrefixedNumeral + NasmSyntax;
