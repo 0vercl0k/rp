@@ -114,12 +114,15 @@ bool IntelBeaEngine::is_valid_instruction(InstructionInformation &instr) const
 {
     Int32 branch_type = instr.bea_branch_type;
     uint64_t addr_value = instr.bea_addr_value;
+	/*
+	Work Around, BeaEngine in x64 mode disassemble "\xDE\xDB" as an instruction without disassembly
+	Btw, this is not the only case!
+	XXX: Something tells me it's not here anymore
+	*/
+	if(instr.disassembly == "")
+		__debugbreak();
+
     return (
-        /*
-            Work Around, BeaEngine in x64 mode disassemble "\xDE\xDB" as an instruction without disassembly
-            Btw, this is not the only case!
-        */
-        instr.disassembly != "" &&
         branch_type != RetType && 
         branch_type != JmpType &&
         // Per @__awe's request
