@@ -50,7 +50,7 @@ InstructionInformation ArmCapstone::disass(const uint8_t *data, uint64_t len, ui
 	if(len == 0)
 		len = 4;
 
-	size_t count = cs_disasm_ex(m_handle, data, (size_t)len, vaddr, 1, &insn);
+	size_t count = cs_disasm(m_handle, data, (size_t)len, vaddr, 1, &insn);
 	if(count != 1)
 	{
 		ret = UnknownInstruction;

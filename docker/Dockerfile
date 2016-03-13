@@ -33,7 +33,7 @@ WORKDIR /home/over
 RUN mkdir dev
 
 WORKDIR /home/over/dev
-RUN git clone https://github.com/0vercl0k/rp.git
+RUN git clone https://github.com/0vercl0k/rp.git --recursive
 
 WORKDIR /home/over/dev/rp
 RUN mkdir buildx86 buildx64
