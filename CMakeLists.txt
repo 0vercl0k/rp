@@ -92,6 +92,11 @@ add_executable(
     "./lib/argtable3/argtable3.c" "./lib/argtable3/argtable3.h"
 )
 
+# Filters for VS solution
+source_group("capstone" FILES ${capstone_pp_files_arch} ${capstone_pp_files})
+source_group("argtable3" FILES "./lib/argtable3/argtable3.c" "./lib/argtable3/argtable3.h")
+source_group("beaengine" FILES "./lib/beaengine/src/BeaEngine.c")
+
 target_link_libraries(
     ${RP_NAME}
 )
