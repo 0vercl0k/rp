@@ -24,16 +24,15 @@ if(UNIX)
         set(RP_PLAT "lin")
     endif()
     set(EXTENSION_LIBRARY a)
-    set(FLAG_CXX "-DCAPSTONE_HAS_X86 -DCAPSTONE_HAS_ARM -DCAPSTONE_X86_ATT_DISABLE -DCAPSTONE_USE_SYS_DYN_MEM")
 endif()
 
 set(RP_NAME "${RP_NAME}-${RP_PLAT}")
 
 if(CMAKE_SIZEOF_VOID_P EQUAL 8 AND NOT(optX86BUILD))
-    set(FLAG_CXX "${FLAG_CXX} -m64")
+    set(FLAG_CXX "-m64")
     set(RP_NAME "${RP_NAME}-x64")
 else()
-    set(FLAG_CXX "${FLAG_CXX} -m32")
+    set(FLAG_CXX "-m32")
     set(RP_NAME "${RP_NAME}-x86")
 endif()
 
@@ -56,7 +55,8 @@ if(MSVC)
 endif()
 
 if(CMAKE_CXX_COMPILER_ID MATCHES "Clang")
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -O2 -static -s -std=c++11 ${FLAG_CXX}")
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -O2 -fPIC -std=c++11 -D_FORTIFY_SOURCE=2 -Wformat -Wformat-security -fstack-protector -DCAPSTONE_HAS_X86 -DCAPSTONE_HAS_ARM -DCAPSTONE_X86_ATT_DISABLE -DCAPSTONE_USE_SYS_DYN_MEM -DCAPSTONE_STATIC ${FLAG_CXX}")
+    set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -lpthread")
 endif()
 
 include_directories("./src/inc/")
