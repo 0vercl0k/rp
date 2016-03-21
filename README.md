@@ -89,7 +89,8 @@ https://github.com/0vercl0k/rp/releases/tag/v1
 ## Build-it yourself
 ### On Linux-like platforms:
 <pre>
-$ git clone https://github.com/0vercl0k/rp.git
+$ aptitude install libboost-all-dev
+$ git clone --recursive https://github.com/0vercl0k/rp.git
 $ cd rp
 $ mkdir build && cd build
 $ cmake .. && make
@@ -97,7 +98,7 @@ $ # Binary should now be in ../bin :-)
 </pre>
 
 ### On Windows:
-1. Download CMake
+1. Download CMake & boost.1.60.0
 2. Launch CMake & generate a VS project inside the directory you want
 3. Launch the generated VS project
 4. Compile!
@@ -118,3 +119,5 @@ Thanks to:
    * Baboon (for the MZ signature),
    * NK (for the typo),
    * Tr4nce (for the output bug in --search-int).
+
+[![Build status](https://ci.appveyor.com/api/projects/status/2s47yk2vl30a3wsy?svg=true)](https://ci.appveyor.com/project/0vercl0k/rp)

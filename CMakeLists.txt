@@ -84,19 +84,24 @@ file(
     ./lib/capstone/*.h
 )
 
-add_executable(
-    ${RP_NAME}
-    ${ropgadget_pp_files}
-    ${capstone_pp_files_arch} ${capstone_pp_files}
-    "./lib/beaengine/src/BeaEngine.c"
-    "./lib/argtable3/argtable3.c" "./lib/argtable3/argtable3.h"
-)
-
 # Filters for VS solution
 source_group("capstone" FILES ${capstone_pp_files_arch} ${capstone_pp_files})
 source_group("argtable3" FILES "./lib/argtable3/argtable3.c" "./lib/argtable3/argtable3.h")
 source_group("beaengine" FILES "./lib/beaengine/src/BeaEngine.c")
 
-target_link_libraries(
-    ${RP_NAME}
-)
+set(Boost_USE_STATIC_LIBS ON) # only find static libs
+set(Boost_USE_MULTITHREADED ON)
+set(Boost_USE_STATIC_RUNTIME    OFF)
+find_package(Boost 1.60.0 COMPONENTS flyweight)
+if(Boost_FOUND)
+    include_directories(${Boost_INCLUDE_DIRS})
+    add_executable(
+        ${RP_NAME}
+        ${ropgadget_pp_files}
+        ${capstone_pp_files_arch} ${capstone_pp_files}
+        "./lib/beaengine/src/BeaEngine.c"
+        "./lib/argtable3/argtable3.c" "./lib/argtable3/argtable3.h"
+    )
+
+  target_link_libraries(${RP_NAME} ${Boost_LIBRARIES})
+endif()
