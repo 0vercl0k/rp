@@ -92,7 +92,7 @@ source_group("beaengine" FILES "./lib/beaengine/src/BeaEngine.c")
 set(Boost_USE_STATIC_LIBS ON) # only find static libs
 set(Boost_USE_MULTITHREADED ON)
 set(Boost_USE_STATIC_RUNTIME    OFF)
-find_package(Boost 1.60.0 COMPONENTS flyweight)
+find_package(Boost 1.59.0 COMPONENTS flyweight)
 if(Boost_FOUND)
     include_directories(${Boost_INCLUDE_DIRS})
     add_executable(
@@ -104,4 +104,6 @@ if(Boost_FOUND)
     )
 
   target_link_libraries(${RP_NAME} ${Boost_LIBRARIES})
+else()
+    message(SEND_ERROR "find_package could not find boost159 - please install it!")
 endif()

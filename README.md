@@ -1,5 +1,7 @@
 # rp++
 
+[![Build status](https://ci.appveyor.com/api/projects/status/2s47yk2vl30a3wsy?svg=true)](https://ci.appveyor.com/project/0vercl0k/rp)
+
 ## Description
 
 rp++ is a full-cpp written tool that aims to find ROP sequences in PE/Elf/Mach-O (doesn't support the FAT binaries) x86/x64/ARM binaries.
@@ -119,5 +121,3 @@ Thanks to:
    * Baboon (for the MZ signature),
    * NK (for the typo),
    * Tr4nce (for the output bug in --search-int).
-
-[![Build status](https://ci.appveyor.com/api/projects/status/2s47yk2vl30a3wsy?svg=true)](https://ci.appveyor.com/project/0vercl0k/rp)
