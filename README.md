@@ -98,8 +98,7 @@ $ git clone --recursive https://github.com/0vercl0k/rp.git
 $ cd rp
 $ git checkout next
 $ git submodule update --init --recursive
-$ 
-mkdir build && cd build
+$ mkdir build && cd build
 $ cmake .. && make
 $ # Binary should now be in ../bin :-)
 </pre>
