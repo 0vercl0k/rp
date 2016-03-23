@@ -92,14 +92,12 @@ https://github.com/0vercl0k/rp/releases/tag/v1
 ### On Linux-like platforms:
 <pre>
 $ aptitude install libboost-all-dev cmake clang-3.5
-$ export CC=/usr/bin/clang-3.5
-$ export CXX=/usr/bin/clang++-3.5
-$ git clone --recursive https://github.com/0vercl0k/rp.git
+$ git clone https://github.com/0vercl0k/rp.git
 $ cd rp
 $ git checkout next
 $ git submodule update --init --recursive
 $ mkdir build && cd build
-$ cmake .. && make
+$ CXX=/usr/bin/clang++ cmake .. && make
 $ # Binary should now be in ../bin :-)
 </pre>
 
