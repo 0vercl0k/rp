@@ -15,13 +15,9 @@ addons:
     - libboost1.59-all-dev
 
 before_install:
-  - echo $CXX
   - clang++ --version
-  - git submodule update --init --recursive
   - mkdir build
   - cd build
-  - pwd
 
 install:
-  - pwd
-  - CXX="clang++" && bii cpp:build ..
+  - CXX="clang++" bii cpp:build ..
