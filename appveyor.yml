@@ -6,6 +6,7 @@ branches:
 
 configuration:
   - Release
+  - Debug
 
 platform:
   - Win32
@@ -15,7 +16,8 @@ clone_folder: c:\projects\rp
 
 environment:
   BOOST_ROOT: C:\Libraries\boost_1_59_0
-  BOOST_LIBRARYDIR: C:\Libraries\boost_1_59_0\lib64-msvc-14.0
+# boost.flyweight is header only, so no need of any libs 
+#  BOOST_LIBRARYDIR: C:\Libraries\boost_1_59_0\lib32-msvc-14.0
 
 install:
   - cmd: git submodule update --init --recursive
@@ -27,7 +29,7 @@ before_build:
   - cmd: cd build
   - cmd: if "%platform%"=="Win32" cmake .. -G "Visual Studio 14 2015"
   - cmd: if "%platform%"=="x64" cmake .. -G "Visual Studio 14 2015 Win64"
-  - cmd:  chdir
+  - cmd: chdir
 
 build:
   project: c:\projects\rp\build\rp++.sln
