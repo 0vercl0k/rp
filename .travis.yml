@@ -7,13 +7,19 @@ os:
   - linux
   # - osx
 
+# https://github.com/travis-ci/apt-package-whitelist/blob/master/ubuntu-precise
+addons:
+  apt:
+    sources:
+      - boost-latest
+    packages:
+      - libboost-dev
+      - clang-3.8
+
 before_install:
   - clang++ --version
   - mkdir build
   - cd build
-
-install:
-  - sudo apt-get install libboost-dev
 
 script:
   - CXX="clang++" cmake ..

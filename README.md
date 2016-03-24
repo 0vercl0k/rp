@@ -1,6 +1,10 @@
 # rp++
 
+Windows:
 [![Build status](https://ci.appveyor.com/api/projects/status/2s47yk2vl30a3wsy?svg=true)](https://ci.appveyor.com/project/0vercl0k/rp)
+
+Linux/OSX:
+[![Build Status](https://travis-ci.org/0vercl0k/rp.svg?branch=master)](https://travis-ci.org/0vercl0k/rp)
 
 ## Description
 
