@@ -27,13 +27,15 @@ before_build:
   - cmd: cd build
   - cmd: if "%platform%"=="Win32" cmake .. -G "Visual Studio 14 2015"
   - cmd: if "%platform%"=="x64" cmake .. -G "Visual Studio 14 2015 Win64"
+  - cmd:  chdir
 
 build:
   project: c:\projects\rp\build\rp++.sln
 
+# this happens in the build directory: c:\projects\rp\build
 after_build:
-  - cmd: if "%platform%"=="Win32" 7z a -t7z rp.x86.7z %APPVEYOR_BUILD_FOLDER%\bin\Release\rp-win-*
-  - cmd: if "%platform%"=="x64" 7z a -t7z rp.x64.7z %APPVEYOR_BUILD_FOLDER%\bin\Release\rp-win-*
+  - cmd: if "%platform%"=="Win32" 7z a -t7z ..\rp.x86.7z Release\rp-win-*
+  - cmd: if "%platform%"=="x64" 7z a -t7z ..\rp.x64.7z Release\rp-win-*
   - cmd: chdir
 
 artifacts:
