@@ -36,8 +36,10 @@ build:
 
 # this happens in the build directory: c:\projects\rp\build
 after_build:
-  - cmd: if "%platform%"=="Win32" 7z a -t7z ..\rp.x86.7z ..\bin\Release\rp-win-*
-  - cmd: if "%platform%"=="x64" 7z a -t7z ..\rp.x64.7z ..\bin\Release\rp-win-*
+  - cmd: if "%platform%"=="Win32" if "%configuration%"=="Release" 7z a -t7z ..\rp.x86.release.7z ..\bin\%configuration%\rp-win-*
+  - cmd: if "%platform%"=="Win32" if "%configuration%"=="Debug" 7z a -t7z ..\rp.x86.debug.7z ..\bin\%configuration%\rp-win-*
+  - cmd: if "%platform%"=="x64" if "%configuration%"=="Release" 7z a -t7z ..\rp.x64.release.7z ..\bin\%configuration%\rp-win-*
+  - cmd: if "%platform%"=="x64" if "%configuration%"=="Debug" 7z a -t7z ..\rp.x64.release.7z ..\bin\%configuration%\rp-win-*
   - cmd: chdir
 
 artifacts:
