@@ -15,10 +15,10 @@ addons:
   apt:
     sources:
       - boost-latest
-      - llvm-toolchain-trusty
+      # - llvm-toolchain-trusty
     packages:
       - libboost-dev
-      - clang-3.7
+      # - clang-3.7
 
 before_install:
   - clang++ --version
