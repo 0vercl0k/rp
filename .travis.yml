@@ -15,6 +15,12 @@ addons:
       - llvm-toolchain-precise
     packages:
       - libboost-dev
+      - libclang1-3.8
+      - libllvm3.8
+      - libstdc++6
+      - libstdc++-4.9-dev
+      - libgcc-4.9-dev
+      - libclang-common-3.8-dev
       - clang-3.8
 
 before_install:
