@@ -37,7 +37,7 @@ after_build:
   - cmd: if "%platform%"=="x64" 7z a -t7z rp.x64.7z %APPVEYOR_BUILD_FOLDER%\bin\Release\rp-win-*
 
 artifacts:
-  - path: bin\Release\rp.*.7z
+  - path: rp.*.7z
 
 # on_finish:
 #   - ps: $blockRdp = $true; iex ((new-object net.webclient).DownloadString('https://raw.githubusercontent.com/appveyor/ci/master/scripts/enable-rdp.ps1'))
