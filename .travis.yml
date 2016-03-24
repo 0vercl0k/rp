@@ -20,4 +20,6 @@ before_install:
   - cd build
 
 install:
-  - CXX="clang++" bii cpp:build ..
+  - CXX="clang++" cmake ..
+  - make
+  - ls -Rla ../bin/
