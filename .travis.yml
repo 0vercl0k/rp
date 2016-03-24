@@ -12,6 +12,7 @@ addons:
   apt:
     sources:
       - boost-latest
+      - llvm-toolchain-precise
     packages:
       - libboost-dev
       - clang-3.8
