@@ -1,0 +1,27 @@
+language: cpp
+
+compiler:
+  - clang++
+
+os:
+  - linux
+  # - osx
+
+addons:
+  apt:
+    sources:
+    - boost-latest
+    packages:
+    - libboost1.59-all-dev
+
+before_install:
+  - echo $CXX
+  - clang++ --version
+  - git submodule update --init --recursive
+  - mkdir build
+  - cd build
+  - pwd
+
+install:
+  - pwd
+  - CXX="clang++" && bii cpp:build ..
