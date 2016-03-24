@@ -91,7 +91,7 @@ https://github.com/0vercl0k/rp/releases/tag/v1
 ## Build-it yourself
 ### On Linux-like platforms:
 <pre>
-$ aptitude install libboost-all-dev cmake clang-3.5
+$ aptitude install libboost-dev cmake clang-3.5
 $ git clone https://github.com/0vercl0k/rp.git
 $ cd rp
 $ git checkout next

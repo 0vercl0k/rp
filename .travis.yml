@@ -7,19 +7,15 @@ os:
   - linux
   # - osx
 
-addons:
-  apt:
-    sources:
-    - boost-latest
-    packages:
-    - libboost1.59-all-dev
-
 before_install:
   - clang++ --version
   - mkdir build
   - cd build
 
 install:
+  - sudo apt-get install libboost-dev
+
+script:
   - CXX="clang++" cmake ..
   - make
   - ls -Rla ../bin/
