@@ -1,0 +1,41 @@
+version: 1.0.{build}
+
+branches:
+  only:
+  - next
+
+configuration:
+  - Release
+
+platform:
+  - Win32
+  - x64
+
+clone_folder: c:\projects\rp
+
+environment:
+  BOOST_ROOT: C:\Libraries\boost_1_59_0
+  BOOST_LIBRARYDIR: C:\Libraries\boost_1_59_0\lib64-msvc-14.0
+
+install:
+  - cmd: git submodule update --init --recursive
+
+before_build:
+  - cmd: echo Running cmake...
+  - cmd: cd c:\projects\rp
+  - cmd: mkdir build
+  - cmd: cd build
+  - cmd: if "%platform%"=="x86" cmake .. -G "Visual Studio 14 2015"
+  - cmd: if "%platform%"=="x64" cmake .. -G "Visual Studio 14 2015 Win64"
+
+build:
+  project: c:\projects\rp\build\rp++.sln
+  parallel: true
+  verbosity: detailed
+
+artifacts:
+  - path: bin\Release\rp-win-*.exe
+  - path: bin\Release\rp-win-*.pdb
+
+# on_finish:
+#   - ps: $blockRdp = $true; iex ((new-object net.webclient).DownloadString('https://raw.githubusercontent.com/appveyor/ci/master/scripts/enable-rdp.ps1'))
