@@ -5,7 +5,7 @@ compiler:
 
 os:
   - linux
-  # - osx
+  - osx
 
 sudo: required
 dist: trusty
@@ -15,10 +15,8 @@ addons:
   apt:
     sources:
       - boost-latest
-      # - llvm-toolchain-trusty
     packages:
       - libboost-dev
-      # - clang-3.7
 
 before_install:
   - clang++ --version
@@ -28,4 +26,4 @@ before_install:
 script:
   - CXX="clang++" cmake ..
   - make
-  - ls -Rla ../bin/
+  - ls -la ../bin/
