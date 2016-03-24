@@ -30,12 +30,14 @@ before_build:
 
 build:
   project: c:\projects\rp\build\rp++.sln
-  parallel: true
   verbosity: detailed
 
+after_build:
+  - cmd: if "%platform%"=="Win32" 7z a -t7z rp.x86.7z %APPVEYOR_BUILD_FOLDER%\bin\Release\rp-win-*
+  - cmd: if "%platform%"=="x64" 7z a -t7z rp.x64.7z %APPVEYOR_BUILD_FOLDER%\bin\Release\rp-win-*
+
 artifacts:
-  - path: bin\Release\rp-win-*.exe
-  - path: bin\Release\rp-win-*.pdb
+  - path: bin\Release\rp.*.7z
 
 # on_finish:
 #   - ps: $blockRdp = $true; iex ((new-object net.webclient).DownloadString('https://raw.githubusercontent.com/appveyor/ci/master/scripts/enable-rdp.ps1'))
