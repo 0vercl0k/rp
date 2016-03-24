@@ -7,12 +7,15 @@ os:
   - linux
   # - osx
 
+sudo: required
+dist: trusty
+
 # https://github.com/travis-ci/apt-package-whitelist/blob/master/ubuntu-precise
 addons:
   apt:
     sources:
       - boost-latest
-      - llvm-toolchain-precise
+      - llvm-toolchain-trusty
     packages:
       - libboost-dev
       - clang-3.7
