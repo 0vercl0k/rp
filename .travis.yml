@@ -18,7 +18,7 @@ addons:
       - boost-latest
     packages:
       - libboost-dev
-      - ia32-libs
+      - g++-multilib
 
 before_install:
   - clang++ --version
