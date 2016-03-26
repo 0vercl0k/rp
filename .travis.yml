@@ -7,6 +7,7 @@ os:
   - linux
   - osx
 
+# https://docs.travis-ci.com/user/trusty-ci-environment/
 sudo: required
 dist: trusty
 
@@ -17,6 +18,7 @@ addons:
       - boost-latest
     packages:
       - libboost-dev
+      - ia32-libs
 
 before_install:
   - clang++ --version
