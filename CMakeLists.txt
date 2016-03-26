@@ -57,6 +57,8 @@ endif()
 if(CMAKE_CXX_COMPILER_ID MATCHES "Clang")
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -O2 -fPIC -std=c++11 -D_FORTIFY_SOURCE=2 -Wformat -Wformat-security -fstack-protector -DCAPSTONE_HAS_X86 -DCAPSTONE_HAS_ARM -DCAPSTONE_X86_ATT_DISABLE -DCAPSTONE_USE_SYS_DYN_MEM -DCAPSTONE_STATIC ${FLAG_CXX}")
     set(CMAKE_C_FLAGS "${CMAKE_CXX_FLAGS}")
+    # C compiler does not support -std
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
     set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -lpthread")
 endif()
 
