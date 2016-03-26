@@ -50,6 +50,7 @@ RUN rm -rf /home/over/dev/rp/buildx86 && rm -rf /home/over/dev/rp/buildx64
 
 WORKDIR /home/over/dev/rp
 RUN git checkout next
+RUN git submodule update --init --recursive
 RUN mkdir buildx86 buildx64
 
 WORKDIR /home/over/dev/rp/buildx86
