@@ -20,10 +20,13 @@ addons:
 
 before_install:
   - clang++ --version
-  - mkdir build
-  - cd build
+  - mkdir build64 build32
 
 script:
+  - cd build64
   - CXX="clang++" cmake ..
+  - make
+  - cd ../build32
+  - CXX="clang++" cmake .. -DoptX86BUILD=ON
   - make
   - ls -la ../bin/
