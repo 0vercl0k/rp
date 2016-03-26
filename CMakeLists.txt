@@ -32,10 +32,6 @@ if(CMAKE_SIZEOF_VOID_P EQUAL 8 AND NOT(optX86BUILD))
     set(FLAG_CXX "-m64")
     set(RP_NAME "${RP_NAME}-x64")
 else()
-    # my way of not having to handle both CXX_FLAGS & C_FLAGS
-    # this happens as rp's code is C++ so handled by CXX, but capstone/beaengine/argtable3 are all C
-    # so CC would be used (and not have the proper flags; not the -m32 when compiling on a 64 bits machine because not default)
-    SET(CMAKE_C_COMPILER ${CMAKE_CXX_COMPILER})
     set(FLAG_CXX "-m32")
     set(RP_NAME "${RP_NAME}-x86")
 endif()
@@ -60,6 +56,7 @@ endif()
 
 if(CMAKE_CXX_COMPILER_ID MATCHES "Clang")
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -O2 -fPIC -std=c++11 -D_FORTIFY_SOURCE=2 -Wformat -Wformat-security -fstack-protector -DCAPSTONE_HAS_X86 -DCAPSTONE_HAS_ARM -DCAPSTONE_X86_ATT_DISABLE -DCAPSTONE_USE_SYS_DYN_MEM -DCAPSTONE_STATIC ${FLAG_CXX}")
+    set(CMAKE_CC_FLAGS "${CMAKE_CXX_FLAGS}")
     set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -lpthread")
 endif()
 
