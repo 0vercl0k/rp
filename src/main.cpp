@@ -50,8 +50,8 @@ int main(int argc, char* argv[])
     int nerrors = arg_parse(argc, argv, argtable);
     if(nerrors > 0)
     {
-        arg_print_errors(stdout, end, "rp++");
-        std::cout << "Try './rp++ --help' for more information." << std::endl;
+        arg_print_errors(stdout, end, argv[0]);
+        std::cout << "Try '" << argv[0] << " --help' for more information." << std::endl;
         return -1;
     }
 
@@ -65,7 +65,7 @@ int main(int argc, char* argv[])
             std::cout << "NB: The original idea comes from (@jonathansalwan) and his 'ROPGadget' tool." << std::endl << std::endl;
             
             w_yel_lf("USAGE:");
-            std::cout << "./rp++";
+            std::cout << argv[0];
             arg_print_syntax(stdout, argtable, "\n");
 
             std::cout << std::endl;
