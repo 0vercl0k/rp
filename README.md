@@ -42,13 +42,13 @@ rp++ on Win7 x64 / Debian Squeeze x64 / FreeBSD x64 / Mac OSX Lion x64:
 How to use it ?
 ===============
 
-####USAGE:
+#### USAGE:
 <pre>
 ./rp++ [-hv] [-f &lt;binary path&gt;] [-i &lt;1,2,3&gt;] [-r &lt;positive int&gt;] [--raw=&lt;archi&gt;]
  [--atsyntax] [--unique] [--search-hexa=&lt;\x90A\x90&gt;] [--search-int=&lt;int in hex&gt;]
 </pre>
 
-####OPTIONS:
+#### OPTIONS:
 <pre>
   -f, --file=&lt;binary path&gt;  give binary path
   -i, --info=&lt;1,2,3&gt;        display information about the binary header
