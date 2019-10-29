@@ -107,6 +107,8 @@ if(Boost_FOUND)
     )
 
   target_link_libraries(${RP_NAME} ${Boost_LIBRARIES})
+  set_target_properties("${RP_NAME}" PROPERTIES OUTPUT_NAME "rp++")
+  install(TARGETS "${RP_NAME}" RUNTIME DESTINATION bin)
 else()
     message(SEND_ERROR "find_package could not find boost159 - please install it!")
 endif()
