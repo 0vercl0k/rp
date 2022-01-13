@@ -4,6 +4,3 @@
 [submodule "lib/capstone"]
 	path = lib/capstone
 	url = https://github.com/aquynh/capstone
-[submodule "lib/beaengine"]
-	path = lib/beaengine
-	url = https://github.com/BeaEngine/beaengine
