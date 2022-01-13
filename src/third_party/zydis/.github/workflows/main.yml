@@ -1,0 +1,87 @@
+name: GitHub Actions CI
+
+on: [push, pull_request]
+
+jobs:
+  cmake-build-and-tests:
+    name: CMake build + tests (${{ matrix.image_name }}, ${{ matrix.no_libc }})
+    runs-on: ${{ matrix.image_name }}
+
+    strategy:
+      matrix:
+        image_name: [macOS-latest, windows-2019, ubuntu-20.04]
+        no_libc: ["", -DZYAN_NO_LIBC=ON]
+        include:
+        - image_name: ubuntu-20.04
+          no_libc: -DCMAKE_BUILD_TYPE=Release
+          dev_mode: -DZYAN_DEV_MODE=ON
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+        with: { submodules: recursive }
+      - name: Configuring
+        run: |
+          mkdir build
+          cd build
+          cmake ${{ matrix.dev_mode }} ${{ matrix.no_libc }} ..
+      - name: Building
+        run: |
+          cmake --build build --config Release
+      - name: Running regression tests
+        run: |
+          cd tests
+          python3 regression.py test ../build/ZydisInfo
+        if: "!matrix.no_libc && matrix.image_name != 'windows-2019'"
+      - name: Running regression tests
+        run: |
+          cd tests
+          python regression.py test ..\\build\\Release\\ZydisInfo.exe
+        if: "!matrix.no_libc && matrix.image_name == 'windows-2019'"
+
+  msbuild-build:
+    name: MSBuild build (windows-2019)
+    runs-on: windows-2019
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+        with: { submodules: recursive }
+      - name: Add msbuild to PATH
+        uses: microsoft/setup-msbuild@v1.0.3
+        with: { vs-version: '[16.0,17)' }
+      - name: Build user-mode
+        run: |
+          cd msvc
+          msbuild.exe Zydis.sln /m /t:Rebuild '/p:Configuration="Release MD";Platform=X64'
+      - name: Build kernel-mode
+        run: |
+          cd msvc
+          msbuild.exe Zydis.sln /m /t:Rebuild '/p:Configuration="Release Kernel";Platform=X64'
+
+  fuzzing:
+    runs-on: ubuntu-20.04
+    strategy:
+      fail-fast: false
+      matrix:
+        sanitizer: [address, undefined, memory]
+    steps:
+      - name: Build Fuzzers (${{ matrix.sanitizer }})
+        id: build
+        uses: google/oss-fuzz/infra/cifuzz/actions/build_fuzzers@master
+        with:
+          oss-fuzz-project-name: zydis
+          dry-run: false
+          sanitizer: ${{ matrix.sanitizer }}
+      - name: Run Fuzzers (${{ matrix.sanitizer }})
+        uses: google/oss-fuzz/infra/cifuzz/actions/run_fuzzers@master
+        with:
+          oss-fuzz-project-name: zydis
+          fuzz-seconds: 600
+          dry-run: false
+          sanitizer: ${{ matrix.sanitizer }}
+      - name: Upload Crash
+        uses: actions/upload-artifact@v1
+        if: failure() && steps.build.outcome == 'success'
+        with:
+          name: ${{ matrix.sanitizer }}-artifacts
+          path: ./out/artifacts
