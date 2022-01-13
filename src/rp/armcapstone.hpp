@@ -1,12 +1,13 @@
 // Axel '0vercl0k' Souchet - January 12 2022
 #pragma once
 
-#include "capstone.h"
 #include "disassenginewrapper.hpp"
+#include <capstone/capstone.h>
 
 class ArmCapstone : public DisassEngineWrapper {
 public:
-  explicit ArmCapstone(const uint32_t thumb_mode) : is_thumb(true) {
+  explicit ArmCapstone(const uint32_t thumb_mode)
+      : DisassEngineWrapper(), is_thumb(true) {
     cs_mode mode = CS_MODE_THUMB;
     if (thumb_mode == 0) {
       mode = CS_MODE_ARM;
@@ -17,14 +18,13 @@ public:
       RAISE_EXCEPTION("Apparently no support for ARM in capstone.lib");
     }
 
-    cs_option(m_handle, CS_OPT_DETAIL, CS_OPT_ON)
+    cs_option(m_handle, CS_OPT_DETAIL, CS_OPT_ON);
   }
 
   ~ArmCapstone() override { cs_close(&m_handle); }
   InstructionInformation disass(const uint8_t *data, uint64_t len,
                                 uint64_t vaddr,
                                 DisassEngineReturn &ret) override {
-
     if (len == 0) {
       len = 4;
     }

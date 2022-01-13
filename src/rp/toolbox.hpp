@@ -15,14 +15,14 @@ enum VerbosityLevel {
 };
 
 /**
- * \fn std::string verbosity_to_string(VerbosityLevel lvl)
+ * \fn std::string verbosity_to_string(const VerbosityLevel lvl)
  * \brief Convert a verbosity level in a string representation
  *
  * \param lvl: the verbosity level
  *
  * \return the string representation
  */
-std::string verbosity_to_string(VerbosityLevel lvl);
+std::string verbosity_to_string(const VerbosityLevel lvl);
 
 /**
  * \fn std::streampos get_file_size(std::ifstream &file)
@@ -35,7 +35,7 @@ std::string verbosity_to_string(VerbosityLevel lvl);
 std::streampos get_file_size(std::ifstream &file);
 
 /**
- * \fn std::vector<uint8_t> string_to_hex(const char* hex)
+ * \fn std::vector<uint8_t> string_to_hex(const std::string &hex)
  * \brief Enable a color in your shell
  *
  * \param hex: The string that represents your raw hex values -- for example
@@ -43,10 +43,10 @@ std::streampos get_file_size(std::ifstream &file);
  *
  * \return a vector that contains the converted bytes
  */
-std::vector<uint8_t> string_to_hex(const char *hex);
+std::vector<uint8_t> string_to_hex(const std::string &hex);
 
 /**
- * \fn bool is_matching(std::string &disass, const char* p)
+ * \fn bool is_matching(const std::string &disass, const char* p)
  * \brief Try to match a string with a pattern: in this pattern you can use the
  * special character '?' that represents anything
  *
@@ -55,10 +55,10 @@ std::vector<uint8_t> string_to_hex(const char *hex);
  *
  * \return true if the pattern matches with str, else false
  */
-bool is_matching(std::string &str, const char *p);
+bool is_matching(const std::string &str, const char *p);
 
 /**
- * \fn bool is_hex_char(char c)
+ * \fn bool is_hex_char(const char c)
  * \brief Is the character c is an hexadecimal character ?
  *
  * \param c: the character
@@ -68,25 +68,27 @@ bool is_matching(std::string &str, const char *p);
 bool is_hex_char(const char c);
 
 /**
- * \fn void only_unique_gadgets(std::multiset<std::shared_ptr<Gadget>,
- * Gadget::Sort> &list_gadgets, std::set<std::shared_ptr<Gadget>, Gadget::Sort>
- * &unique_gadgets) \brief It keeps only the unique gadgets
+ * \fn std::set<std::shared_ptr<Gadget>, Gadget::Sort>
+ * only_unique_gadgets(std::multiset<std::shared_ptr<Gadget>, Gadget::Sort>
+ * &list_gadgets)
+ * \brief It keeps only the unique gadgets
  *
  * \param list_gadgets: It is the gadget list with duplicates
  * \param unique_gadgets: The list of unique gadgets
  *
  */
-void only_unique_gadgets(
-    std::multiset<std::shared_ptr<Gadget>> &list_gadgets,
-    std::set<std::shared_ptr<Gadget>, Gadget::Sort> &unique_gadgets);
+std::set<std::shared_ptr<Gadget>, Gadget::Sort>
+only_unique_gadgets(std::multiset<std::shared_ptr<Gadget>> &list_gadgets);
 
 /**
- * \fn bool does_badbytes_filter_apply(uint64_t va, std::vector<uint8_t>
- * &badbytes) \brief Return true if va has a bad byte (taken from badbytes)
+ * \fn bool does_badbytes_filter_apply(const uint64_t va, const
+ * std::vector<uint8_t> &badbytes) \brief Return true if va has a bad byte
+ * (taken from badbytes)
  *
  * \param va: It is the VA to check
  * \param badbytes: The list of bytes you don't want in va
  *
  * \return true if va has at least one bad byte, else false
  */
-bool does_badbytes_filter_apply(uint64_t va, std::vector<uint8_t> &badbytes);
+bool does_badbytes_filter_apply(const uint64_t va,
+                                const std::vector<uint8_t> &badbytes);

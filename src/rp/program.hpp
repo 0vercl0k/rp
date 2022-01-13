@@ -37,7 +37,8 @@ public:
    *
    *  \param depth: Set the depth of the research (don't forget the ending
    * instruction doesn't count -- so if you want only ending instruction, depth
-   * = 0) \param gadgets: The gadgets found \param disass_engine_options:
+   * = 0)
+   * \param gadgets: The gadgets found \param disass_engine_options:
    * Options you want to pass to the disassembly engine
    *
    */
@@ -49,9 +50,10 @@ public:
    *  \brief Find hex values in the section of the program
    *
    *  \param hex_values: It is a pointer on where it can find the bytes to find
-   * in memory \param size: It is the size of the buffer hex_values
+   * in memory
+   * \param size: It is the size of the buffer hex_values
    */
-  void search_and_display(const uint8_t *hex_values, uint32_t size);
+  void search_and_display(const uint8_t *hex_values, const size_t size);
 
   /*!
    *  \brief Get the base address of the program

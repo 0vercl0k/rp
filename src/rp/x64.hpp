@@ -2,6 +2,8 @@
 #pragma once
 
 #include "cpu.hpp"
+#include "intelbeaengine.hpp"
+#include "ropsearch_algorithm.hpp"
 
 class x64 : public CPU {
 public:

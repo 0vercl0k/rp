@@ -8,6 +8,7 @@
 #include "rpexception.hpp"
 #include "section.hpp"
 #include "toolbox.hpp"
+#include <fmt/printf.h>
 #include <fstream>
 #include <iostream>
 #include <memory>
@@ -126,7 +127,7 @@ private:
    *
    *  \return The CPU type used in your binary file
    */
-  virtual CPU::E_CPU extract_information_from_binary(std::ifstream &file) {
+  virtual CPU::E_CPU extract_information_from_binary(std::ifstream &) {
     RAISE_EXCEPTION(
         "This method should not be called ; you're doing it wrong!");
     return CPU::CPU_UNKNOWN;

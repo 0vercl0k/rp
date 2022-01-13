@@ -35,16 +35,16 @@ public:
     return cpu;
   }
 
-  void display_information(const VerbosityLevel lvl) const {
+  void display_information(const VerbosityLevel lvl) const override {
     ExecutableFormat::display_information(lvl);
     std::cout << "PE Information:" << std::endl;
     m_pPELayout->display(lvl);
   }
 
-  std::string get_class_name() const { return "PE"; }
+  std::string get_class_name() const override { return "PE"; }
 
   std::vector<std::shared_ptr<Section>>
-  get_executables_section(std::ifstream &file) const {
+  get_executables_section(std::ifstream &file) const override {
     std::vector<std::shared_ptr<Section>> exec_sections;
 
     for (const auto &sectionheader : m_pPELayout->imgSectionHeaders) {
@@ -52,7 +52,7 @@ public:
         continue;
       }
 
-      auto &sec = std::make_shared<Section>(
+      auto sec = std::make_shared<Section>(
           sectionheader->get_name().c_str(), sectionheader->PointerToRawData,
           // in the PE, this field is a RVA, so we need to add it the image
           // base to have a VA
@@ -66,12 +66,12 @@ public:
     return exec_sections;
   }
 
+private:
   uint64_t get_image_base_address() const {
     return m_pPELayout->get_image_base_address();
   }
 
-private:
-  CPU::E_CPU extract_information_from_binary(std::ifstream &file) {
+  CPU::E_CPU extract_information_from_binary(std::ifstream &file) override {
     RP_IMAGE_DOS_HEADER imgDosHeader;
     RP_IMAGE_NT_HEADERS32 imgNtHeaders32;
     CPU::E_CPU cpu = CPU::CPU_UNKNOWN;
@@ -146,8 +146,9 @@ private:
 
   template <class T> void init_properly_PELayout() {
     m_pPELayout = std::make_shared<PELayout<T>>();
-    if (m_pPELayout == nullptr)
+    if (m_pPELayout == nullptr) {
       RAISE_EXCEPTION("m_PELayout allocation failed");
+    }
   }
 
   std::shared_ptr<PortableExecutableLayout> m_pPELayout;

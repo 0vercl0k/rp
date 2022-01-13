@@ -21,7 +21,7 @@ struct InstructionInformation {
   // BeaEngine fields
   uint32_t bea_branch_type = 0; // This is used by BeaEngine ; and this will
                                 // hold DISASM.Instruction.BranchType
-  uint64_t bea_addr_value = 0; // This is used by BeaEngine, DISASM.Instruction
+  uint64_t bea_addr_value = 0;  // This is used by BeaEngine, DISASM.Instruction
 };
 
 enum DisassEngineReturn { UnknownInstruction, OutOfBlock, AllRight };
@@ -32,6 +32,7 @@ public:
   DisassEngineWrapper &operator=(const DisassEngineWrapper &) = delete;
   DisassEngineWrapper(DisassEngineWrapper &&) = delete;
   DisassEngineWrapper &operator=(DisassEngineWrapper &&) = delete;
+  DisassEngineWrapper() = default;
   virtual ~DisassEngineWrapper() = default;
   virtual InstructionInformation disass(const uint8_t *data, uint64_t len,
                                         uint64_t vaddr,

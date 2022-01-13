@@ -1,7 +1,9 @@
 // Axel '0vercl0k' Souchet - January 12 2022
 #pragma once
 
-#include <boost/flyweight.hpp>
+// XXX:
+//#include <boost/flyweight.hpp>
+#include <fmt/printf.h>
 #include <string>
 #include <vector>
 
@@ -36,7 +38,7 @@ public:
    *
    *  \return the disassembly of the instruction
    */
-  const std::string &get_disassembly() const { return m_disass.get(); }
+  const std::string &get_disassembly() const { return m_disass; }
 
   void print_bytes() {
     for (size_t i = 0; i < m_size; ++i) {
@@ -46,9 +48,9 @@ public:
 
 private:
   std::vector<uint8_t> bytes;
-
-  boost::flyweight<std::string>
-      m_disass; /*!< the disassembly of the instruction */
+  // XXX
+  // boost::flyweight<std::string>
+  std::string m_disass; /*!< the disassembly of the instruction */
 
   uint32_t m_size; /*!< the size of the instruction */
 };

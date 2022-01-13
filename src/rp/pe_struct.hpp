@@ -288,7 +288,7 @@ struct RP_IMAGE_SECTION_HEADER {
   uint32_t Characteristics;
 
   std::string get_name() const {
-    uint8_t name_null_terminated[Name.size() + 1] = {};
+    uint8_t name_null_terminated[RP_IMAGE_SIZEOF_SHORT_NAME + 1] = {};
     // Yeah sometimes you don't have null byte after the name -- I try to be
     // clean
     memcpy(name_null_terminated, Name.data(), Name.size());

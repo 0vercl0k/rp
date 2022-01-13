@@ -2,6 +2,7 @@
 #pragma once
 
 #include "instruction.hpp"
+#include <fmt/printf.h>
 #include <list>
 #include <map>
 #include <memory>
@@ -44,7 +45,7 @@ public:
 
   void display_disassembly() const {
     for (const auto &i : m_instructions) {
-      std::cout << i->get_disassembly() << " ; ";
+      fmt::print("{} ; ", i->get_disassembly());
     }
   }
 
@@ -87,7 +88,13 @@ public:
    *  \brief Get the size of your gadget
    *  \return the size of the whole gadget
    */
-  std::vector<std::shared_ptr<Instruction>> get_instructions();
+  // XXX: wut?
+  std::vector<std::shared_ptr<Instruction>> get_instructions() {
+    std::vector<std::shared_ptr<Instruction>> instrs(m_instructions);
+    // We don't want the ending instruction in the list
+    instrs.pop_back();
+    return instrs;
+  }
 
   /*!
    *  \brief Get the first offset of this gadget (first offset because a gadget
@@ -132,13 +139,6 @@ public:
    *  \brief Get the ending instruction of this gadget
    *  \return a pointer on the ending instruction
    */
-  std::vector<std::shared_ptr<Instruction>> get_instructions() {
-    std::vector<std::shared_ptr<Instruction>> instrs(m_instructions);
-    // We don't want the ending instruction in the list
-    instrs.pop_back();
-    return instrs;
-  }
-
   std::shared_ptr<Instruction> get_ending_instruction() {
     return m_instructions.back();
   }

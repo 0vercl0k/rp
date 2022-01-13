@@ -120,7 +120,7 @@ void Program::find_gadgets(
   }
 }
 
-void Program::search_and_display(const uint8_t *hex_values, uint32_t size) {
+void Program::search_and_display(const uint8_t *hex_values, const size_t size) {
   const auto &executable_sections = m_exformat->get_executables_section(m_file);
   if (executable_sections.size() == 0) {
     fmt::print("It seems your binary haven't executable sections.\n");

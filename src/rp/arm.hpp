@@ -1,7 +1,9 @@
 // Axel '0vercl0k' Souchet - January 12 2022
 #pragma once
 
+#include "armcapstone.hpp"
 #include "cpu.hpp"
+#include "ropsearch_algorithm.hpp"
 #include <vector>
 
 class ARM : public CPU {

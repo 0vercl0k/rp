@@ -7,12 +7,12 @@
 class Macho : public ExecutableFormat {
 public:
   std::shared_ptr<CPU> get_cpu(std::ifstream &file) override {
-    std::shared_ptr<CPU> cpu(nullptr);
+    std::shared_ptr<CPU> cpu;
     RP_MACH_HEADER<x86Version> header32;
 
     std::cout << "Loading Mach-O information.." << std::endl;
 
-    /* Remember where the caller was in the file */
+    // Remember where the caller was in the file
     std::streampos off = file.tellg();
 
     file.seekg(0, std::ios::beg);
@@ -31,32 +31,28 @@ public:
       break;
     }
 
-    default:
+    default: {
       RAISE_EXCEPTION(
           "Cannot determine which architecture is used in this Mach-O file");
+    }
     }
 
     file.seekg(off);
 
-    if (cpu == nullptr)
+    if (cpu == nullptr) {
       RAISE_EXCEPTION("Cannot allocate cpu");
+    }
 
-    /* Now we can fill the structure */
+    // Now we can fill the structure
     m_MachoLayout->fill_structures(file);
-
     return cpu;
   }
 
-  std::string get_class_name() const { return "Mach-o"; }
+  std::string get_class_name() const override { return "Mach-o"; }
 
   std::vector<std::shared_ptr<Section>>
-  get_executables_section(std::ifstream &file) const {
+  get_executables_section(std::ifstream &file) const override {
     return m_MachoLayout->get_executable_section(file);
-  }
-
-  uint64_t raw_offset_to_va(const uint64_t absolute_raw_offset,
-                            const uint64_t absolute_raw_offset_section) const {
-    return 0;
   }
 
   void display_information(const VerbosityLevel lvl) const override {
@@ -73,7 +69,7 @@ private:
     m_MachoLayout = std::make_shared<MachoArchLayout<T>>();
   }
 
-  CPU::E_CPU extract_information_from_binary(std::ifstream &file) {
+  CPU::E_CPU extract_information_from_binary(std::ifstream &file) override {
     return CPU::CPU_UNKNOWN;
   }
 

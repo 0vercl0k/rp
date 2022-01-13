@@ -1,6 +1,8 @@
 // Axel '0vercl0k' Souchet - January 12 2022
 #pragma once
 
+#include "safeint.hpp"
+#include "toolbox.hpp"
 #include <fstream>
 #include <list>
 #include <string>
@@ -72,7 +74,7 @@ public:
    * sequence of bytes
    */
   std::list<uint64_t> search_in_memory(const uint8_t *val,
-                                       const uint32_t size) const {
+                                       const size_t size) const {
     std::list<uint64_t> val_found;
     for (uint64_t offset = 0; offset < m_size; ++offset) {
       if (std::memcmp(m_section.data() + offset, val, size) == 0) {
@@ -92,7 +94,7 @@ public:
     // NB: std::streampos performs unsigned check
     uint64_t fsize = get_file_size(file);
     if (SafeIntAdd(m_offset, m_size) > fsize) {
-      RAISE_EXCEPTION("Your file seems to be fucked up");
+      RAISE_EXCEPTION("Your file seems to be screwed up");
     }
 
     std::streampos backup = file.tellg();

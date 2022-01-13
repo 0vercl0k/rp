@@ -65,27 +65,30 @@ bool is_hex_char(const char c) {
           (c >= 'A' && c <= 'F'));
 }
 
-std::vector<uint8_t> string_to_hex(const char *hex) {
-  uint32_t len = uint32_t(std::strlen(hex)), i = 0;
+std::vector<uint8_t> string_to_hex(const std::string &hex) {
+  const size_t len = hex.size();
   std::vector<uint8_t> bytes;
-
   if (len == 0) {
     return bytes;
   }
 
-  while (i < len) {
+  for (size_t i = 0; i < len; i++) {
     uint8_t byte = 0;
-    if (hex[i] == '\\' && hex[i + 1] == 'x') {
-      if (is_hex_char(hex[i + 2]) && is_hex_char(hex[i + 3])) {
-        const char str_byte[3] = {hex[i + 2], hex[i + 3], 0};
-        byte = uint8_t(strtoul(str_byte, nullptr, 16));
-        i += 4;
-      } else {
+    if (hex[i] == '\\') {
+      if ((i + 3) >= len) {
         RAISE_EXCEPTION("Your hex values aren't formated correctly");
       }
+
+      const bool hex_chars = is_hex_char(hex[i + 2]) && is_hex_char(hex[i + 3]);
+      if (hex[i + 1] != 'x' || !hex_chars) {
+        RAISE_EXCEPTION("Your hex values aren't formated correctly");
+      }
+
+      const char str_byte[3] = {hex[i + 2], hex[i + 3], 0};
+      byte = uint8_t(strtoul(str_byte, nullptr, 16));
+      i += 3;
     } else {
       byte = hex[i];
-      i++;
     }
 
     bytes.push_back(byte);
@@ -94,23 +97,25 @@ std::vector<uint8_t> string_to_hex(const char *hex) {
   return bytes;
 }
 
-void only_unique_gadgets(
-    const std::multiset<std::shared_ptr<Gadget>> &list_gadgets,
-    std::set<std::shared_ptr<Gadget>, Gadget::Sort> &unique_gadgets) {
+std::set<std::shared_ptr<Gadget>, Gadget::Sort> only_unique_gadgets(
+    const std::multiset<std::shared_ptr<Gadget>> &list_gadgets) {
+  std::set<std::shared_ptr<Gadget>, Gadget::Sort> unique_gadgets;
   // Now we have a list of gadget, cool, but we want to keep only the unique!
   for (const auto &gadget : list_gadgets) {
-    auto g = unique_gadgets.insert(gadget);
-    // If a gadget, with the same disassembly, has already been found; just its
-    // offset in the existing one
-    if (g.second == false) {
-      // we have found the same gadget in memory, so we just store its offset &
-      // its va section maybe you can ask yourself 'Why do we store its va
+    const auto &[g, unique] = unique_gadgets.insert(gadget);
+    // If a gadget, with the same disassembly, has already been found; just
+    // its offset in the existing one
+    if (unique) {
+      // we have found the same gadget in memory, so we just store its offset
+      // & its va section maybe you can ask yourself 'Why do we store its va
       // section ?' and the answer is: because you can find the same gadget in
       // another executable sections!
-      (*g.first)->add_new_one(gadget->get_first_offset(),
-                              gadget->get_first_va_section());
+      (*g)->add_new_one(gadget->get_first_offset(),
+                        gadget->get_first_va_section());
     }
   }
+
+  return unique_gadgets;
 }
 
 bool does_badbytes_filter_apply(const uint64_t va,

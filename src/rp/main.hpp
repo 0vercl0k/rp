@@ -3,12 +3,6 @@
 
 #include "platform.h"
 
-// If you don't want any colors if your shell, you can disable it in
-// coloshell.hpp -- just comment the #define
-
-// it defines the maximum number of instruction per gadget
-const size_t MAXIMUM_INSTRUCTION_PER_GADGET = 20;
-
 #define NUM_V "2.0"
 
 #ifdef ARCH_X64

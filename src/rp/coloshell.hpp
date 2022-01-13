@@ -8,8 +8,9 @@
 #include <iostream>
 
 #ifdef WINDOWS
-#include <fileapi.h>
 #include <windows.h>
+
+#include <fileapi.h>
 #else
 #include <unistd.h>
 #endif

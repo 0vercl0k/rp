@@ -2,8 +2,10 @@
 #pragma once
 
 #define BEA_ENGINE_STATIC
-#include "beaengine/BeaEngine.h"
 #include "disassenginewrapper.hpp"
+#include "x64.hpp"
+#include "x86.hpp"
+#include <beaengine/BeaEngine.h>
 
 class IntelBeaEngine : public DisassEngineWrapper {
 public:
@@ -124,5 +126,5 @@ public:
 
 private:
   uint32_t m_arch = 0; /*!< architecture the BeaEngine will use to disassemble*/
-  DISASM m_disasm = {}
+  DISASM m_disasm = {};
 };
