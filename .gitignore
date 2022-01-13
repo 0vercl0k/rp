@@ -1,0 +1,8 @@
+.idea
+headers/libBeaEngine.so
+**.pyc
+lib
+bin
+build
+doc/*.pdf
+.vscode
