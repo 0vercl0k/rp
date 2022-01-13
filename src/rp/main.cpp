@@ -4,10 +4,10 @@
 #include "coloshell.hpp"
 #include "program.hpp"
 #include "toolbox.hpp"
-
 #include <cstdlib>
 #include <cstring>
 #include <exception>
+#include <fmt/printf.h>
 #include <iostream>
 
 int main(int argc, char *argv[]) {
@@ -48,48 +48,46 @@ int main(int argc, char *argv[]) {
   void *argtable[]{file,    display, rop, raw,      unique, shexa, sint, help,
                    version, colors,  va,  badbytes, thumb,  maxth, end};
 
-  if (arg_nullcheck(argtable) != 0)
+  if (arg_nullcheck(argtable) != 0) {
     RAISE_EXCEPTION("Cannot allocate long option structures");
+  }
 
-  int nerrors = arg_parse(argc, argv, argtable);
+  const int nerrors = arg_parse(argc, argv, argtable);
   if (nerrors > 0) {
     arg_print_errors(stdout, end, "rp++");
-    std::cout << "Try './rp++ --help' for more information." << std::endl;
+    fmt::print("Try './rp++ --help' for more information.\n");
     return -1;
   }
 
-  if (colors->count > 0)
+  if (colors->count > 0) {
     g_colors_desired = true;
+  }
 
   try {
     if (help->count > 0 || argc == 1) {
       w_yel_lf("DESCRIPTION:");
       w_red("rp++");
-      std::cout << " allows you to find ROP gadgets in pe/elf/mach-o "
-                   "x86/x64/ARM binaries."
-                << std::endl;
-      std::cout << "NB: The original idea comes from (@jonathansalwan) and his "
-                   "'ROPGadget' tool."
-                << std::endl
-                << std::endl;
+      fmt::print(" allows you to find ROP gadgets in pe/elf/mach-o "
+                 "x86/x64/ARM binaries.\n\n");
 
       w_yel_lf("USAGE:");
-      std::cout << "./rp++";
+      fmt::print("./rp++");
       arg_print_syntax(stdout, argtable, "\n");
 
-      std::cout << std::endl;
+      fmt::print("\n");
       w_yel_lf("OPTIONS:");
       arg_print_glossary(stdout, argtable, "  %-25s %s\n");
     }
 
-    if (version->count > 0)
-      std::cout << "You are currently using the version " << VERSION
-                << " of rp++." << std::endl;
+    if (version->count > 0) {
+      fmt::print("You are currently using the version {} of rp++.\n", VERSION);
+    }
 
-    /* If we've asked the help or version option, we assume the program is
-     * terminated */
-    if (version->count > 0 || help->count > 0)
+    // If we've asked the help or version option, we assume the program is
+    // terminated
+    if (version->count > 0 || help->count > 0) {
       return 0;
+    }
 
     if (file->count > 0) {
       std::string program_path(file->filename[0]);
@@ -98,15 +96,16 @@ int main(int argc, char *argv[]) {
       if (raw->count > 0) {
         const char *architecture = raw->sval[0];
 
-        if (std::strcmp(architecture, "x86") == 0)
+        if (std::strcmp(architecture, "x86") == 0) {
           arch = CPU::CPU_x86;
-        else if (std::strcmp(architecture, "x64") == 0)
+        } else if (std::strcmp(architecture, "x64") == 0) {
           arch = CPU::CPU_x64;
-        else if (std::strcmp(architecture, "arm") == 0)
+        } else if (std::strcmp(architecture, "arm") == 0) {
           arch = CPU::CPU_ARM;
-        else
+        } else {
           RAISE_EXCEPTION(
               "You must use an architecture supported, read the help");
+        }
       }
 
       Program p(program_path, arch);
@@ -120,27 +119,20 @@ int main(int argc, char *argv[]) {
       }
 
       if (rop->count > 0) {
-        if (rop->ival[0] < 0)
+        if (rop->ival[0] < 0) {
           rop->ival[0] = 0;
+        }
 
-        if (rop->ival[0] > MAXIMUM_INSTRUCTION_PER_GADGET)
+        if (rop->ival[0] > MAXIMUM_INSTRUCTION_PER_GADGET) {
           RAISE_EXCEPTION("You specified a maximum number of instruction too "
                           "important for the --rop option");
+        }
 
-        uint32_t options = 0;
-        if (thumb->count > 0)
-          options = 1;
+        const uint32_t options = thumb->count > 0 ? 1 : 0;
+        const size_t n_max_thread = maxth->count > 0 ? atoi(maxth->sval[0]) : 2;
 
-        size_t n_max_thread = 2;
-        if (maxth->count > 0)
-          n_max_thread = atoi(maxth->sval[0]);
-
-        if (n_max_thread == 0)
-          n_max_thread = 2;
-
-        std::cout << std::endl
-                  << "Wait a few seconds, rp++ is looking for gadgets ("
-                  << n_max_thread << " threads max).." << std::endl;
+        fmt::print("\nWait a few seconds, rp++ is looking for gadgets ({} "
+                   "threads max)..\n");
         std::multiset<std::shared_ptr<Gadget>> all_gadgets;
         p.find_gadgets(rop->ival[0], all_gadgets, options, n_max_thread);
 
@@ -153,55 +145,54 @@ int main(int argc, char *argv[]) {
           // only offsets
           base = p.get_image_base_address();
           // And we will use your new base address
-          new_base = strtoul(va->sval[0], nullptr,
-                             16); // XXX: Only valid with VS2k13
-                                  // strtoull(rva->sval[0], NULL, 16);
+          new_base = strtoull(va->sval[0], nullptr, 16);
         }
 
-        std::cout << "A total of " << all_gadgets.size() << " gadgets found."
-                  << std::endl;
+        fmt::print("A total of {} gadgets found.\n", all_gadgets.size());
         std::vector<uint8_t> badbyte_list;
-        if (badbytes->count > 0)
+        if (badbytes->count > 0) {
           badbyte_list = string_to_hex(badbytes->sval[0]);
+        }
 
         uint64_t nb_gadgets_filtered = 0;
         if (unique->count > 0) {
           std::set<std::shared_ptr<Gadget>, Gadget::Sort> unique_gadgets;
           only_unique_gadgets(all_gadgets, unique_gadgets);
 
-          std::cout << "You decided to keep only the unique ones, "
-                    << unique_gadgets.size() << " unique gadgets found."
-                    << std::endl;
+          fmt::print("You decided to keep only the unique ones, {}  unique "
+                     "gadgets found.\n",
+                     unique_gadgets.size());
 
-          /* Now we walk the gadgets found and set the VA */
-          for (const auto &unique_gadget : unique_gadgets)
+          // Now we walk the gadgets found and set the VA
+          for (const auto &unique_gadget : unique_gadgets) {
             display_gadget_lf(unique_gadget->get_first_absolute_address(),
                               unique_gadget);
+          }
         } else {
-          for (const auto &gadget : all_gadgets)
+          for (const auto &gadget : all_gadgets) {
             display_gadget_lf(gadget->get_first_absolute_address(), gadget);
+          }
         }
 
-        if (badbytes->count > 0)
-          std::cout << std::endl
-                    << nb_gadgets_filtered
-                    << " gadgets have been filtered because of your bad-bytes."
-                    << std::endl;
+        if (badbytes->count > 0) {
+          fmt::print(
+              "\n{} gadgets have been filtered because of your bad-bytes.\n");
+        }
       }
 
       if (shexa->count > 0) {
-        std::vector<uint8_t> hex_values = string_to_hex(shexa->sval[0]);
+        const std::vector<uint8_t> &hex_values = string_to_hex(shexa->sval[0]);
         p.search_and_display(hex_values.data(), (uint32_t)hex_values.size());
       }
 
       if (sint->count > 0) {
-        uint32_t val = std::strtoul(sint->sval[0], nullptr, 16);
-        p.search_and_display((const uint8_t *)&val, sizeof(uint32_t));
+        const uint32_t val = std::strtoul(sint->sval[0], nullptr, 16);
+        p.search_and_display((const uint8_t *)&val, sizeof(val));
       }
     }
   } catch (const std::exception &e) {
     enable_color(COLO_RED);
-    std::cout << e.what() << std::endl;
+    fmt::print("{}\n", e.what());
     disable_color();
   }
 

@@ -30,7 +30,8 @@ public:
    *  \param size: It is the size of the section
    */
   Section(const char *name, const uint64_t offset, const uint64_t vaddr,
-          const uint64_t size);
+          const uint64_t size)
+      : m_name(name), m_offset(offset), m_size(size), m_vaddr(vaddr) {}
 
   /*!
    *  \brief Get the name of the section
@@ -71,12 +72,13 @@ public:
    * sequence of bytes
    */
   std::list<uint64_t> search_in_memory(const uint8_t *val,
-                                       const uint32_t size) {
+                                       const uint32_t size) const {
     std::list<uint64_t> val_found;
-
-    for (uint64_t offset = 0; offset < m_size; ++offset)
-      if (std::memcmp(m_section.data() + offset, val, size) == 0)
+    for (uint64_t offset = 0; offset < m_size; ++offset) {
+      if (std::memcmp(m_section.data() + offset, val, size) == 0) {
         val_found.push_back(offset);
+      }
+    }
 
     return val_found;
   }
@@ -87,10 +89,11 @@ public:
    *  \param file: The file
    */
   void dump(std::ifstream &file) {
-    // NB: std::streampos performs unsigned check */
+    // NB: std::streampos performs unsigned check
     uint64_t fsize = get_file_size(file);
-    if (SafeIntAdd(m_offset, m_size) > fsize)
+    if (SafeIntAdd(m_offset, m_size) > fsize) {
       RAISE_EXCEPTION("Your file seems to be fucked up");
+    }
 
     std::streampos backup = file.tellg();
 

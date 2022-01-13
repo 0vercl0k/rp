@@ -5,24 +5,20 @@
 #include "platform.h"
 #include "rpexception.hpp"
 #include "toolbox.hpp"
+#include <array>
+#include <cstdint>
 #include <cstring>
 #include <fstream>
 #include <iomanip>
 #include <iostream>
 #include <vector>
 
-/* Information extracted from winnt.h ; a bit of template-kung-fu and here it
- * goes ! */
-
-//
-// Calculate the byte offset of a field in a structure of type type.
-//
-
+// Calculate the byte offset of a field in a structure of type |type|.
 #define RP_FIELD_OFFSET(type, field)                                           \
   ((uint32_t)(uintptr_t) & (((type *)0)->field))
 
-#define RP_IMAGE_DOS_SIGNATURE 0x5A4D    // MZ
-#define RP_IMAGE_NT_SIGNATURE 0x00004550 // PE00
+const uint16_t RP_IMAGE_DOS_SIGNATURE = 0x5A4D;    // MZ
+const uint32_t RP_IMAGE_NT_SIGNATURE = 0x00004550; // PE00
 
 #ifdef WINDOWS
 #pragma pack(push)
@@ -75,11 +71,10 @@ __attribute__((packed))
 #endif
 ;
 
-#define RP_IMAGE_NT_OPTIONAL_HDR32_MAGIC 0x10b
-#define RP_IMAGE_NT_OPTIONAL_HDR64_MAGIC 0x20b
-
-#define RP_IMAGE_FILE_MACHINE_I386 0x14c
-#define RP_IMAGE_FILE_MACHINE_ARMTHUMB2LE 0x1c4
+const uint16_t RP_IMAGE_NT_OPTIONAL_HDR32_MAGIC = 0x10b;
+const uint16_t RP_IMAGE_NT_OPTIONAL_HDR64_MAGIC = 0x20b;
+const uint16_t RP_IMAGE_FILE_MACHINE_I386 = 0x14c;
+const uint16_t RP_IMAGE_FILE_MACHINE_ARMTHUMB2LE = 0x1c4;
 
 struct RP_IMAGE_FILE_HEADER {
   uint16_t Machine;
@@ -90,9 +85,7 @@ struct RP_IMAGE_FILE_HEADER {
   uint16_t SizeOfOptionalHeader;
   uint16_t Characteristics;
 
-  uint16_t get_size_of_optionnal_header(void) const {
-    return SizeOfOptionalHeader;
-  }
+  uint16_t get_size_of_optionnal_header() const { return SizeOfOptionalHeader; }
 
   void display(VerbosityLevel lvl = VERBOSE_LEVEL_1) const {
     w_yel_lf("-> IMAGE_FILE_HEADER:");
@@ -127,14 +120,14 @@ __attribute__((packed))
 #endif
 ;
 
-#define RP_IMAGE_NUMBEROF_DIRECTORY_ENTRIES 16
+const uint32_t RP_IMAGE_NUMBEROF_DIRECTORY_ENTRIES = 16;
 
 //
 // Optional header format.
 //
 
-#define RP_IMAGE_DLL_CHARACTERISTICS_DYNAMIC_BASE 0x40
-#define RP_IMAGE_DLL_CHARACTERISTICS_NX_COMPAT 0x100
+const uint16_t RP_IMAGE_DLL_CHARACTERISTICS_DYNAMIC_BASE = 0x40;
+const uint16_t RP_IMAGE_DLL_CHARACTERISTICS_NX_COMPAT = 0x100;
 
 template <class T> struct RP_IMAGE_OPTIONAL_HEADER {};
 
@@ -276,8 +269,8 @@ using RP_IMAGE_OPTIONAL_HEADER64 = RP_IMAGE_OPTIONAL_HEADER<x64Version>;
 // Section header format.
 //
 
-#define RP_IMAGE_SIZEOF_SHORT_NAME 8
-#define RP_IMAGE_SCN_MEM_EXECUTE 0x00000020
+const uint32_t RP_IMAGE_SCN_MEM_EXECUTE = 0x00000020;
+const uint32_t RP_IMAGE_SIZEOF_SHORT_NAME = 8;
 
 struct RP_IMAGE_SECTION_HEADER {
   std::array<uint8_t, RP_IMAGE_SIZEOF_SHORT_NAME> Name;
@@ -294,14 +287,11 @@ struct RP_IMAGE_SECTION_HEADER {
   uint16_t NumberOfLinenumbers;
   uint32_t Characteristics;
 
-  explicit RP_IMAGE_SECTION_HEADER() {}
-
-  std::string get_name(void) const {
-    uint8_t name_null_terminated[RP_IMAGE_SIZEOF_SHORT_NAME + 1]{0};
-    /* Yeah sometimes you don't have null byte after the name -- I try to be
-     * clean */
-    memcpy(name_null_terminated, Name.data(),
-           RP_IMAGE_SIZEOF_SHORT_NAME * sizeof(uint8_t));
+  std::string get_name() const {
+    uint8_t name_null_terminated[Name.size() + 1] = {};
+    // Yeah sometimes you don't have null byte after the name -- I try to be
+    // clean
+    memcpy(name_null_terminated, Name.data(), Name.size());
 
     return std::string((char *)name_null_terminated);
   }
@@ -329,20 +319,18 @@ template <class T> struct RP_IMAGE_NT_HEADERS {
   RP_IMAGE_FILE_HEADER FileHeader;
   RP_IMAGE_OPTIONAL_HEADER<T> OptionalHeader;
 
-  /* Keep in mind this offset is relative to the NT Header !
-   * So if you want the PA of the first section: get_offset_first_section() +
-   * IMAGE_DOS_HEADER.e_lfanew
-   */
+  // Keep in mind this offset is relative to the NT Header! So if you want the
+  // PA of the first section: get_offset_first_section() +
+  // IMAGE_DOS_HEADER.e_lfanew
   uintptr_t get_offset_first_section() const {
-    return (uintptr_t)(RP_FIELD_OFFSET(RP_IMAGE_NT_HEADERS<T>, OptionalHeader) +
-                       FileHeader.SizeOfOptionalHeader);
+    return uintptr_t(RP_FIELD_OFFSET(RP_IMAGE_NT_HEADERS<T>, OptionalHeader) +
+                     FileHeader.SizeOfOptionalHeader);
   }
 
   void display(VerbosityLevel lvl = VERBOSE_LEVEL_1) const {
     w_yel_lf("-> IMAGE_NT_HEADERS:");
 
     if (lvl > VERBOSE_LEVEL_1) {
-      /* Yeah. I know I'm not supposed to do that this way */
       if (FileHeader.get_size_of_optionnal_header() >= sizeof(OptionalHeader))
         OptionalHeader.display(lvl);
     }
@@ -374,24 +362,24 @@ struct PortableExecutableLayout {
     imgDosHeader.display(lvl);
   }
 
-  uint32_t get_image_dos_header_size(void) const {
+  uint32_t get_image_dos_header_size() const {
     return sizeof(RP_IMAGE_DOS_HEADER);
   }
 
-  uint32_t get_image_section_header_size(void) const {
+  uint32_t get_image_section_header_size() const {
     return sizeof(RP_IMAGE_SECTION_HEADER);
   }
 
-  virtual uint32_t get_nt_headers_size(void) const = 0;
+  virtual uint32_t get_nt_headers_size() const = 0;
   virtual void fill_nt_structures(std::ifstream &file) = 0;
-  virtual uint64_t get_image_base_address(void) const = 0;
+  virtual uint64_t get_image_base_address() const = 0;
 };
 
 /* Some magic..and ABSTRACTION */
 template <class T> struct PELayout : public PortableExecutableLayout {
   RP_IMAGE_NT_HEADERS<T> imgNtHeaders;
 
-  uint32_t get_nt_headers_size(void) const override {
+  uint32_t get_nt_headers_size() const override {
     return sizeof(RP_IMAGE_NT_HEADERS<T>);
   }
 
@@ -405,20 +393,19 @@ template <class T> struct PELayout : public PortableExecutableLayout {
   }
 
   void fill_nt_structures(std::ifstream &file) override {
-    /* Remember where the caller was in the file */
+    // Remember where the caller was in the file
     std::streampos off = file.tellg();
 
     file.seekg(imgDosHeader.e_lfanew, std::ios::beg);
     file.read((char *)&imgNtHeaders, get_nt_headers_size());
 
     file.seekg(imgDosHeader.e_lfanew, std::ios::beg);
-    /* This offset is relative to the NT Header, do not forget to move the file
-     * pointer on it */
+    // This offset is relative to the NT Header, do not forget to move the file
+    // pointer on it
     file.seekg(imgNtHeaders.get_offset_first_section(), std::ios::cur);
 
     for (uint32_t i = 0; i < imgNtHeaders.FileHeader.NumberOfSections; ++i) {
-      std::shared_ptr<RP_IMAGE_SECTION_HEADER> pImgSectionHeader =
-          std::make_shared<RP_IMAGE_SECTION_HEADER>();
+      auto &pImgSectionHeader = std::make_shared<RP_IMAGE_SECTION_HEADER>();
 
       file.read((char *)pImgSectionHeader.get(),
                 get_image_section_header_size());
@@ -428,7 +415,7 @@ template <class T> struct PELayout : public PortableExecutableLayout {
     file.seekg(off);
   }
 
-  uint64_t get_image_base_address(void) const override {
+  uint64_t get_image_base_address() const override {
     return imgNtHeaders.OptionalHeader.ImageBase;
   }
 };

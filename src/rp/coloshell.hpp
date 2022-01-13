@@ -3,6 +3,7 @@
 
 #include "platform.h"
 #include "rpexception.hpp"
+#include <fmt/printf.h>
 #include <iomanip>
 #include <iostream>
 
@@ -15,8 +16,8 @@
 
 extern bool g_colors_desired;
 
-/* Here you will find all you need to display the data in a cute way on a
- * windows/unix terminal */
+// Here you will find all you need to display the data in a cute way on a
+// windows/unix terminal
 
 #ifdef WINDOWS
 enum Colors {
@@ -37,13 +38,16 @@ enum Colors { COLO_RED = 0, COLO_GREEN = 1, COLO_YELLOW = 2, COLO_DEFAULT = 3 };
  * example, if stdout is redirected to a file then the output won't be colored.
  */
 #ifdef WINDOWS
-#define should_emit_color()                                                    \
-  (GetFileType(GetStdHandle(STD_OUTPUT_HANDLE)) == FILE_TYPE_CHAR)
+inline bool should_emit_color() {
+  return GetFileType(GetStdHandle(STD_OUTPUT_HANDLE)) == FILE_TYPE_CHAR;
+}
 #else
-#define should_emit_color() (isatty(STDOUT_FILENO))
+inline bool should_emit_color() { return isatty(STDOUT_FILENO); }
 #endif
 
-#define g_are_colors_enabled() (g_colors_desired && should_emit_color())
+inline bool g_are_colors_enabled() {
+  return g_colors_desired && should_emit_color();
+}
 
 /**
  * \fn static void enable_color_(const Colors colo)
@@ -54,8 +58,9 @@ enum Colors { COLO_RED = 0, COLO_GREEN = 1, COLO_YELLOW = 2, COLO_DEFAULT = 3 };
 static inline void enable_color_(const Colors colo) {
 #ifdef WINDOWS
   HANDLE hStdOutput = GetStdHandle(STD_OUTPUT_HANDLE);
-  if (hStdOutput == INVALID_HANDLE_VALUE)
+  if (hStdOutput == INVALID_HANDLE_VALUE) {
     RAISE_EXCEPTION("Cannot find a STD_OUTPUT_HANDLE valid value");
+  }
 
   SetConsoleTextAttribute(hStdOutput, uint16_t(colo));
 #else
@@ -71,19 +76,23 @@ static inline void enable_color_(const Colors colo) {
  * \param colo: the color you want to activate
  */
 static inline void enable_color(const Colors colo) {
-  if (g_are_colors_enabled())
-    enable_color_(colo);
+  if (!g_are_colors_enabled()) {
+    return;
+  }
+
+  enable_color_(colo);
 }
 
 /**
  * \fn static void disable_color_(const Colors colo)
  * \brief Unset the color you have previously set
  */
-static void disable_color_(void) {
+static void disable_color_() {
 #ifdef WINDOWS
   HANDLE hStdOutput = GetStdHandle(STD_OUTPUT_HANDLE);
-  if (hStdOutput == INVALID_HANDLE_VALUE)
+  if (hStdOutput == INVALID_HANDLE_VALUE) {
     RAISE_EXCEPTION("Cannot find a STD_OUTPUT_HANDLE valid value");
+  }
 
   SetConsoleTextAttribute(hStdOutput, COLO_DEFAULT);
 #else
@@ -96,9 +105,12 @@ static void disable_color_(void) {
  * \fn static void disable_color_(const Colors colo)
  * \brief Unset the color you have previously set
  */
-static inline void disable_color(void) {
-  if (g_are_colors_enabled())
-    disable_color_();
+static inline void disable_color() {
+  if (!g_are_colors_enabled()) {
+    return;
+  }
+
+  disable_color_();
 }
 
 /**
@@ -110,7 +122,7 @@ static inline void disable_color(void) {
  */
 template <class T> static void coloshell(const T t, const Colors colo) {
   enable_color(colo);
-  std::cout << t;
+  fmt::print("{}", t);
   disable_color();
 }
 
@@ -150,7 +162,7 @@ template <class T> static void coloshell(const T t, const Colors colo) {
 #define w_red_lf(text)                                                         \
   {                                                                            \
     w_red(text);                                                               \
-    std::cout << std::endl;                                                    \
+    fmt::print("\n");                                                          \
   }
 
 /**
@@ -162,7 +174,7 @@ template <class T> static void coloshell(const T t, const Colors colo) {
 #define w_yel_lf(text)                                                         \
   {                                                                            \
     w_yel(text);                                                               \
-    std::cout << std::endl;                                                    \
+    fmt::print("\n");                                                          \
   }
 
 /**
@@ -174,7 +186,7 @@ template <class T> static void coloshell(const T t, const Colors colo) {
 #define w_gre_lf(text)                                                         \
   {                                                                            \
     w_gre_lf(text);                                                            \
-    std::cout << std::endl;                                                    \
+    fmt::print("\n");                                                          \
   }
 
 /**
@@ -204,7 +216,7 @@ template <class T> static void coloshell(const T t, const Colors colo) {
 #define display_hex_field_lf(field)                                            \
   {                                                                            \
     display_hex_field(field, 25);                                              \
-    std::cout << std::endl;                                                    \
+    fmt::print("\n");                                                          \
   }
 
 /**
@@ -218,7 +230,7 @@ template <class T> static void coloshell(const T t, const Colors colo) {
   {                                                                            \
     display_hex_field(field1, 25);                                             \
     display_hex_field(field2, 25);                                             \
-    std::cout << std::endl;                                                    \
+    fmt::print("\n");                                                          \
   }
 
 /**
@@ -239,7 +251,7 @@ template <class T> static void coloshell(const T t, const Colors colo) {
 #define display_short_hex_field_lf(field)                                      \
   {                                                                            \
     display_short_hex_field(field);                                            \
-    std::cout << std::endl;                                                    \
+    fmt::print("\n");                                                          \
   }
 
 /**
@@ -253,7 +265,7 @@ template <class T> static void coloshell(const T t, const Colors colo) {
   {                                                                            \
     display_short_hex_field(field1);                                           \
     display_short_hex_field(field2);                                           \
-    std::cout << std::endl;                                                    \
+    fmt::print("\n");                                                          \
   }
 
 /**
@@ -280,7 +292,7 @@ template <class T> static void coloshell(const T t, const Colors colo) {
 #define display_string_lf(field_name, field)                                   \
   {                                                                            \
     display_string(field_name, field);                                         \
-    std::cout << std::endl;                                                    \
+    fmt::print("\n");                                                          \
   }
 
 /**
@@ -296,7 +308,7 @@ template <class T> static void coloshell(const T t, const Colors colo) {
   {                                                                            \
     display_string(field_name1, field1);                                       \
     display_string(field_name2, field2);                                       \
-    std::cout << std::endl;                                                    \
+    fmt::print("\n");                                                          \
   }
 
 /**
@@ -314,13 +326,12 @@ template <class T> static void coloshell(const T t, const Colors colo) {
                 << std::setfill('0');                                          \
       std::cout << std::hex << ((va - base) + new_base);                       \
       disable_color();                                                         \
-      std::cout << ": ";                                                       \
+      fmt::print(": ");                                                        \
       enable_color(COLO_GREEN);                                                \
       (gadget)->display_disassembly();                                         \
-      std::cout << " ";                                                        \
+      fmt::print(" ");                                                         \
       (gadget)->print_bytes();                                                 \
-      std::cout << " (" << std::dec << (gadget)->get_nb() << " found)"         \
-                << std::endl;                                                  \
+      fmt::print(" ({} found)\n", (gadget)->get_nb());                         \
       disable_color();                                                         \
     } else                                                                     \
       nb_gadgets_filtered++;                                                   \
@@ -341,7 +352,7 @@ template <class T> static void coloshell(const T t, const Colors colo) {
               << std::setfill('0');                                            \
     std::cout << std::hex << va;                                               \
     disable_color();                                                           \
-    std::cout << ": ";                                                         \
+    fmt::print(": ");                                                          \
     enable_color(COLO_GREEN);                                                  \
     for (uint32_t i = 0; i < size; ++i) {                                      \
       if (isprint(hex_val[i]))                                                 \
@@ -352,6 +363,6 @@ template <class T> static void coloshell(const T t, const Colors colo) {
                   << std::hex << b;                                            \
       }                                                                        \
     }                                                                          \
-    std::cout << std::endl;                                                    \
+    fmt::print("\n");                                                          \
     disable_color();                                                           \
   }

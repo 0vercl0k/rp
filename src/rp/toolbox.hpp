@@ -65,7 +65,7 @@ bool is_matching(std::string &str, const char *p);
  *
  * \return true if the character is an hexadecimal char, else false
  */
-bool is_hex_char(char c);
+bool is_hex_char(const char c);
 
 /**
  * \fn void only_unique_gadgets(std::multiset<std::shared_ptr<Gadget>,
@@ -90,5 +90,3 @@ void only_unique_gadgets(
  * \return true if va has at least one bad byte, else false
  */
 bool does_badbytes_filter_apply(uint64_t va, std::vector<uint8_t> &badbytes);
-
-#endif

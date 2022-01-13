@@ -5,7 +5,7 @@
 
 class x64 : public CPU {
 public:
-  std::string get_class_name() const;
+  std::string get_class_name() const { return "x64"; }
 
   void find_gadget_in_memory(const uint8_t *p_memory, const uint64_t size,
                              const uint64_t vaddr, const uint32_t depth,

@@ -24,15 +24,13 @@ public:
   explicit Program(const std::string &program_path,
                    CPU::E_CPU arch = CPU::CPU_UNKNOWN);
 
-  ~Program(void);
-
   /*!
    *  \brief Display information concerning the executable format (section
    * address, entry point, stuff like that)
    *
    *  \param lvl: Set the verbosity level you want
    */
-  void display_information(VerbosityLevel lvl = VERBOSE_LEVEL_1);
+  void display_information(const VerbosityLevel lvl = VERBOSE_LEVEL_1);
 
   /*!
    *  \brief Find all the rop gadgets
@@ -60,7 +58,7 @@ public:
    *
    *  \return size: Base address of the program
    */
-  uint64_t get_image_base_address(void);
+  uint64_t get_image_base_address();
 
 private:
   std::shared_ptr<CPU> m_cpu; /*!< a pointer on the CPU used by your program*/

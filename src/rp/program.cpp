@@ -9,6 +9,7 @@
 #include "toolbox.hpp"
 #include "x64.hpp"
 #include "x86.hpp"
+#include <fmt/printf.h>
 #include <future>
 #include <iostream>
 #include <map>
@@ -17,76 +18,76 @@
 #include <sstream>
 #include <thread>
 
-Program::Program(const std::string &program_path, CPU::E_CPU arch)
-    : m_cpu(nullptr), m_exformat(nullptr) {
+Program::Program(const std::string &program_path, CPU::E_CPU arch) {
   uint32_t magic_dword = 0;
 
-  std::cout << "Trying to open '" << program_path << "'.." << std::endl;
+  fmt::print("Trying to open '{}'..\n", program_path);
   m_file.open(program_path.c_str(), std::ios::binary);
-  if (m_file.is_open() == false)
+  if (!m_file.is_open()) {
     RAISE_EXCEPTION("Cannot open the file");
+  }
 
-  /* If we know the CPU in the constructor, it is a raw file */
   if (arch != CPU::CPU_UNKNOWN) {
+    // If we know the CPU in the constructor, it is a raw file
     m_exformat = std::make_shared<Raw>();
 
     switch (arch) {
-    case CPU::CPU_x86:
+    case CPU::CPU_x86: {
       m_cpu = std::make_shared<x86>();
       break;
+    }
 
-    case CPU::CPU_x64:
+    case CPU::CPU_x64: {
       m_cpu = std::make_shared<x64>();
       break;
+    }
 
-    case CPU::CPU_ARM:
+    case CPU::CPU_ARM: {
       m_cpu = std::make_shared<ARM>();
       break;
+    }
 
-    default:
+    default: {
       RAISE_EXCEPTION("Don't know your architecture");
     }
-  }
-  /* This isn't a raw file, we have to determine the executable format and the
-     cpu */
-  else {
+    }
+  } else {
+    // This isn't a raw file, we have to determine the executable format and the
+    // cpu
     m_file.read((char *)&magic_dword, sizeof(magic_dword));
 
     m_exformat = ExecutableFormat::GetExecutableFormat(magic_dword);
-    if (m_exformat == nullptr)
+    if (m_exformat == nullptr) {
       RAISE_EXCEPTION("GetExecutableFormat fails");
+    }
 
     m_cpu = m_exformat->get_cpu(m_file);
-    if (m_cpu == nullptr)
+    if (m_cpu == nullptr) {
       RAISE_EXCEPTION("get_cpu fails");
+    }
   }
 
-  std::cout << "FileFormat: " << m_exformat->get_class_name()
-            << ", Arch: " << m_cpu->get_class_name() << std::endl;
+  fmt::print("FileFormat: {}, Arch: {}\n", m_exformat->get_class_name(),
+             m_cpu->get_class_name());
 }
 
-Program::~Program(void) {
-  if (m_file.is_open())
-    m_file.close();
-}
-
-void Program::display_information(VerbosityLevel lvl) {
+void Program::display_information(const VerbosityLevel lvl) {
   m_exformat->display_information(lvl);
 }
 
 void Program::find_gadgets(
     uint32_t depth, std::multiset<std::shared_ptr<Gadget>> &gadgets_found,
     uint32_t disass_engine_options, size_t n_max_thread) {
-  /* To do a ROP gadget research, we need to know the executable section */
-  std::vector<std::shared_ptr<Section>> executable_sections =
-      m_exformat->get_executables_section(m_file);
-  if (executable_sections.size() == 0)
-    std::cout << "It seems your binary haven't executable sections."
-              << std::endl;
+  // To do a ROP gadget research, we need to know the executable section
+  const auto &executable_sections = m_exformat->get_executables_section(m_file);
+  if (executable_sections.size() == 0) {
+    fmt::print("It seems your binary haven't executable sections.\n");
+  }
 
   std::queue<std::shared_ptr<Section>> jobs_queue;
-  for (auto &executable_section : executable_sections)
+  for (auto &executable_section : executable_sections) {
     jobs_queue.push(executable_section);
+  }
 
   std::vector<std::future<void>> thread_pool;
   std::mutex m;
@@ -114,37 +115,28 @@ void Program::find_gadgets(
   }
 
   // Wait for potentially unfinished threads
-  for (std::future<void> &f : thread_pool)
+  for (std::future<void> &f : thread_pool) {
     f.get();
-
-  // XXX:
-  //     If at&t syntax is enabled, BeaEngine doesn't seem to handle the prefix:
-  //     \xf0\x00\x00 => addb %al, (%eax) ; -- and in intel -- lock add byte
-  //     [eax], al ; ret  ;
-  //
-  //     It will introduce differences between the number of unique gadgets
-  //     found!
+  }
 }
 
 void Program::search_and_display(const uint8_t *hex_values, uint32_t size) {
-  std::vector<std::shared_ptr<Section>> executable_sections =
-      m_exformat->get_executables_section(m_file);
-  if (executable_sections.size() == 0)
-    std::cout << "It seems your binary haven't executable sections."
-              << std::endl;
+  const auto &executable_sections = m_exformat->get_executables_section(m_file);
+  if (executable_sections.size() == 0) {
+    fmt::print("It seems your binary haven't executable sections.\n");
+  }
 
-  for (auto &executable_section : executable_sections) {
-    std::list<uint64_t> offsets =
+  for (const auto &executable_section : executable_sections) {
+    const auto &offsets =
         executable_section->search_in_memory(hex_values, size);
-    for (auto &offset : offsets) {
-      uint64_t va_section = executable_section->get_vaddr();
-      uint64_t va = va_section + offset;
-
+    for (const auto &offset : offsets) {
+      const uint64_t va_section = executable_section->get_vaddr();
+      const uint64_t va = va_section + offset;
       display_offset_lf(va, hex_values, size);
     }
   }
 }
 
-uint64_t Program::get_image_base_address(void) {
+uint64_t Program::get_image_base_address() {
   return m_exformat->get_image_base_address();
 }

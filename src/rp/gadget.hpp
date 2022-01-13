@@ -20,25 +20,39 @@ public:
     uint64_t m_offset;
     uint64_t m_va_section;
 
-    Info(uint64_t offset, uint64_t va_section)
+    Info(const uint64_t offset, const uint64_t va_section)
         : m_offset(offset), m_va_section(va_section) {}
   };
 
-  explicit Gadget(uint64_t offset_start);
+  explicit Gadget(const uint64_t offset_start)
+      : m_start_offset(offset_start), m_size(0) {}
 
   /*!
    *  \brief Get the entire disassembly of your gadget
    *  \return the disassembly
    */
-  std::string get_disassembly(void) const;
+  std::string get_disassembly() const {
+    // Computing the disassembly is cheaper than keeping it in memory
+    // Otherwise with big binaries you end up with a *lot* of memory being used
+    std::string disassembly;
+    for (const auto &i : m_instructions) {
+      disassembly += i->get_disassembly() + " ; ";
+    }
 
-  void display_disassembly(void) const;
+    return disassembly;
+  }
+
+  void display_disassembly() const {
+    for (const auto &i : m_instructions) {
+      std::cout << i->get_disassembly() << " ; ";
+    }
+  }
 
   /*!
    *  \brief Get the size of your gadget
    *  \return the size of the whole gadget
    */
-  uint32_t get_size(void) const;
+  uint32_t get_size() const { return m_size; }
 
   /*!
    *  \brief Add a list of instructions to your gadget ; don't forget it's back
@@ -50,52 +64,84 @@ public:
    * va_section: It is the va section of the instructions ; a bit weird to pass
    * it here yeah
    */
-  void add_instructions(std::vector<Instruction> &instrs, uint64_t va_section);
+  void add_instructions(std::vector<Instruction> &instrs, uint64_t va_section) {
+    for (const auto &instr : instrs) {
+      // If we haven't any offset yet, it means this instruction is the first
+      // one added thus, the offset of the gadget
+      // XXX: Yeah I'm aware that passing the va_section is a bit weird
+      if (m_info_gadgets.size() == 0) {
+        m_info_gadgets.emplace_back(m_start_offset, va_section);
+      }
+
+      auto instr_copy = std::make_shared<Instruction>(instr);
+
+      // We build our gadget instruction per instruction
+      m_instructions.push_back(instr_copy);
+
+      // Don't forget to increment the size
+      m_size += instr.get_size();
+    }
+  }
 
   /*!
    *  \brief Get the size of your gadget
    *  \return the size of the whole gadget
    */
-  std::vector<std::shared_ptr<Instruction>> get_instructions(void);
+  std::vector<std::shared_ptr<Instruction>> get_instructions();
 
   /*!
    *  \brief Get the first offset of this gadget (first offset because a gadget
    * instance stores other offset with the same disassembly in memory) \return
    * the offset (relative to m_va_section)
    */
-  uint64_t get_first_offset(void) const;
+  uint64_t get_first_offset() const { return m_info_gadgets.front().m_offset; }
 
   /*!
    *  \brief Get the first va section of this gadget (first offset because a
    * gadget instance stores other offset with the same disassembly in memory)
    *  \return the va section
    */
-  uint64_t get_first_va_section(void) const;
+  uint64_t get_first_va_section() const {
+    return m_info_gadgets.front().m_va_section;
+  }
 
   /*!
    *  \brief Get the first absolute address of this gadget
    *  \return the absolute address (computed like this: m_va_section + offset)
    */
-  uint64_t get_first_absolute_address(void) const;
+  uint64_t get_first_absolute_address() const {
+    return get_first_offset() + get_first_va_section();
+  }
 
   /*!
    *  \brief Get the number of other equivalent gadget
    *  \return the number of the same gadget in memory
    */
-  size_t get_nb(void) const;
+  size_t get_nb() const { return m_info_gadgets.size(); }
 
   /*!
    *  \brief Add the offset where you can find the same gadget
    *
    *  \param offset: the offset where you can find the same gadget
    */
-  void add_new_one(uint64_t offset, uint64_t va_section);
+  void add_new_one(uint64_t offset, uint64_t va_section) {
+    m_info_gadgets.emplace_back(offset, va_section);
+  }
 
   /*!
    *  \brief Get the ending instruction of this gadget
    *  \return a pointer on the ending instruction
    */
-  std::shared_ptr<Instruction> get_ending_instruction(void);
+  std::vector<std::shared_ptr<Instruction>> get_instructions() {
+    std::vector<std::shared_ptr<Instruction>> instrs(m_instructions);
+    // We don't want the ending instruction in the list
+    instrs.pop_back();
+    return instrs;
+  }
+
+  std::shared_ptr<Instruction> get_ending_instruction() {
+    return m_instructions.back();
+  }
 
   /*!
    * \brief This structure can be used for sorting Gadgets instance
@@ -108,7 +154,11 @@ public:
     }
   };
 
-  void print_bytes();
+  void print_bytes() const {
+    for (const auto &i : m_instructions) {
+      i->print_bytes();
+    }
+  }
 
 private:
   uint64_t m_start_offset; /*!< this is where the gadget is starting from in

@@ -3,15 +3,13 @@
 
 #include "platform.h"
 
-/*
-If you don't want any colors if your shell, you can disable it in
-coloshell.hpp -- just comment the #define
-*/
+// If you don't want any colors if your shell, you can disable it in
+// coloshell.hpp -- just comment the #define
 
-#define MAXIMUM_INSTRUCTION_PER_GADGET                                         \
-  20 // it defines the maximum number of instruction per gadget
+// it defines the maximum number of instruction per gadget
+const size_t MAXIMUM_INSTRUCTION_PER_GADGET = 20;
 
-#define NUM_V "2.0-beta"
+#define NUM_V "2.0"
 
 #ifdef ARCH_X64
 #define VERSION_TMP NUM_V " x64 built the " __DATE__ " " __TIME__

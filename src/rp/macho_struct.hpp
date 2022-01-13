@@ -6,6 +6,7 @@
 #include "section.hpp"
 #include "toolbox.hpp"
 #include <cstring>
+#include <fmt/printf.h>
 #include <vector>
 
 #ifdef WINDOWS
@@ -13,8 +14,8 @@
 #pragma pack(1)
 #endif
 
-#define CPU_TYPE_x86_64 0x1000007
-#define CPU_TYPE_I386 7
+const uint32_t CPU_TYPE_x86_64 = 0x1000007;
+const uint32_t CPU_TYPE_I386 = 7;
 
 template <class T> struct RP_MACH_HEADER {};
 
@@ -27,7 +28,7 @@ template <> struct RP_MACH_HEADER<x86Version> {
   uint32_t sizeofcmds;
   uint32_t flags;
 
-  void display(VerbosityLevel lvl) const {
+  void display(const VerbosityLevel lvl) const {
     w_yel_lf("-> mach_header32:");
 
     display_hex_2fields_lf(ncmds, sizeofcmds);
@@ -57,7 +58,7 @@ template <> struct RP_MACH_HEADER<x64Version> {
   uint32_t flags;
   uint32_t reserved;
 
-  void display(VerbosityLevel lvl) const {
+  void display(const VerbosityLevel lvl) const {
     w_yel_lf("-> mach_header64:");
 
     display_hex_2fields_lf(ncmds, sizeofcmds);
@@ -78,8 +79,8 @@ __attribute__((packed))
 #endif
 ;
 
-#define LC_SEGMENT 1
-#define LC_SEGMENT_64 0x19
+const uint32_t LC_SEGMENT = 1;
+const uint32_t LC_SEGMENT_64 = 0x19;
 
 struct RP_LOAD_COMMAND {
   uint32_t cmd;
@@ -103,11 +104,9 @@ template <class T> struct RP_SEGMENT_COMMAND {
   uint32_t nsects;
   uint32_t flags;
 
-  explicit RP_SEGMENT_COMMAND() {}
-
   void display(VerbosityLevel lvl) const {
     w_yel_lf("-> segment_command");
-    std::cout << "    " << segname.data() << std::endl;
+    fmt::print("     {}\n", segname.data());
 
     if (lvl > VERBOSE_LEVEL_1) {
       display_hex_field_lf(vmaddr);
@@ -130,8 +129,8 @@ __attribute__((packed))
 using SegmentCommand32 = RP_SEGMENT_COMMAND<x86Version>;
 using SegmentCommand64 = RP_SEGMENT_COMMAND<x64Version>;
 
-#define S_ATTR_PURE_INSTRUCTIONS 0x80000000
-#define S_ATTR_SOME_INSTRUCTIONS 0x400
+const uint32_t S_ATTR_PURE_INSTRUCTIONS = 0x80000000;
+const uint32_t S_ATTR_SOME_INSTRUCTIONS = 0x400;
 
 template <class T> struct RP_SECTION {};
 
@@ -148,12 +147,9 @@ template <> struct RP_SECTION<x86Version> {
   uint32_t reserved1;
   uint32_t reserved2;
 
-  explicit RP_SECTION() {}
-
   void display(VerbosityLevel lvl) const {
     w_yel_lf("-> section32");
-    std::cout << "    " << segname.data() << "." << sectname.data()
-              << std::endl;
+    fmt::print("     {}.{}\n", segname.data(), sectname.data());
 
     if (lvl > VERBOSE_LEVEL_1) {
       display_hex_2fields_lf(addr, size);
@@ -185,12 +181,9 @@ template <> struct RP_SECTION<x64Version> {
   uint32_t reserved2;
   uint32_t reserved3;
 
-  explicit RP_SECTION() {}
-
   void display(VerbosityLevel lvl) const {
     w_yel_lf("-> section64");
-    std::cout << "    " << segname.data() << "." << sectname.data()
-              << std::endl;
+    fmt::print("     {}.{}\n", segname.data(), sectname.data());
 
     if (lvl > VERBOSE_LEVEL_1) {
       display_hex_field_lf(addr);
@@ -216,22 +209,20 @@ __attribute__((packed))
 
 struct MachoLayout {
   virtual void fill_structures(std::ifstream &file) = 0;
-  virtual uint32_t get_size_mach_header(void) const = 0;
-  virtual void display(VerbosityLevel lvl = VERBOSE_LEVEL_1) const = 0;
+  virtual uint32_t get_size_mach_header() const = 0;
+  virtual void display(const VerbosityLevel lvl = VERBOSE_LEVEL_1) const = 0;
   virtual std::vector<std::shared_ptr<Section>>
   get_executable_section(std::ifstream &file) const = 0;
-  virtual uint64_t get_image_base_address(void) const = 0;
+  virtual uint64_t get_image_base_address() const = 0;
 };
 
 template <class T> struct MachoArchLayout : public MachoLayout {
-  uint64_t base;
+  uint64_t base = 0;
   RP_MACH_HEADER<T> header;
   std::vector<std::shared_ptr<RP_SEGMENT_COMMAND<T>>> seg_commands;
   std::vector<std::shared_ptr<RP_SECTION<T>>> sections;
 
-  explicit MachoArchLayout() : MachoLayout{}, base{0} {}
-
-  uint32_t get_size_mach_header(void) const override {
+  uint32_t get_size_mach_header() const override {
     return sizeof(RP_MACH_HEADER<T>);
   }
 
@@ -239,13 +230,13 @@ template <class T> struct MachoArchLayout : public MachoLayout {
     bool is_all_section_walked = false;
     std::streampos off = file.tellg();
 
-    /* 1] Fill the header structure */
+    // Fill the header structure
     file.seekg(0, std::ios::beg);
     file.read((char *)&header, sizeof(RP_MACH_HEADER<T>));
 
-    /* 2] The load commands now */
+    // The load commands now
     for (uint32_t i = 0; i < header.ncmds; ++i) {
-      RP_LOAD_COMMAND loadcmd{};
+      RP_LOAD_COMMAND loadcmd;
 
       file.read((char *)&loadcmd, sizeof(RP_LOAD_COMMAND));
       switch (loadcmd.cmd) {
@@ -257,20 +248,17 @@ template <class T> struct MachoArchLayout : public MachoLayout {
         file.read((char *)seg_cmd.get(), sizeof(RP_SEGMENT_COMMAND<T>));
         seg_commands.push_back(seg_cmd);
 
-        if (strcasecmp((char *)seg_cmd->segname.data(), "__TEXT") == 0)
+        if (strcasecmp((char *)seg_cmd->segname.data(), "__TEXT") == 0) {
           // If this is the __text segment, we populate the base address of the
           // program
           base = uint64_t(seg_cmd->vmaddr);
+        }
 
-        /*
-           Directly following a segment_command data structure is an array of
-           section data structures, with the exact count determined by the
-           nsects field of the segment_command structure.
-        */
+        // Directly following a segment_command data structure is an array of
+        // section data structures, with the exact count determined by the
+        // nsects field of the segment_command structure.
         for (uint32_t j = 0; j < seg_cmd->nsects; ++j) {
-          std::shared_ptr<RP_SECTION<T>> sect =
-              std::make_shared<RP_SECTION<T>>();
-
+          auto sect = std::make_shared<RP_SECTION<T>>();
           file.read((char *)sect.get(), sizeof(RP_SECTION<T>));
           sections.push_back(sect);
         }
@@ -279,19 +267,18 @@ template <class T> struct MachoArchLayout : public MachoLayout {
       }
 
       default: {
-        /*
-            XXX: We assume that all SEGMENT_HEADER[_64] are in first, and they
-           are all contiguous The proper way should be add cases for each
-           COMMAND possible, and increment the file pointer of the size of the
-           COMMAND read
-        */
+        // XXX: We assume that all SEGMENT_HEADER[_64] are in first, and they
+        // are all contiguous The proper way should be add cases for each
+        // COMMAND possible, and increment the file pointer of the size of the
+        // COMMAND read
         is_all_section_walked = true;
         break;
       }
       }
 
-      if (is_all_section_walked)
+      if (is_all_section_walked) {
         break;
+      }
     }
 
     file.seekg(off);
@@ -304,9 +291,9 @@ template <class T> struct MachoArchLayout : public MachoLayout {
     for (const auto &section : sections) {
       if (section->flags & S_ATTR_PURE_INSTRUCTIONS ||
           section->flags & S_ATTR_SOME_INSTRUCTIONS) {
-        std::shared_ptr<Section> s = std::make_shared<Section>(
-            (char *)section->sectname.data(), section->offset, section->addr,
-            section->size);
+        auto s = std::make_shared<Section>((char *)section->sectname.data(),
+                                           section->offset, section->addr,
+                                           section->size);
 
         s->dump(file);
 
@@ -318,17 +305,17 @@ template <class T> struct MachoArchLayout : public MachoLayout {
     return exc_sect;
   }
 
-  void display(VerbosityLevel lvl = VERBOSE_LEVEL_1) const override {
+  void display(const VerbosityLevel lvl = VERBOSE_LEVEL_1) const override {
     header.display(lvl);
 
-    for (const auto &segcommand : seg_commands)
+    for (const auto &segcommand : seg_commands) {
       segcommand->display(lvl);
+    }
 
-    for (const auto &section : sections)
+    for (const auto &section : sections) {
       section->display(lvl);
+    }
   }
 
-  uint64_t get_image_base_address(void) const override { return base; }
+  uint64_t get_image_base_address() const override { return base; }
 };
-
-#endif

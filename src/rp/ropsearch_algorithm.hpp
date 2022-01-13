@@ -7,7 +7,7 @@
 #include <mutex>
 #include <set>
 
-void find_rop_gadgets(const uint8_t *data, uint64_t size, uint64_t vaddr,
-                      uint32_t depth,
+void find_rop_gadgets(const uint8_t *data, const uint64_t size,
+                      const uint64_t vaddr, const uint32_t depth,
                       std::multiset<std::shared_ptr<Gadget>> &merged_gadgets,
                       DisassEngineWrapper &disass_engine, std::mutex &m);

@@ -2,6 +2,7 @@
 #pragma once
 
 #include <exception>
+#include <fmt/format.h>
 #include <string>
 
 /**
@@ -28,17 +29,20 @@ public:
    *  \param funct: The function name where the exception has been raised
    *  \param msg: It is a message that describes the reason of the exception
    */
-  explicit RpException(const char *filename, uint32_t line, const char *funct,
-                       const char *msg);
-
-  ~RpException(void) throw();
+  RpException(const char *filename, uint32_t line, const char *funct,
+              const char *msg)
+      : m_filename(filename), m_msg(msg), m_function_name(funct), m_line(line) {
+    m_report = fmt::format("[EXCEPTION REPORT]:\n\t Raised in {}:{}\n\t More "
+                           "precisely in {}\n\t Further infos: {}",
+                           m_filename, m_line, m_function_name, m_msg);
+  }
 
   /*!
    *  \brief Obtain the reason the exception
    *
    *  \return A message describing the exception
    */
-  const char *what(void) const throw();
+  const char *what(void) const throw() { return m_report.c_str(); }
 
 private:
   std::string m_filename, /*!< the name of the file where the exception has been
