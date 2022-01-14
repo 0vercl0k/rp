@@ -405,7 +405,7 @@ template <class T> struct PELayout : public PortableExecutableLayout {
     file.seekg(imgNtHeaders.get_offset_first_section(), std::ios::cur);
 
     for (uint32_t i = 0; i < imgNtHeaders.FileHeader.NumberOfSections; ++i) {
-      auto &pImgSectionHeader = std::make_shared<RP_IMAGE_SECTION_HEADER>();
+      auto pImgSectionHeader = std::make_shared<RP_IMAGE_SECTION_HEADER>();
 
       file.read((char *)pImgSectionHeader.get(),
                 get_image_section_header_size());

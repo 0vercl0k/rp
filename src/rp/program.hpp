@@ -5,8 +5,7 @@
 #include <set>
 #include <string>
 
-#include "cpu.hpp"
-#include "executable_format.hpp"
+#include "elf.hpp"
 
 /*! \class Program
  *

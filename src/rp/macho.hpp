@@ -2,7 +2,11 @@
 #pragma once
 
 #include "executable_format.hpp"
+
+#include "arm.hpp"
 #include "macho_struct.hpp"
+#include "x64.hpp"
+#include "x86.hpp"
 
 class Macho : public ExecutableFormat {
 public:

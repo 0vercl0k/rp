@@ -1,9 +1,10 @@
 // Axel '0vercl0k' Souchet - January 12 2022
 #pragma once
 
+#include "executable_format.hpp"
+
 #include "arm.hpp"
 #include "elf_struct.hpp"
-#include "executable_format.hpp"
 #include "rpexception.hpp"
 #include "x64.hpp"
 #include "x86.hpp"

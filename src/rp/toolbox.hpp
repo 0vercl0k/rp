@@ -50,12 +50,12 @@ std::vector<uint8_t> string_to_hex(const std::string &hex);
  * \brief Try to match a string with a pattern: in this pattern you can use the
  * special character '?' that represents anything
  *
- * \param str: the string
+ * \paraqm str: the string
  * \param p: the pattern you will apply to str
  *
  * \return true if the pattern matches with str, else false
  */
-bool is_matching(const std::string &str, const char *p);
+bool is_matching(const std::string &str, const std::string &p);
 
 /**
  * \fn bool is_hex_char(const char c)
@@ -78,12 +78,13 @@ bool is_hex_char(const char c);
  *
  */
 std::set<std::shared_ptr<Gadget>, Gadget::Sort>
-only_unique_gadgets(std::multiset<std::shared_ptr<Gadget>> &list_gadgets);
+only_unique_gadgets(const std::multiset<std::shared_ptr<Gadget>> &list_gadgets);
 
 /**
  * \fn bool does_badbytes_filter_apply(const uint64_t va, const
- * std::vector<uint8_t> &badbytes) \brief Return true if va has a bad byte
- * (taken from badbytes)
+ * std::vector<uint8_t> &badbytes)
+ *
+ * \brief Return true if va has a bad byte (taken from badbytes)
  *
  * \param va: It is the VA to check
  * \param badbytes: The list of bytes you don't want in va

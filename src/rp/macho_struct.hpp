@@ -5,6 +5,7 @@
 #include "platform.h"
 #include "section.hpp"
 #include "toolbox.hpp"
+#include <array>
 #include <cstring>
 #include <fmt/printf.h>
 #include <vector>

@@ -71,7 +71,7 @@ __attribute__((packed))
 #endif
 ;
 
-std::string type_to_str(const uint32_t p_type) {
+static std::string type_to_str(const uint32_t p_type) {
   switch (p_type) {
   case 0: {
     return "NULL";
@@ -146,7 +146,7 @@ std::string type_to_str(const uint32_t p_type) {
   return "unknown type";
 }
 
-std::string flags_to_str(const uint32_t p_flags) {
+static std::string flags_to_str(const uint32_t p_flags) {
   std::string ret(3, '-');
 
   if (p_flags & 4) {
@@ -381,7 +381,7 @@ template <class T> struct ELFLayout : public ExecutableLinkingFormatLayout {
     // Goto the first Section Header, and dump them !
     file.seekg(std::streamoff(elfHeader.e_shoff), std::ios::beg);
     for (uint32_t i = 0; i < elfHeader.e_shnum; ++i) {
-      auto &pElfSectionHeader = std::make_shared<Elf_Shdr_Abstraction<T>>();
+      auto pElfSectionHeader = std::make_shared<Elf_Shdr_Abstraction<T>>();
 
       file.read((char *)&pElfSectionHeader->header, sizeof(Elf_Shdr<T>));
 
@@ -408,7 +408,7 @@ template <class T> struct ELFLayout : public ExecutableLinkingFormatLayout {
     for (const auto &programheader : elfProgramHeaders) {
       if (programheader->p_flags & 1) {
         // XXX: g++ + std::make_shared + packed struct
-        auto &sec = std::make_shared<Section>(
+        auto sec = std::make_shared<Section>(
             type_to_str(programheader->p_type).c_str(), programheader->p_offset,
             programheader->p_vaddr, programheader->p_filesz);
 

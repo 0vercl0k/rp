@@ -2,12 +2,13 @@
 #pragma once
 
 #include "disassenginewrapper.hpp"
+
+#include "rpexception.hpp"
 #include <capstone/capstone.h>
 
 class ArmCapstone : public DisassEngineWrapper {
 public:
-  explicit ArmCapstone(const uint32_t thumb_mode)
-      : DisassEngineWrapper(), is_thumb(true) {
+  explicit ArmCapstone(const uint32_t thumb_mode) : is_thumb(true) {
     cs_mode mode = CS_MODE_THUMB;
     if (thumb_mode == 0) {
       mode = CS_MODE_ARM;
@@ -34,13 +35,13 @@ public:
         cs_disasm(m_handle, data, size_t(len), vaddr, 1, &insn);
     if (count != 1) {
       ret = UnknownInstruction;
-      goto end;
+      return {};
     }
 
     InstructionInformation instr;
     instr.address = uintptr_t(data);
     instr.virtual_address_in_memory = uintptr_t(vaddr);
-    instr.mnemonic = std::string(insn[0].mnemonic);
+    instr.mnemonic = insn[0].mnemonic;
     instr.disassembly = instr.mnemonic + ' ' + std::string(insn[0].op_str);
     instr.size = insn[0].size;
     instr.bytes.insert(instr.bytes.begin(), data, data + instr.size);
@@ -50,14 +51,15 @@ public:
     ret = AllRight;
 
     if (insn[0].detail == nullptr) {
-      goto end;
+      cs_free(insn, count);
+      return instr;
     }
 
     if (cs_insn_group(m_handle, insn, ARM_GRP_JUMP)) {
       instr.cap_is_branch = true;
-      if (insn[0].detail->arm.op_count == 1)
-        if (insn[0].detail->arm.operands[0].type != ARM_OP_IMM)
-          instr.cap_is_valid_ending_instr = true;
+      instr.cap_is_valid_ending_instr =
+          insn[0].detail->arm.op_count == 1 &&
+          insn[0].detail->arm.operands[0].type != ARM_OP_IMM;
     } else if (instr.mnemonic == "b" || instr.mnemonic == "bl" ||
                instr.mnemonic == "blx" || instr.mnemonic == "cb" ||
                instr.mnemonic == "cbz") {
@@ -65,18 +67,15 @@ public:
     } else if (instr.mnemonic == "swi" || instr.mnemonic == "svc") {
       instr.cap_is_branch = true;
       instr.cap_is_valid_ending_instr = true;
-    } else if (instr.mnemonic == "mov") {
-      if (insn[0].detail->arm.op_count >= 1) {
-        if (insn[0].detail->arm.operands[0].type == ARM_OP_REG &&
-            insn[0].detail->arm.operands[0].reg == ARM_REG_PC) {
-          instr.cap_is_branch = true;
-          instr.cap_is_valid_ending_instr = true;
-        }
-      }
+    } else if (instr.mnemonic == "mov" && insn[0].detail->arm.op_count >= 1 &&
+               insn[0].detail->arm.operands[0].type == ARM_OP_REG &&
+               insn[0].detail->arm.operands[0].reg == ARM_REG_PC) {
+      instr.cap_is_branch = true;
+      instr.cap_is_valid_ending_instr = true;
     } else if (instr.mnemonic == "bx") {
       instr.cap_is_branch = true;
-      if (insn[0].detail->arm.operands[0].type == ARM_OP_REG)
-        instr.cap_is_valid_ending_instr = true;
+      instr.cap_is_valid_ending_instr =
+          insn[0].detail->arm.operands[0].type == ARM_OP_REG;
     } else if (instr.mnemonic == "blx") {
       instr.cap_is_branch = true;
       instr.cap_is_valid_ending_instr = true;
@@ -96,11 +95,7 @@ public:
       }
     }
 
-  end:
-    if (insn != nullptr) {
-      cs_free(insn, count);
-    }
-
+    cs_free(insn, count);
     return instr;
   }
 
@@ -114,16 +109,14 @@ public:
     return instr.cap_is_branch == false;
   }
 
-  uint32_t get_size_biggest_instruction() const override {
-    return ARM::get_size_biggest_instruction();
-  }
+  uint32_t get_size_biggest_instruction() const override { return 4; }
 
   uint32_t get_alignement() const override {
     if (is_thumb) {
       return 2;
     }
 
-    return ARM::get_alignement();
+    return 4;
   }
 
 private:

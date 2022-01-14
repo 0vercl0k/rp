@@ -1,7 +1,6 @@
 // Axel '0vercl0k' Souchet - January 12 2022
 #pragma once
 
-#include "disassenginewrapper.hpp"
 #include "gadget.hpp"
 #include <mutex>
 #include <set>
@@ -18,7 +17,7 @@ public:
    *
    *  \return the name of the class
    */
-  virtual std::string get_class_name(void) const = 0;
+  virtual std::string get_class_name() const = 0;
 
   /*!
    *  \brief Each CPU class is able to find all gadgets in [p_memory,

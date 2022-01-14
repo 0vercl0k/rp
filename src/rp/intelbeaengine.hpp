@@ -3,8 +3,6 @@
 
 #define BEA_ENGINE_STATIC
 #include "disassenginewrapper.hpp"
-#include "x64.hpp"
-#include "x86.hpp"
 #include <beaengine/BeaEngine.h>
 
 class IntelBeaEngine : public DisassEngineWrapper {
@@ -34,7 +32,7 @@ public:
       return instr;
     }
 
-    /* OK this one is an unknow opcode, goto the next one */
+    // OK this one is an unknow opcode, goto the next one
     if (len_instr == UNKNOWN_OPCODE) {
       ret = UnknownInstruction;
       return instr;
@@ -59,70 +57,58 @@ public:
     // instruction without disassembly Btw, this is not the only case!
     // XXX: BeaEngine has received a lot of recent commits recently, let's
     // remove the branch to see if it's gone
-    if (instr.disassembly == "") {
+    if (!instr.disassembly.size()) {
       RAISE_EXCEPTION("BeaEngine bug coming back?");
     }
 
-    uint32_t branch_type = instr.bea_branch_type;
-    uint64_t addr_value = instr.bea_addr_value;
+    const uint32_t branch_type = instr.bea_branch_type;
+    const uint64_t addr_value = instr.bea_addr_value;
     const char *mnemonic_s = instr.mnemonic.c_str();
 
     const std::string &disass = instr.disassembly;
     const char *disass_s = disass.c_str();
 
-    bool is_good_branch_type = (
-        /* We accept all the ret type instructions (except retf/iret) */
+    const bool is_good_branch_type =
+        // We accept all the ret type instructions (except retf/iret)
         (branch_type == RetType && (strncmp(mnemonic_s, "retf", 4) != 0) &&
          (strncmp(mnemonic_s, "iretd", 5) != 0)) ||
 
-        /* call reg32 / call [reg32] */
+        // call reg32 / call [reg32]
         (branch_type == CallType && addr_value == 0) ||
 
-        /* jmp reg32 / jmp [reg32] */
+        // jmp reg32 / jmp [reg32]
         (branch_type == JmpType && addr_value == 0) ||
 
-        /* int 0x80 & int 0x2e */
+        // int 0x80 & int 0x2e
         ((strncmp(disass_s, "int 0x80", 8) == 0) ||
          (strncmp(disass_s, "int 0x2e", 8) == 0) ||
-         (strncmp(disass_s, "syscall", 7) == 0)));
+         (strncmp(disass_s, "syscall", 7) == 0));
 
-    return (is_good_branch_type &&
-            // Yeah, we don't accept jmp far/call far
-            disass.find("far") == std::string::npos);
+    return is_good_branch_type &&
+           // Yeah, we don't accept jmp far/call far
+           disass.find("far") == std::string::npos;
   }
 
   bool
   is_valid_instruction(const InstructionInformation &instr) const override {
-    Int32 branch_type = instr.bea_branch_type;
-    uint64_t addr_value = instr.bea_addr_value;
+    const Int32 branch_type = instr.bea_branch_type;
+    const uint64_t addr_value = instr.bea_addr_value;
     // Work Around, BeaEngine in x64 mode disassemble "\xDE\xDB" as an
     // instruction without disassembly Btw, this is not the only case!
     // XXX: Something tells me it's not here anymore
-    if (instr.disassembly == "") {
+    if (!instr.disassembly.size()) {
       RAISE_EXCEPTION("BeaEngine bug coming back?");
     }
 
-    return (branch_type != RetType && branch_type != JmpType &&
-            ((branch_type == CallType && addr_value == 0) ||
-             branch_type != CallType) &&
-            instr.disassembly.find("far") == std::string::npos);
+    return branch_type != RetType && branch_type != JmpType &&
+           ((branch_type == CallType && addr_value == 0) ||
+            branch_type != CallType) &&
+           instr.disassembly.find("far") == std::string::npos;
   }
 
-  uint32_t get_size_biggest_instruction() const override {
-    if (m_arch == x86) {
-      return x86::get_size_biggest_instruction();
-    }
+  uint32_t get_size_biggest_instruction() const override { return 15; }
 
-    return x64::get_size_biggest_instruction();
-  }
-
-  uint32_t get_alignement() const override {
-    if (m_arch == x86) {
-      return x86::get_alignement();
-    }
-
-    return x64::get_alignement();
-  }
+  uint32_t get_alignement() const override { return 1; }
 
 private:
   uint32_t m_arch = 0; /*!< architecture the BeaEngine will use to disassemble*/

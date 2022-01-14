@@ -1,6 +1,7 @@
 // Axel '0vercl0k' Souchet - January 12 2022
 #pragma once
 
+#include <cstdint>
 #include <string>
 #include <vector>
 
@@ -28,12 +29,14 @@ enum DisassEngineReturn { UnknownInstruction, OutOfBlock, AllRight };
 
 class DisassEngineWrapper {
 public:
+  DisassEngineWrapper() = default;
+  virtual ~DisassEngineWrapper() = default;
+
   DisassEngineWrapper(const DisassEngineWrapper &) = delete;
   DisassEngineWrapper &operator=(const DisassEngineWrapper &) = delete;
   DisassEngineWrapper(DisassEngineWrapper &&) = delete;
   DisassEngineWrapper &operator=(DisassEngineWrapper &&) = delete;
-  DisassEngineWrapper() = default;
-  virtual ~DisassEngineWrapper() = default;
+
   virtual InstructionInformation disass(const uint8_t *data, uint64_t len,
                                         uint64_t vaddr,
                                         DisassEngineReturn &ret) = 0;

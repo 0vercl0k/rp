@@ -1,14 +1,28 @@
 // Axel '0vercl0k' Souchet - January 12 2022
-#include "main.hpp"
 #include "coloshell.hpp"
+#include "platform.h"
 #include "program.hpp"
-#include "toolbox.hpp"
 #include <CLI11.hpp>
 #include <cstdlib>
 #include <cstring>
 #include <exception>
 #include <fmt/printf.h>
 #include <iostream>
+
+#define NUM_V "2.0"
+#ifdef ARCH_X64
+#define VERSION_TMP NUM_V " x64 built the " __DATE__ " " __TIME__
+#else
+#define VERSION_TMP NUM_V " x86 built the " __DATE__ " " __TIME__
+#endif
+
+#define VERSION_TM VERSION_TMP " for " SYSTEM_PLATFORM
+
+#ifdef _DEBUG
+#define VERSION VERSION_TM " (Debug)"
+#else
+#define VERSION VERSION_TM " (Release)"
+#endif
 
 int main(int argc, char *argv[]) {
   struct {
