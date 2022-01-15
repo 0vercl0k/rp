@@ -1,7 +1,6 @@
 // Axel '0vercl0k' Souchet - January 12 2022
 #pragma once
 
-#define BEA_ENGINE_STATIC
 #include "disassenginewrapper.hpp"
 #include <beaengine/BeaEngine.h>
 

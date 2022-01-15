@@ -277,7 +277,7 @@ struct ExecutableLinkingFormatLayout {
   virtual void fill_structures(std::ifstream &file) = 0;
   virtual void display(VerbosityLevel lvl = VERBOSE_LEVEL_1) const = 0;
   virtual uint64_t get_image_base_address(void) const = 0;
-  virtual std::vector<std::shared_ptr<Section>>
+  virtual std::vector<std::unique_ptr<Section>>
   get_executable_section(std::ifstream &file) const = 0;
   virtual uint16_t get_cpu(void) const = 0;
 };
@@ -291,8 +291,8 @@ const uint32_t RP_ELFEM_ARM = 0x28;
 
 template <class T> struct ELFLayout : public ExecutableLinkingFormatLayout {
   Elf_Ehdr<T> elfHeader;
-  std::vector<std::shared_ptr<Elf_Phdr<T>>> elfProgramHeaders;
-  std::vector<std::shared_ptr<Elf_Shdr_Abstraction<T>>> elfSectionHeaders;
+  std::vector<std::unique_ptr<Elf_Phdr<T>>> elfProgramHeaders;
+  std::vector<std::unique_ptr<Elf_Shdr_Abstraction<T>>> elfSectionHeaders;
   T offset_string_table, size_string_table;
   uint64_t base = 0;
 
@@ -353,18 +353,18 @@ template <class T> struct ELFLayout : public ExecutableLinkingFormatLayout {
     // Goto the first Program Header, and dump them
     file.seekg(std::streamoff(elfHeader.e_phoff), std::ios::beg);
     for (uint32_t i = 0; i < elfHeader.e_phnum; ++i) {
-      std::shared_ptr<Elf_Phdr<T>> pElfProgramHeader =
-          std::make_shared<Elf_Phdr<T>>();
+      auto pElfProgramHeader = std::make_unique<Elf_Phdr<T>>();
 
       file.read((char *)pElfProgramHeader.get(), sizeof(Elf_Phdr<T>));
-      elfProgramHeaders.push_back(pElfProgramHeader);
+      elfProgramHeaders.push_back(std::move(pElfProgramHeader));
 
       // XXX: Here we assume that the first LOAD program header encountered will
       // hold the image base address and I guess this assumption is quite wrong
       // Fuck you ELF.
       // https://stackoverflow.com/questions/18296276/base-address-of-elf
-      if (type_to_str(pElfProgramHeader->p_type) == "LOAD" && base == 0)
+      if (type_to_str(pElfProgramHeader->p_type) == "LOAD" && base == 0) {
         base = pElfProgramHeader->p_vaddr;
+      }
     }
 
     // If we want to know the name of the different section, we need to find the
@@ -381,7 +381,7 @@ template <class T> struct ELFLayout : public ExecutableLinkingFormatLayout {
     // Goto the first Section Header, and dump them !
     file.seekg(std::streamoff(elfHeader.e_shoff), std::ios::beg);
     for (uint32_t i = 0; i < elfHeader.e_shnum; ++i) {
-      auto pElfSectionHeader = std::make_shared<Elf_Shdr_Abstraction<T>>();
+      auto pElfSectionHeader = std::make_unique<Elf_Shdr_Abstraction<T>>();
 
       file.read((char *)&pElfSectionHeader->header, sizeof(Elf_Shdr<T>));
 
@@ -394,21 +394,21 @@ template <class T> struct ELFLayout : public ExecutableLinkingFormatLayout {
         pElfSectionHeader->name = (s == "") ? "unknown section" : s;
       }
 
-      elfSectionHeaders.push_back(pElfSectionHeader);
+      elfSectionHeaders.push_back(std::move(pElfSectionHeader));
     }
 
     // Set correctly the pointer
     file.seekg(off);
   }
 
-  std::vector<std::shared_ptr<Section>>
+  std::vector<std::unique_ptr<Section>>
   get_executable_section(std::ifstream &file) const override {
-    std::vector<std::shared_ptr<Section>> exec_sections;
+    std::vector<std::unique_ptr<Section>> exec_sections;
 
     for (const auto &programheader : elfProgramHeaders) {
       if (programheader->p_flags & 1) {
         // XXX: g++ + std::make_shared + packed struct
-        auto sec = std::make_shared<Section>(
+        auto sec = std::make_unique<Section>(
             type_to_str(programheader->p_type).c_str(), programheader->p_offset,
             programheader->p_vaddr, programheader->p_filesz);
 
@@ -419,7 +419,7 @@ template <class T> struct ELFLayout : public ExecutableLinkingFormatLayout {
         sec->dump(file);
         sec->set_props(Section::Executable);
 
-        exec_sections.push_back(sec);
+        exec_sections.push_back(std::move(sec));
       }
     }
 

@@ -34,11 +34,11 @@ public:
    * disass_engine_options: Options you want to pass to the disassembly engine
    *
    */
-  virtual void
-  find_gadget_in_memory(const uint8_t *p_memory, const uint64_t size,
-                        const uint64_t vaddr, const uint32_t depth,
-                        std::multiset<std::shared_ptr<Gadget>> &gadgets,
-                        uint32_t disass_engine_options, std::mutex &m) = 0;
+  virtual void find_gadget_in_memory(const uint8_t *p_memory,
+                                     const uint64_t size, const uint64_t vaddr,
+                                     const uint32_t depth, GadgetSet &gadgets,
+                                     uint32_t disass_engine_options,
+                                     std::mutex &m) = 0;
 
   /*! The different architectures RP++ handles */
   enum E_CPU {

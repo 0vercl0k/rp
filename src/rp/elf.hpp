@@ -11,47 +11,36 @@
 
 class Elf : public ExecutableFormat {
 public:
-  std::shared_ptr<CPU> get_cpu(std::ifstream &file) override {
-    std::shared_ptr<CPU> cpu;
+  std::unique_ptr<CPU> get_cpu(std::ifstream &file) override {
     CPU::E_CPU cpu_type = extract_information_from_binary(file);
-
     switch (cpu_type) {
     case CPU::CPU_x86: {
-      cpu = std::make_shared<x86>();
-      break;
+      return std::make_unique<x86>();
     }
 
     case CPU::CPU_x64: {
-      cpu = std::make_shared<x64>();
-      break;
+      return std::make_unique<x64>();
     }
 
     case CPU::CPU_ARM: {
-      cpu = std::make_shared<ARM>();
-      break;
+      return std::make_unique<ARM>();
     }
 
     default: {
       RAISE_EXCEPTION("Cannot determine the CPU type");
     }
     }
-
-    if (cpu == nullptr) {
-      RAISE_EXCEPTION("Cannot allocate a cpu");
-    }
-
-    return cpu;
   }
 
   void display_information(const VerbosityLevel lvl) const override {
     ExecutableFormat::display_information(lvl);
-    std::cout << "Elf Information:" << std::endl;
+    fmt::print("Elf Information:\n");
     m_ELFLayout->display(lvl);
   }
 
   std::string get_class_name() const override { return "Elf"; }
 
-  std::vector<std::shared_ptr<Section>>
+  std::vector<std::unique_ptr<Section>>
   get_executables_section(std::ifstream &file) const override {
     return m_ELFLayout->get_executable_section(file);
   }
@@ -65,7 +54,7 @@ private:
     uint32_t size_init = 0;
     std::array<uint8_t, EI_NIDENT> buf;
     CPU::E_CPU cpu = CPU::CPU_UNKNOWN;
-    std::cout << "Loading ELF information.." << std::endl;
+    fmt::print("Loading ELF information..\n");
 
     std::streampos off = file.tellg();
     file.seekg(0, std::ios::beg);
@@ -124,11 +113,11 @@ private:
   }
 
   template <class T> void init_properly_ELFLayout() {
-    m_ELFLayout = std::make_shared<ELFLayout<T>>();
+    m_ELFLayout = std::make_unique<ELFLayout<T>>();
     if (m_ELFLayout == nullptr) {
       RAISE_EXCEPTION("m_ELFLayout allocation failed");
     }
   }
 
-  std::shared_ptr<ExecutableLinkingFormatLayout> m_ELFLayout;
+  std::unique_ptr<ExecutableLinkingFormatLayout> m_ELFLayout;
 };

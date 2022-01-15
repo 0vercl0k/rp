@@ -18,7 +18,7 @@
 #include <sstream>
 #include <thread>
 
-Program::Program(const std::string &program_path, CPU::E_CPU arch) {
+Program::Program(const std::string &program_path, const CPU::E_CPU arch) {
   uint32_t magic_dword = 0;
 
   fmt::print("Trying to open '{}'..\n", program_path);
@@ -29,21 +29,21 @@ Program::Program(const std::string &program_path, CPU::E_CPU arch) {
 
   if (arch != CPU::CPU_UNKNOWN) {
     // If we know the CPU in the constructor, it is a raw file
-    m_exformat = std::make_shared<Raw>();
+    m_exformat = std::make_unique<Raw>();
 
     switch (arch) {
     case CPU::CPU_x86: {
-      m_cpu = std::make_shared<x86>();
+      m_cpu = std::make_unique<x86>();
       break;
     }
 
     case CPU::CPU_x64: {
-      m_cpu = std::make_shared<x64>();
+      m_cpu = std::make_unique<x64>();
       break;
     }
 
     case CPU::CPU_ARM: {
-      m_cpu = std::make_shared<ARM>();
+      m_cpu = std::make_unique<ARM>();
       break;
     }
 
@@ -56,14 +56,14 @@ Program::Program(const std::string &program_path, CPU::E_CPU arch) {
     // cpu
     m_file.read((char *)&magic_dword, sizeof(magic_dword));
 
-    m_exformat = ExecutableFormat::GetExecutableFormat(magic_dword);
+    m_exformat = get_executable_format(magic_dword);
     if (m_exformat == nullptr) {
-      RAISE_EXCEPTION("GetExecutableFormat fails");
+      RAISE_EXCEPTION("get_executable_format fails");
     }
 
     m_cpu = m_exformat->get_cpu(m_file);
     if (m_cpu == nullptr) {
-      RAISE_EXCEPTION("get_cpu fails");
+      RAISE_EXCEPTION("get_cpu failed");
     }
   }
 
@@ -75,47 +75,51 @@ void Program::display_information(const VerbosityLevel lvl) {
   m_exformat->display_information(lvl);
 }
 
-void Program::find_gadgets(
-    uint32_t depth, std::multiset<std::shared_ptr<Gadget>> &gadgets_found,
-    uint32_t disass_engine_options, size_t n_max_thread) {
+void Program::find_gadgets(uint32_t depth, GadgetSet &gadgets_found,
+                           uint32_t disass_engine_options,
+                           size_t n_max_thread) {
   // To do a ROP gadget research, we need to know the executable section
-  const auto &executable_sections = m_exformat->get_executables_section(m_file);
+  auto executable_sections = m_exformat->get_executables_section(m_file);
   if (executable_sections.size() == 0) {
     fmt::print("It seems your binary haven't executable sections.\n");
   }
 
-  std::queue<std::shared_ptr<Section>> jobs_queue;
+  std::queue<std::unique_ptr<Section>> jobs_queue;
   for (auto &executable_section : executable_sections) {
-    jobs_queue.push(executable_section);
+    jobs_queue.push(std::move(executable_section));
   }
 
   std::vector<std::future<void>> thread_pool;
   std::mutex m;
   while (jobs_queue.size() != 0) {
     if (thread_pool.size() < n_max_thread) {
-      std::shared_ptr<Section> section = jobs_queue.front();
-      uint64_t va_section = section->get_vaddr();
-      thread_pool.emplace_back(std::async(
-          std::launch::async, &CPU::find_gadget_in_memory, m_cpu,
-          section->get_section_buffer(), section->get_size(), va_section, depth,
-          std::ref(gadgets_found), disass_engine_options, std::ref(m)));
+      auto section = std::move(jobs_queue.front());
       jobs_queue.pop();
+      const uint64_t va_section = section->get_vaddr();
+      thread_pool.emplace_back(std::async(
+          std::launch::async,
+          [&, this](std::unique_ptr<Section> section) {
+            m_cpu->find_gadget_in_memory(
+                section->get_section_buffer(), section->get_size(), va_section,
+                depth, gadgets_found, disass_engine_options, m);
+          },
+          std::move(section)));
     } else {
       // Wait for a thread to finish
-      for (decltype(thread_pool)::iterator it = thread_pool.begin();
-           it != thread_pool.end();) {
+      for (auto it = thread_pool.begin(); it != thread_pool.end();) {
         if (it->wait_for(std::chrono::milliseconds(1)) ==
             std::future_status::ready) {
           it->get();
           it = thread_pool.erase(it);
-        } else
+        } else {
           it++;
+        }
       }
     }
   }
 
   // Wait for potentially unfinished threads
-  for (std::future<void> &f : thread_pool) {
+  for (auto &f : thread_pool) {
     f.get();
   }
 }

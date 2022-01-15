@@ -15,7 +15,7 @@
 #include <unistd.h>
 #endif
 
-extern bool g_colors_desired;
+static bool g_colors_desired = false;
 
 // Here you will find all you need to display the data in a cute way on a
 // windows/unix terminal

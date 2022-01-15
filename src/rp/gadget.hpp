@@ -6,6 +6,7 @@
 #include <list>
 #include <map>
 #include <memory>
+#include <set>
 #include <string>
 #include <vector>
 
@@ -74,10 +75,10 @@ public:
         m_info_gadgets.emplace_back(m_start_offset, va_section);
       }
 
-      auto instr_copy = std::make_shared<Instruction>(instr);
+      auto instr_copy = std::make_unique<Instruction>(instr);
 
       // We build our gadget instruction per instruction
-      m_instructions.push_back(instr_copy);
+      m_instructions.push_back(std::move(instr_copy));
 
       // Don't forget to increment the size
       m_size += instr.get_size();
@@ -89,12 +90,6 @@ public:
    *  \return the size of the whole gadget
    */
   // XXX: wut?
-  std::vector<std::shared_ptr<Instruction>> get_instructions() {
-    std::vector<std::shared_ptr<Instruction>> instrs(m_instructions);
-    // We don't want the ending instruction in the list
-    instrs.pop_back();
-    return instrs;
-  }
 
   /*!
    *  \brief Get the first offset of this gadget (first offset because a gadget
@@ -131,16 +126,8 @@ public:
    *
    *  \param offset: the offset where you can find the same gadget
    */
-  void add_new_one(uint64_t offset, uint64_t va_section) {
+  void add_new_one(const uint64_t offset, const uint64_t va_section) {
     m_info_gadgets.emplace_back(offset, va_section);
-  }
-
-  /*!
-   *  \brief Get the ending instruction of this gadget
-   *  \return a pointer on the ending instruction
-   */
-  std::shared_ptr<Instruction> get_ending_instruction() {
-    return m_instructions.back();
   }
 
   /*!
@@ -148,8 +135,8 @@ public:
    * \return
    */
   struct Sort {
-    bool operator()(const std::shared_ptr<Gadget> g,
-                    const std::shared_ptr<Gadget> d) const {
+    bool operator()(const std::unique_ptr<Gadget> &g,
+                    const std::unique_ptr<Gadget> &d) const {
       return g->get_disassembly() < d->get_disassembly();
     }
   };
@@ -166,7 +153,7 @@ private:
 
   uint32_t m_size; /*!< the size in byte of the gadget*/
 
-  std::vector<std::shared_ptr<Instruction>>
+  std::vector<std::unique_ptr<Instruction>>
       m_instructions; /*!< the list of the different instructions composing the
                          gadget*/
 
@@ -174,3 +161,6 @@ private:
       m_info_gadgets; /*!< the vector which stores where you can find the same
                          gadget ; those offsets are relative to m_va_section*/
 };
+
+using GadgetSet = std::multiset<std::unique_ptr<Gadget>>;
+using GadgetOrderedSet = std::set<std::unique_ptr<Gadget>, Gadget::Sort>;

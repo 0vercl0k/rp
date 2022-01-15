@@ -3,6 +3,7 @@
 
 #include "gadget.hpp"
 #include <fstream>
+#include <memory>
 #include <set>
 #include <string>
 #include <vector>
@@ -68,17 +69,14 @@ bool is_matching(const std::string &str, const std::string &p);
 bool is_hex_char(const char c);
 
 /**
- * \fn std::set<std::shared_ptr<Gadget>, Gadget::Sort>
- * only_unique_gadgets(std::multiset<std::shared_ptr<Gadget>, Gadget::Sort>
- * &list_gadgets)
+ * \fn GadgetOrderedSet only_unique_gadgets(GadgetSet &list_gadgets)
  * \brief It keeps only the unique gadgets
  *
  * \param list_gadgets: It is the gadget list with duplicates
  * \param unique_gadgets: The list of unique gadgets
  *
  */
-std::set<std::shared_ptr<Gadget>, Gadget::Sort>
-only_unique_gadgets(const std::multiset<std::shared_ptr<Gadget>> &list_gadgets);
+GadgetOrderedSet only_unique_gadgets(GadgetSet &list_gadgets);
 
 /**
  * \fn bool does_badbytes_filter_apply(const uint64_t va, const
@@ -93,3 +91,16 @@ only_unique_gadgets(const std::multiset<std::shared_ptr<Gadget>> &list_gadgets);
  */
 bool does_badbytes_filter_apply(const uint64_t va,
                                 const std::vector<uint8_t> &badbytes);
+
+/*!
+ *  \brief Give you a PE/ELF instance (based mostly on the magic signature)
+ *
+ *  \param magic_dword: It is a dword that allows to deduce which
+ * ExecutableFormat is used by the binary
+ *
+ *  \return A pointer on the correct ExecutableFormat deduced thanks to the
+ * magic_dword argument
+ */
+class ExecutableFormat;
+std::unique_ptr<ExecutableFormat>
+get_executable_format(const uint32_t magic_dword);

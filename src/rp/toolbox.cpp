@@ -101,22 +101,23 @@ std::vector<uint8_t> string_to_hex(const std::string &hex) {
   return bytes;
 }
 
-std::set<std::shared_ptr<Gadget>, Gadget::Sort> only_unique_gadgets(
-    const std::multiset<std::shared_ptr<Gadget>> &list_gadgets) {
-  std::set<std::shared_ptr<Gadget>, Gadget::Sort> unique_gadgets;
+GadgetOrderedSet only_unique_gadgets(GadgetSet &list_gadgets) {
+  GadgetOrderedSet unique_gadgets;
   // Now we have a list of gadget, cool, but we want to keep only the unique!
-  for (const auto &gadget : list_gadgets) {
-    const auto &[g, unique] = unique_gadgets.insert(gadget);
-    // If a gadget, with the same disassembly, has already been found; just
-    // its offset in the existing one
-    if (unique) {
-      // we have found the same gadget in memory, so we just store its offset
-      // & its va section maybe you can ask yourself 'Why do we store its va
-      // section ?' and the answer is: because you can find the same gadget in
-      // another executable sections!
-      (*g)->add_new_one(gadget->get_first_offset(),
-                        gadget->get_first_va_section());
+  for (size_t i = 0; i < list_gadgets.size(); i++) {
+    auto node = list_gadgets.extract(list_gadgets.begin());
+    const uint64_t first_offset = node.value()->get_first_offset();
+    const uint64_t first_va_section = node.value()->get_first_va_section();
+    const auto &[g, inserted] = unique_gadgets.insert(std::move(node.value()));
+    if (!inserted) {
+      continue;
     }
+
+    // we have found the same gadget in memory, so we just store its offset
+    // & its va section maybe you can ask yourself 'Why do we store its va
+    // section ?' and the answer is: because you can find the same gadget in
+    // another executable sections!
+    (*g)->add_new_one(first_offset, first_va_section);
   }
 
   return unique_gadgets;
@@ -138,26 +139,22 @@ bool does_badbytes_filter_apply(const uint64_t va,
   return false;
 }
 
-std::shared_ptr<ExecutableFormat>
-ExecutableFormat::GetExecutableFormat(const uint32_t magic_dword) {
-  std::shared_ptr<ExecutableFormat> exe_format;
-  switch (magic_dword) {
-  case uint32_t(RP_IMAGE_DOS_SIGNATURE): {
-    exe_format = std::make_shared<PE>();
-    break;
+std::unique_ptr<ExecutableFormat>
+get_executable_format(const uint32_t magic_dword) {
+  if (uint16_t(magic_dword) == RP_IMAGE_DOS_SIGNATURE) {
+    return std::make_unique<PE>();
   }
 
+  switch (magic_dword) {
   case 0x464C457F: {
-    exe_format = std::make_shared<Elf>();
-    break;
+    return std::make_unique<Elf>();
   }
 
   // this is for x64
   case 0xFEEDFACF:
   // this one for x86
   case 0xFEEDFACE: {
-    exe_format = std::make_shared<Macho>();
-    break;
+    return std::make_unique<Macho>();
   }
 
   case 0xBEBAFECA: {
@@ -170,10 +167,4 @@ ExecutableFormat::GetExecutableFormat(const uint32_t magic_dword) {
     RAISE_EXCEPTION("Cannot determine the executable format used");
   }
   }
-
-  if (exe_format == nullptr) {
-    RAISE_EXCEPTION("Cannot allocate exe_format");
-  }
-
-  return exe_format;
 }

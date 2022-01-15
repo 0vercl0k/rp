@@ -356,7 +356,7 @@ using RP_IMAGE_NT_HEADERS64 = RP_IMAGE_NT_HEADERS<x64Version>;
 
 struct PortableExecutableLayout {
   RP_IMAGE_DOS_HEADER imgDosHeader;
-  std::vector<std::shared_ptr<RP_IMAGE_SECTION_HEADER>> imgSectionHeaders;
+  std::vector<std::unique_ptr<RP_IMAGE_SECTION_HEADER>> imgSectionHeaders;
 
   virtual void display(VerbosityLevel lvl = VERBOSE_LEVEL_1) const {
     imgDosHeader.display(lvl);
@@ -405,11 +405,11 @@ template <class T> struct PELayout : public PortableExecutableLayout {
     file.seekg(imgNtHeaders.get_offset_first_section(), std::ios::cur);
 
     for (uint32_t i = 0; i < imgNtHeaders.FileHeader.NumberOfSections; ++i) {
-      auto pImgSectionHeader = std::make_shared<RP_IMAGE_SECTION_HEADER>();
+      auto pImgSectionHeader = std::make_unique<RP_IMAGE_SECTION_HEADER>();
 
       file.read((char *)pImgSectionHeader.get(),
                 get_image_section_header_size());
-      imgSectionHeaders.push_back(pImgSectionHeader);
+      imgSectionHeaders.push_back(std::move(pImgSectionHeader));
     }
 
     file.seekg(off);

@@ -4,7 +4,6 @@
 #include "cpu.hpp"
 #include "rpexception.hpp"
 #include "section.hpp"
-#include "toolbox.hpp"
 #include <fmt/printf.h>
 #include <fstream>
 #include <iostream>
@@ -29,7 +28,7 @@ public:
    *
    *  \return a pointer on the correct CPU
    */
-  virtual std::shared_ptr<CPU> get_cpu(std::ifstream &file) = 0;
+  virtual std::unique_ptr<CPU> get_cpu(std::ifstream &file) = 0;
 
   /*!
    *  \brief Display information concerning the executable format: where
@@ -56,20 +55,8 @@ public:
    *
    *  \return A vector of Section instances
    */
-  virtual std::vector<std::shared_ptr<Section>>
+  virtual std::vector<std::unique_ptr<Section>>
   get_executables_section(std::ifstream &file) const = 0;
-
-  /*!
-   *  \brief Give you a PE/ELF instance (based mostly on the magic signature)
-   *
-   *  \param magic_dword: It is a dword that allows to deduce which
-   * ExecutableFormat is used by the binary
-   *
-   *  \return A pointer on the correct ExecutableFormat deduced thanks to the
-   * magic_dword argument
-   */
-  static std::shared_ptr<ExecutableFormat>
-  GetExecutableFormat(const uint32_t magic_dword);
 
   /*!
    *  \brief Give you the base address of the executable

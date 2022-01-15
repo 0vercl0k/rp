@@ -22,9 +22,8 @@ public:
    *  \param offset: A raw offset (relative to a section) where you can find
    * this instruction \param size: It is the size of the instruction
    */
-  Instruction(const std::string &disass, const uint32_t size,
-              const std::vector<uint8_t> &b)
-      : m_disass(disass), m_size(size), bytes(b) {}
+  Instruction(const std::string &disass, const std::vector<uint8_t> &b)
+      : m_disass(disass), bytes(b) {}
 
   /*!
    *  \brief Get the size of the instruction
@@ -40,9 +39,9 @@ public:
    */
   const std::string &get_disassembly() const { return m_disass; }
 
-  void print_bytes() {
-    for (size_t i = 0; i < m_size; ++i) {
-      fmt::print("\\x{:.2x}", bytes.at(i));
+  void print_bytes() const {
+    for (const auto &byte : bytes) {
+      fmt::print("\\x{:02x}", byte);
     }
   }
 

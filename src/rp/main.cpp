@@ -29,10 +29,10 @@ int main(int argc, char *argv[]) {
     std::string file;
     uint8_t display = 0;
     uint32_t rop = 0;
-    std::string raw;
-    bool unique;
+    CPU::E_CPU raw = CPU::E_CPU::CPU_UNKNOWN;
+    bool unique = false;
     std::string shexa;
-    uint32_t maxth = 0;
+    uint32_t maxth = 2;
     std::string badbytes;
     std::string sint;
     bool version = false;
@@ -40,37 +40,32 @@ int main(int argc, char *argv[]) {
     uint64_t va = 0;
   } opts;
 
-  CLI::App rp("rp++: a fast ROP gadget finder by Axel '0vercl0k' Souchet.\n");
-  rp.add_option("--file", opts.file, "<binary path>")
-      ->description("Binary path")
-      ->required();
-  rp.add_option("--info", opts.display, "<1, 2, 3>")
-      ->description("display information about the binary header");
-  rp.add_option("--rop", opts.rop, "<positive int>")
-      ->description("find useful gadget for your future exploits, arg is the "
-                    "gadget maximum size in instructions");
-  rp.add_option("--raw", opts.raw, "<archi>")
-      ->description("find gadgets in a raw file, 'archi' must be in the "
-                    "following list: x86, x64, arm");
+  CLI::App rp("rp++: a fast ROP gadget finder for pe/elf/mach-o x86/x64/ARM "
+              "binaries\nby Axel '0vercl0k' Souchet.\n");
+  rp.add_option("-f,--file", opts.file, "Binary path")->required();
+  rp.add_option("-i,--info", opts.display,
+                "display information about the binary header");
+  rp.add_option("-r,--rop", opts.rop,
+                "find useful gadget for your future exploits, arg is the "
+                "gadget maximum size in instructions");
+  const std::unordered_map<std::string, CPU::E_CPU> raw_archi_map = {
+      {"x86", CPU::CPU_x86}, {"x64", CPU::CPU_x64}, {"arm", CPU::CPU_ARM}};
+  rp.add_option("--raw", opts.raw, "find gadgets in a raw file")
+      ->transform(CLI::CheckedTransformer(raw_archi_map, CLI::ignore_case));
   rp.add_flag("--unique", opts.unique, "display only unique gadget");
-  rp.add_option("--search-hexa", opts.shexa, "<\\x90A\\x90>")
-      ->description("try to find hex values");
-  rp.add_option("--max-thread", opts.maxth, "<int>")
-      ->description("set the maximum number of threads that can be used")
-      ->default_val(2);
-  rp.add_option("--bad-bytes", opts.badbytes, "<\\x90A\\x90>")
-      ->description(
-          "the bytes you don't want to see in the gadgets' addresses");
-  rp.add_option("--search-int", opts.sint, "<int in hex>")
-      ->description("try to find a pointer on a specific integer value");
-  rp.add_flag("--version", opts.version, "print version information");
-  rp.add_flag("--colors", g_colors_desired, "enable colors")
-      ->default_val(false);
+  rp.add_option("--search-hexa", opts.shexa, "try to find hex values");
+  rp.add_option("--max-thread", opts.maxth,
+                "set the maximum number of threads that can be used");
+  rp.add_option("--bad-bytes", opts.badbytes,
+                "the bytes you don't want to see in the gadgets' addresses");
+  rp.add_option("--search-int", opts.sint,
+                "try to find a pointer on a specific integer value");
+  rp.add_flag("-v,--version", opts.version, "print version information");
+  rp.add_flag("--colors", g_colors_desired, "enable colors");
   rp.add_flag("--thumb", opts.thumb,
               "enable thumb mode when looking for ARM gadgets");
-  rp.add_flag("--va", opts.va, "<0xdeadbeef>")
-      ->description(
-          "don't use the image base of the binary, but yours instead");
+  rp.add_flag("--va", opts.va,
+              "don't use the image base of the binary, but yours instead");
 
   CLI11_PARSE(rp, argc, argv);
 
@@ -79,23 +74,7 @@ int main(int argc, char *argv[]) {
       fmt::print("You are currently using the version {} of rp++.\n", VERSION);
     }
 
-    CPU::E_CPU arch(CPU::CPU_UNKNOWN);
-
-    if (opts.raw.size() > 0) {
-      if (opts.raw == "x86") {
-        arch = CPU::CPU_x86;
-      } else if (opts.raw == "x64") {
-        arch = CPU::CPU_x64;
-      } else if (opts.raw == "arm") {
-        arch = CPU::CPU_ARM;
-      } else {
-        RAISE_EXCEPTION(
-            "You must use an architecture supported, read the help");
-      }
-    }
-
-    Program p(opts.file, arch);
-
+    Program p(opts.file, opts.raw);
     if (opts.display >= VERBOSE_LEVEL_1 && opts.display <= VERBOSE_LEVEL_3) {
       p.display_information(VerbosityLevel(opts.display));
     }
@@ -103,8 +82,9 @@ int main(int argc, char *argv[]) {
     if (opts.rop > 0) {
       const uint32_t options = opts.thumb ? 1 : 0;
       fmt::print("\nWait a few seconds, rp++ is looking for gadgets ({} "
-                 "threads max)..\n");
-      std::multiset<std::shared_ptr<Gadget>> all_gadgets;
+                 "threads max)..\n",
+                 opts.maxth);
+      GadgetSet all_gadgets;
       p.find_gadgets(opts.rop, all_gadgets, options, opts.maxth);
 
       // Here we set the base beeing 0 if we want to have absolute virtual

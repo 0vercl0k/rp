@@ -7,32 +7,25 @@
 
 class PE : public ExecutableFormat {
 public:
-  std::shared_ptr<CPU> get_cpu(std::ifstream &file) {
-    std::shared_ptr<CPU> cpu;
+  std::unique_ptr<CPU> get_cpu(std::ifstream &file) {
     CPU::E_CPU cpu_type = extract_information_from_binary(file);
-
     switch (cpu_type) {
     case CPU::CPU_x86: {
-      cpu = std::make_shared<x86>();
-      break;
+      return std::make_unique<x86>();
     }
 
     case CPU::CPU_x64: {
-      cpu = std::make_shared<x64>();
-      break;
+      return std::make_unique<x64>();
     }
 
     case CPU::CPU_ARM: {
-      cpu = std::make_shared<ARM>();
-      break;
+      return std::make_unique<ARM>();
     }
 
     default: {
       RAISE_EXCEPTION("Cannot determine the CPU type");
     }
     }
-
-    return cpu;
   }
 
   void display_information(const VerbosityLevel lvl) const override {
@@ -43,16 +36,16 @@ public:
 
   std::string get_class_name() const override { return "PE"; }
 
-  std::vector<std::shared_ptr<Section>>
+  std::vector<std::unique_ptr<Section>>
   get_executables_section(std::ifstream &file) const override {
-    std::vector<std::shared_ptr<Section>> exec_sections;
+    std::vector<std::unique_ptr<Section>> exec_sections;
 
     for (const auto &sectionheader : m_pPELayout->imgSectionHeaders) {
       if ((sectionheader->Characteristics & RP_IMAGE_SCN_MEM_EXECUTE) != 0) {
         continue;
       }
 
-      auto sec = std::make_shared<Section>(
+      auto sec = std::make_unique<Section>(
           sectionheader->get_name().c_str(), sectionheader->PointerToRawData,
           // in the PE, this field is a RVA, so we need to add it the image
           // base to have a VA
@@ -61,7 +54,7 @@ public:
 
       sec->dump(file);
       sec->set_props(Section::Executable);
-      exec_sections.push_back(sec);
+      exec_sections.push_back(std::move(sec));
     }
     return exec_sections;
   }
@@ -145,11 +138,11 @@ private:
   }
 
   template <class T> void init_properly_PELayout() {
-    m_pPELayout = std::make_shared<PELayout<T>>();
+    m_pPELayout = std::make_unique<PELayout<T>>();
     if (m_pPELayout == nullptr) {
       RAISE_EXCEPTION("m_PELayout allocation failed");
     }
   }
 
-  std::shared_ptr<PortableExecutableLayout> m_pPELayout;
+  std::unique_ptr<PortableExecutableLayout> m_pPELayout;
 };

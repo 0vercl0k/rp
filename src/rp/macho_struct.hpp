@@ -212,7 +212,7 @@ struct MachoLayout {
   virtual void fill_structures(std::ifstream &file) = 0;
   virtual uint32_t get_size_mach_header() const = 0;
   virtual void display(const VerbosityLevel lvl = VERBOSE_LEVEL_1) const = 0;
-  virtual std::vector<std::shared_ptr<Section>>
+  virtual std::vector<std::unique_ptr<Section>>
   get_executable_section(std::ifstream &file) const = 0;
   virtual uint64_t get_image_base_address() const = 0;
 };
@@ -220,8 +220,8 @@ struct MachoLayout {
 template <class T> struct MachoArchLayout : public MachoLayout {
   uint64_t base = 0;
   RP_MACH_HEADER<T> header;
-  std::vector<std::shared_ptr<RP_SEGMENT_COMMAND<T>>> seg_commands;
-  std::vector<std::shared_ptr<RP_SECTION<T>>> sections;
+  std::vector<std::unique_ptr<RP_SEGMENT_COMMAND<T>>> seg_commands;
+  std::vector<std::unique_ptr<RP_SECTION<T>>> sections;
 
   uint32_t get_size_mach_header() const override {
     return sizeof(RP_MACH_HEADER<T>);
@@ -243,11 +243,10 @@ template <class T> struct MachoArchLayout : public MachoLayout {
       switch (loadcmd.cmd) {
       case LC_SEGMENT:
       case LC_SEGMENT_64: {
-        std::shared_ptr<RP_SEGMENT_COMMAND<T>> seg_cmd =
-            std::make_shared<RP_SEGMENT_COMMAND<T>>();
+        auto seg_cmd = std::make_unique<RP_SEGMENT_COMMAND<T>>();
 
         file.read((char *)seg_cmd.get(), sizeof(RP_SEGMENT_COMMAND<T>));
-        seg_commands.push_back(seg_cmd);
+        seg_commands.push_back(std::move(seg_cmd));
 
         if (strcasecmp((char *)seg_cmd->segname.data(), "__TEXT") == 0) {
           // If this is the __text segment, we populate the base address of the
@@ -259,9 +258,9 @@ template <class T> struct MachoArchLayout : public MachoLayout {
         // section data structures, with the exact count determined by the
         // nsects field of the segment_command structure.
         for (uint32_t j = 0; j < seg_cmd->nsects; ++j) {
-          auto sect = std::make_shared<RP_SECTION<T>>();
+          auto sect = std::make_unique<RP_SECTION<T>>();
           file.read((char *)sect.get(), sizeof(RP_SECTION<T>));
-          sections.push_back(sect);
+          sections.push_back(std::move(sect));
         }
 
         break;
@@ -285,14 +284,14 @@ template <class T> struct MachoArchLayout : public MachoLayout {
     file.seekg(off);
   }
 
-  std::vector<std::shared_ptr<Section>>
+  std::vector<std::unique_ptr<Section>>
   get_executable_section(std::ifstream &file) const override {
-    std::vector<std::shared_ptr<Section>> exc_sect;
+    std::vector<std::unique_ptr<Section>> exc_sect;
 
     for (const auto &section : sections) {
       if (section->flags & S_ATTR_PURE_INSTRUCTIONS ||
           section->flags & S_ATTR_SOME_INSTRUCTIONS) {
-        auto s = std::make_shared<Section>((char *)section->sectname.data(),
+        auto s = std::make_unique<Section>((char *)section->sectname.data(),
                                            section->offset, section->addr,
                                            section->size);
 
@@ -300,7 +299,7 @@ template <class T> struct MachoArchLayout : public MachoLayout {
 
         s->set_props(Section::Executable);
 
-        exc_sect.push_back(s);
+        exc_sect.push_back(std::move(s));
       }
     }
     return exc_sect;

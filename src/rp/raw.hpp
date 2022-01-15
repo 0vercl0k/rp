@@ -5,31 +5,30 @@
 
 class Raw : public ExecutableFormat {
 public:
-  std::shared_ptr<CPU> get_cpu(std::ifstream &file) override {
-    /* Don't need this method */
+  std::unique_ptr<CPU> get_cpu(std::ifstream &file) override {
+    // Don't need this method
     return nullptr;
   }
 
-  std::string get_class_name() const { return "raw"; }
+  std::string get_class_name() const override { return "raw"; }
 
-  std::vector<std::shared_ptr<Section>>
-  get_executables_section(std::ifstream &file) const {
-    std::vector<std::shared_ptr<Section>> executable_sections;
+  std::vector<std::unique_ptr<Section>>
+  get_executables_section(std::ifstream &file) const override {
+    std::vector<std::unique_ptr<Section>> executable_sections;
 
     uint64_t raw_file_size = get_file_size(file);
 
-    /* It is a raw file -> we have only one "virtual" section */
-    std::shared_ptr<Section> sect =
-        std::make_shared<Section>(".raw", 0, 0, raw_file_size);
-
+    // It is a raw file -> we have only one "virtual" section
+    auto sect = std::make_unique<Section>(".raw", 0, 0, raw_file_size);
     sect->dump(file);
     sect->set_props(Section::Executable);
 
-    executable_sections.push_back(sect);
+    executable_sections.push_back(std::move(sect));
 
     return executable_sections;
   }
 
+private:
   uint64_t raw_offset_to_va(const uint64_t absolute_raw_offset,
                             const uint64_t absolute_raw_offset_section) const {
     return absolute_raw_offset;

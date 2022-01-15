@@ -20,8 +20,8 @@ public:
    *
    *  \param program_path: The path of your binary
    */
-  explicit Program(const std::string &program_path,
-                   CPU::E_CPU arch = CPU::CPU_UNKNOWN);
+  Program(const std::string &program_path,
+          const CPU::E_CPU arch = CPU::CPU_UNKNOWN);
 
   /*!
    *  \brief Display information concerning the executable format (section
@@ -41,8 +41,7 @@ public:
    * Options you want to pass to the disassembly engine
    *
    */
-  void find_gadgets(uint32_t depth,
-                    std::multiset<std::shared_ptr<Gadget>> &gadgets,
+  void find_gadgets(uint32_t depth, GadgetSet &gadgets,
                     uint32_t disass_engine_options, size_t n_max_thread);
 
   /*!
@@ -62,9 +61,9 @@ public:
   uint64_t get_image_base_address();
 
 private:
-  std::shared_ptr<CPU> m_cpu; /*!< a pointer on the CPU used by your program*/
+  std::unique_ptr<CPU> m_cpu; /*!< a pointer on the CPU used by your program*/
 
-  std::shared_ptr<ExecutableFormat>
+  std::unique_ptr<ExecutableFormat>
       m_exformat; /*!< a pointer on the ExecutableFormat used by your program*/
 
   std::ifstream m_file; /*!< the file descriptor*/

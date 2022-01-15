@@ -10,7 +10,7 @@ include_directories(${CMAKE_CURRENT_LIST_DIR}/third_party/beaengine/include)
 include_directories(${CMAKE_CURRENT_LIST_DIR}/third_party/capstone/include)
 include_directories(${CMAKE_CURRENT_LIST_DIR}/third_party/CLI11)
 
-add_compile_definitions(FMT_HEADER_ONLY)
+add_compile_definitions(FMT_HEADER_ONLY BEA_ENGINE_STATIC)
 
 if(WIN32)
     set(RP_PLAT "win")
