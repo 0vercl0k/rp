@@ -70,7 +70,6 @@ public:
     for (const auto &instr : instrs) {
       // If we haven't any offset yet, it means this instruction is the first
       // one added thus, the offset of the gadget
-      // XXX: Yeah I'm aware that passing the va_section is a bit weird
       if (m_info_gadgets.size() == 0) {
         m_info_gadgets.emplace_back(m_start_offset, va_section);
       }
@@ -84,12 +83,6 @@ public:
       m_size += instr.get_size();
     }
   }
-
-  /*!
-   *  \brief Get the size of your gadget
-   *  \return the size of the whole gadget
-   */
-  // XXX: wut?
 
   /*!
    *  \brief Get the first offset of this gadget (first offset because a gadget

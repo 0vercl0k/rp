@@ -266,7 +266,7 @@ template <class T> struct MachoArchLayout : public MachoLayout {
       }
 
       default: {
-        // XXX: We assume that all SEGMENT_HEADER[_64] are in first, and they
+        // We assume that all SEGMENT_HEADER[_64] are in first, and they
         // are all contiguous The proper way should be add cases for each
         // COMMAND possible, and increment the file pointer of the size of the
         // COMMAND read

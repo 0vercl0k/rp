@@ -350,7 +350,7 @@ template <class T> struct ELFLayout : public ExecutableLinkingFormatLayout {
 
       file.read((char *)pElfProgramHeader.get(), sizeof(Elf_Phdr<T>));
 
-      // XXX: Here we assume that the first LOAD program header encountered will
+      // Here we assume that the first LOAD program header encountered will
       // hold the image base address and I guess this assumption is quite wrong
       // https://stackoverflow.com/questions/18296276/base-address-of-elf
       if (type_to_str(pElfProgramHeader->p_type) == "LOAD" && image_base == 0) {
