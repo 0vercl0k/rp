@@ -93,9 +93,7 @@ __attribute__((packed))
 ;
 
 template <class T> struct RP_SEGMENT_COMMAND {
-  // RP_LOAD_COMMAND command;
-
-  std::array<uint8_t, 16> segname;
+  std::array<char, 16> segname;
   T vmaddr;
   T vmsize;
   T fileoff;
@@ -136,8 +134,8 @@ const uint32_t S_ATTR_SOME_INSTRUCTIONS = 0x400;
 template <class T> struct RP_SECTION {};
 
 template <> struct RP_SECTION<x86Version> {
-  std::array<uint8_t, 16> sectname;
-  std::array<uint8_t, 16> segname;
+  std::array<char, 16> sectname;
+  std::array<char, 16> segname;
   uint32_t addr;
   uint32_t size;
   uint32_t offset;
@@ -169,8 +167,8 @@ __attribute__((packed))
 ;
 
 template <> struct RP_SECTION<x64Version> {
-  std::array<uint8_t, 16> sectname;
-  std::array<uint8_t, 16> segname;
+  std::array<char, 16> sectname;
+  std::array<char, 16> segname;
   uint64_t addr;
   uint64_t size;
   uint32_t offset;
