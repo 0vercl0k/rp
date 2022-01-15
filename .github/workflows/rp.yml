@@ -48,13 +48,13 @@ jobs:
           src/build/rp-win-x64.pdb
 
   Linux:
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-latest
     strategy:
       fail-fast: false
       matrix:
         compiler: ['clang', 'gcc']
 
-    name: Ubuntu 20.04 / ${{ matrix.compiler }}
+    name: Ubuntu Latest / ${{ matrix.compiler }}
     steps:
     - name: Checkout
       uses: actions/checkout@v2
@@ -96,3 +96,47 @@ jobs:
         name: rp-lin-x64-${{ matrix.compiler }}.Release
         path: |
           src/build/rp-lin-x64
+
+  OSX:
+    runs-on: osx-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        compiler: ['clang', 'gcc']
+
+    name: OSX Latest / ${{ matrix.compiler }}
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v2
+
+    - name: Initialize CodeQL
+      uses: github/codeql-action/init@v1
+      with:
+        languages: cpp
+
+    - name: Build with gcc
+      if: matrix.compiler == 'gcc'
+      env:
+        CC: gcc-11
+        CXX: g++-11
+      run: |
+        cd src/build
+        chmod u+x ./build-release-osx.sh
+        ./build-release-osx.sh
+
+    - name: Build with clang
+      if: matrix.compiler == 'clang'
+      env:
+        CC: clang-13
+        CXX: clang++-13
+      run: |
+        cd src/build
+        chmod u+x ./build-release-osx.sh
+        ./build-release-osx.sh
+
+    - name: Upload artifacts
+      uses: actions/upload-artifact@v2
+      with:
+        name: rp-osx-x64-${{ matrix.compiler }}.Release
+        path: |
+          src/build/rp-osx-x64
