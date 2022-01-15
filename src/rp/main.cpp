@@ -7,7 +7,6 @@
 #include <cstring>
 #include <exception>
 #include <fmt/printf.h>
-#include <iostream>
 #include <unordered_map>
 
 #define NUM_V "2.0"
@@ -85,7 +84,6 @@ int main(int argc, char *argv[]) {
     const uint64_t base = opts.va.size() > 0
                               ? std::strtoull(opts.va.c_str(), nullptr, 0)
                               : p.get_image_base_address();
-
     if (opts.rop > 0) {
       const uint32_t options = opts.thumb ? 1 : 0;
       fmt::print("\nWait a few seconds, rp++ is looking for gadgets ({} "
@@ -129,12 +127,12 @@ int main(int argc, char *argv[]) {
 
     if (opts.shexa.size() > 0) {
       const std::vector<uint8_t> &hex_values = string_to_hex(opts.shexa);
-      p.search_and_display(hex_values.data(), hex_values.size());
+      p.search_and_display(hex_values.data(), hex_values.size(), base);
     }
 
     if (opts.sint.size() > 0) {
       const uint32_t val = std::strtoul(opts.sint.c_str(), nullptr, 16);
-      p.search_and_display((const uint8_t *)&val, sizeof(val));
+      p.search_and_display((const uint8_t *)&val, sizeof(val), base);
     }
   } catch (const std::exception &e) {
     enable_color(COLO_RED);

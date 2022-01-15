@@ -48,18 +48,19 @@ public:
   /*!
    *  \brief Find hex values in the section of the program
    *
-   *  \param hex_values: It is a pointer on where it can find the bytes to find
+   * \param hex_values: It is a pointer on where it can find the bytes to find
    * in memory
    * \param size: It is the size of the buffer hex_values
    */
-  void search_and_display(const uint8_t *hex_values, const size_t size);
+  void search_and_display(const uint8_t *hex_values, const size_t size,
+                          const uint64_t base);
 
   /*!
    *  \brief Get the base address of the program
    *
    *  \return size: Base address of the program
    */
-  uint64_t get_image_base_address();
+  uint64_t get_image_base_address() const;
 
 private:
   std::unique_ptr<CPU> m_cpu; /*!< a pointer on the CPU used by your program*/

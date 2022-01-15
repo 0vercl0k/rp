@@ -207,7 +207,7 @@ __attribute__((packed))
 #endif
 
 struct MachoLayout {
-  virtual ~MachoLayout() = 0;
+  virtual ~MachoLayout() = default;
   virtual void fill_structures(std::ifstream &file) = 0;
   virtual uint32_t get_size_mach_header() const = 0;
   virtual void display(const VerbosityLevel lvl = VERBOSE_LEVEL_1) const = 0;
@@ -245,7 +245,6 @@ template <class T> struct MachoArchLayout : public MachoLayout {
         auto seg_cmd = std::make_unique<RP_SEGMENT_COMMAND<T>>();
 
         file.read((char *)seg_cmd.get(), sizeof(RP_SEGMENT_COMMAND<T>));
-        seg_commands.push_back(std::move(seg_cmd));
 
         if (strcasecmp((char *)seg_cmd->segname.data(), "__TEXT") == 0) {
           // If this is the __text segment, we populate the base address of the
@@ -262,6 +261,7 @@ template <class T> struct MachoArchLayout : public MachoLayout {
           sections.push_back(std::move(sect));
         }
 
+        seg_commands.push_back(std::move(seg_cmd));
         break;
       }
 

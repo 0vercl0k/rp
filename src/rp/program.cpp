@@ -11,7 +11,6 @@
 #include "x86.hpp"
 #include <fmt/printf.h>
 #include <future>
-#include <iostream>
 #include <map>
 #include <mutex>
 #include <queue>
@@ -128,9 +127,10 @@ GadgetSet Program::find_gadgets(const uint32_t depth,
   return gadgets_found;
 }
 
-void Program::search_and_display(const uint8_t *hex_values, const size_t size) {
-  const auto &executable_sections = m_exformat->get_executables_section(
-      m_file, m_exformat->get_image_base_address());
+void Program::search_and_display(const uint8_t *hex_values, const size_t size,
+                                 const uint64_t base) {
+  const auto &executable_sections =
+      m_exformat->get_executables_section(m_file, base);
   if (executable_sections.size() == 0) {
     fmt::print("It seems your binary haven't executable sections.\n");
   }
@@ -146,6 +146,6 @@ void Program::search_and_display(const uint8_t *hex_values, const size_t size) {
   }
 }
 
-uint64_t Program::get_image_base_address() {
+uint64_t Program::get_image_base_address() const {
   return m_exformat->get_image_base_address();
 }

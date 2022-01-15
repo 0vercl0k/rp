@@ -19,7 +19,7 @@ public:
     std::streampos off = file.tellg();
 
     file.seekg(0, std::ios::beg);
-    file.read((char *)&header32, sizeof(RP_MACH_HEADER<x86Version>));
+    file.read((char *)&header32, sizeof(header32));
 
     std::unique_ptr<CPU> cpu;
     switch (header32.cputype) {
@@ -43,10 +43,6 @@ public:
 
     file.seekg(off);
 
-    if (cpu == nullptr) {
-      RAISE_EXCEPTION("Cannot allocate cpu");
-    }
-
     // Now we can fill the structure
     m_MachoLayout->fill_structures(file);
     return cpu;
@@ -55,7 +51,8 @@ public:
   std::string get_class_name() const override { return "Mach-o"; }
 
   std::vector<std::unique_ptr<Section>>
-  get_executables_section(std::ifstream &file, const uint64_t base) const override {
+  get_executables_section(std::ifstream &file,
+                          const uint64_t base) const override {
     return m_MachoLayout->get_executable_section(file, base);
   }
 
@@ -70,7 +67,7 @@ public:
 
 private:
   template <class T> void init_properly_macho_layout() {
-    m_MachoLayout = std::unique_ptr<MachoArchLayout<T>>();
+    m_MachoLayout = std::make_unique<MachoArchLayout<T>>();
   }
 
   CPU::E_CPU extract_information_from_binary(std::ifstream &file) override {

@@ -1,9 +1,7 @@
 // Axel '0vercl0k' Souchet - January 12 2022
 #include "ropsearch_algorithm.hpp"
 #include "safeint.hpp"
-
 #include <cstring>
-#include <iostream>
 
 void find_all_gadget_from_ret(const uint8_t *data, uint64_t vaddr,
                               const InstructionInformation &ending_instr_disasm,
@@ -21,10 +19,6 @@ void find_all_gadget_from_ret(const uint8_t *data, uint64_t vaddr,
                           (depth * size_biggest_instruction);
 
   // going back yeah, but not too much :))
-  // /!\ I encountered a quirk in g++: `unsigned char *p = (unsigned
-  // char*)0x80000000; / unsigned long long q = (unsigned long long)p; /
-  // printf("%llx", q); -> ffffffff80000000 -- To fix this sign-extension issue,
-  // EIP is now an uintptr_t */
   if (EIP < uintptr_t(data)) {
     EIP = uintptr_t(data);
     VirtualAddr = (uintptr_t)vaddr;

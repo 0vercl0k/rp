@@ -5,7 +5,6 @@
 #include "rpexception.hpp"
 #include <fmt/printf.h>
 #include <iomanip>
-#include <iostream>
 
 #ifdef WINDOWS
 #include <windows.h>
@@ -66,7 +65,7 @@ static inline void enable_color_(const Colors colo) {
   SetConsoleTextAttribute(hStdOutput, uint16_t(colo));
 #else
   const char *colors[] = {"\x1b[91m", "\x1b[92m", "\x1b[93m", "\x1b[0m"};
-  std::cout << colors[colo];
+  fmt::print(colors[colo]);
 #endif
 }
 
@@ -98,7 +97,7 @@ static void disable_color_() {
   SetConsoleTextAttribute(hStdOutput, COLO_DEFAULT);
 #else
   const char *colors[]{"\x1b[91m", "\x1b[92m", "\x1b[93m", "\x1b[0m"};
-  std::cout << colors[COLO_DEFAULT];
+  fmt::print(colors[COLO_DEFAULT]);
 #endif
 }
 
@@ -199,12 +198,9 @@ template <class T> static void coloshell(const T t, const Colors colo) {
  */
 #define display_hex_field(field, n)                                            \
   {                                                                            \
-    std::cout << std::setw(n) << std::left << std::setfill(' ') << " " #field  \
-              << ": ";                                                         \
+    fmt::print("{:{}}: ", #field, n);                                          \
     enable_color(COLO_RED);                                                    \
-    std::cout << "0x" << std::setw(sizeof(field) * 2) << std::right            \
-              << std::setfill('0');                                            \
-    std::cout << std::hex << field;                                            \
+    fmt::print("0x{:0{}x} ", field, sizeof(field) * 2);                        \
     disable_color();                                                           \
   }
 
@@ -266,49 +262,6 @@ template <class T> static void coloshell(const T t, const Colors colo) {
   {                                                                            \
     display_short_hex_field(field1);                                           \
     display_short_hex_field(field2);                                           \
-    fmt::print("\n");                                                          \
-  }
-
-/**
- * \def display_string(field_name, field)
- *  Display a field with its name.
- *
- * \param field_name: It is the field name
- * \param field: It is the field
- */
-#define display_string(field_name, field)                                      \
-  {                                                                            \
-    std::cout << std::setw(15) << std::right << std::setfill(' ')              \
-              << field_name;                                                   \
-    std::cout << ": " << field;                                                \
-  }
-
-/**
- * \def display_string_lf(field_name, field)
- *  Display a field with its name and a line feed.
- *
- * \param field_name: It is the field name
- * \param field: It is the field
- */
-#define display_string_lf(field_name, field)                                   \
-  {                                                                            \
-    display_string(field_name, field);                                         \
-    fmt::print("\n");                                                          \
-  }
-
-/**
- * \def display_2strings_lf(field_name1, field1, field_name2, field2)
- *  Display two fields with their names and a line feed.
- *
- * \param field_name1: It is the first field name
- * \param field1: It is the first field
- * \param field_name2: It is the second field name
- * \param field2: It is the second field
- */
-#define display_2strings_lf(field_name1, field1, field_name2, field2)          \
-  {                                                                            \
-    display_string(field_name1, field1);                                       \
-    display_string(field_name2, field2);                                       \
     fmt::print("\n");                                                          \
   }
 

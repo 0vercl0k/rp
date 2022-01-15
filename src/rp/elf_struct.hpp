@@ -11,7 +11,6 @@
 #include <fmt/printf.h>
 #include <fstream>
 #include <iomanip>
-#include <iostream>
 #include <string>
 #include <vector>
 
@@ -306,20 +305,18 @@ template <class T> struct ELFLayout : public ExecutableLinkingFormatLayout {
     }
 
     w_yel_lf("-> Elf Headers:");
-    std::cout << std::setw(12) << std::setfill(' ') << std::left;
     w_gre("id");
-    std::cout << std::setw(17) << std::setfill(' ') << std::left;
+    fmt::print("{:10}", "");
     w_gre("addr");
-    std::cout << std::setw(17) << std::setfill(' ') << std::left;
+    fmt::print("{:13}", "");
     w_gre("size");
-    std::cout << std::setw(32) << std::setfill(' ') << std::left;
+    fmt::print("{:13}", "");
     w_gre("name");
-    std::cout << std::endl
-              << std::setw(70) << std::setfill('-') << "-" << std::endl;
+    fmt::print("{:32}\n", "");
+    fmt::print("{:-<70}-\n", "");
 
     for (const auto &sectionheader : elfSectionHeaders) {
-      std::cout << "0x" << std::setw(10) << std::setfill(' ') << std::left
-                << i++;
+      fmt::print("0x{:<10x}", i++);
       sectionheader->display(lvl);
     }
   }
@@ -357,7 +354,6 @@ template <class T> struct ELFLayout : public ExecutableLinkingFormatLayout {
       auto pElfProgramHeader = std::make_unique<Elf_Phdr<T>>();
 
       file.read((char *)pElfProgramHeader.get(), sizeof(Elf_Phdr<T>));
-      elfProgramHeaders.push_back(std::move(pElfProgramHeader));
 
       // XXX: Here we assume that the first LOAD program header encountered will
       // hold the image base address and I guess this assumption is quite wrong
@@ -365,6 +361,7 @@ template <class T> struct ELFLayout : public ExecutableLinkingFormatLayout {
       if (type_to_str(pElfProgramHeader->p_type) == "LOAD" && image_base == 0) {
         image_base = pElfProgramHeader->p_vaddr;
       }
+      elfProgramHeaders.push_back(std::move(pElfProgramHeader));
     }
 
     // If we want to know the name of the different section, we need to find the
