@@ -90,7 +90,7 @@ int main(int argc, char *argv[]) {
                  "threads max)..\n",
                  opts.maxth);
 
-      GadgetSet all_gadgets =
+      GadgetMultiset all_gadgets =
           p.find_gadgets(opts.rop, options, opts.maxth, base);
 
       fmt::print("A total of {} gadgets found.\n", all_gadgets.size());
@@ -109,12 +109,12 @@ int main(int argc, char *argv[]) {
 
         // Now we walk the gadgets found and set the VA
         for (const auto &unique_gadget : unique_gadgets) {
-          display_gadget_lf(unique_gadget->get_first_absolute_address(),
+          display_gadget_lf(unique_gadget.get_first_absolute_address(),
                             unique_gadget);
         }
       } else {
         for (const auto &gadget : all_gadgets) {
-          display_gadget_lf(gadget->get_first_absolute_address(), gadget);
+          display_gadget_lf(gadget.get_first_absolute_address(), gadget);
         }
       }
 

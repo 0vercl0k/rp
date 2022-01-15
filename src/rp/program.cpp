@@ -74,7 +74,7 @@ void Program::display_information(const VerbosityLevel lvl) {
   m_exformat->display_information(lvl);
 }
 
-GadgetSet Program::find_gadgets(const uint32_t depth,
+GadgetMultiset Program::find_gadgets(const uint32_t depth,
                                 const uint32_t disass_engine_options,
                                 const size_t n_max_thread,
                                 const uint64_t base) {
@@ -89,7 +89,7 @@ GadgetSet Program::find_gadgets(const uint32_t depth,
     jobs_queue.push(std::move(executable_section));
   }
 
-  GadgetSet gadgets_found;
+  GadgetMultiset gadgets_found;
   std::vector<std::future<void>> thread_pool;
   std::mutex m;
   while (jobs_queue.size() != 0) {

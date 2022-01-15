@@ -9,5 +9,5 @@
 
 void find_rop_gadgets(const uint8_t *data, const uint64_t size,
                       const uint64_t vaddr, const uint32_t depth,
-                      GadgetSet &merged_gadgets,
+                      GadgetMultiset &merged_gadgets,
                       DisassEngineWrapper &disass_engine, std::mutex &m);

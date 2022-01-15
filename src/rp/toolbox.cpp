@@ -101,15 +101,14 @@ std::vector<uint8_t> string_to_hex(const std::string &hex) {
   return bytes;
 }
 
-GadgetOrderedSet only_unique_gadgets(GadgetSet &list_gadgets) {
-  GadgetOrderedSet unique_gadgets;
+GadgetSet only_unique_gadgets(GadgetMultiset &list_gadgets) {
+  GadgetSet unique_gadgets;
   // Now we have a list of gadget, cool, but we want to keep only the unique!
   for (size_t i = 0; i < list_gadgets.size(); i++) {
     auto node = list_gadgets.extract(list_gadgets.begin());
-    const uint64_t first_offset = node.value()->get_first_offset();
-    const uint64_t first_va_section = node.value()->get_first_va_section();
-    const auto &[g, inserted] = unique_gadgets.insert(std::move(node.value()));
-    if (!inserted) {
+    const uint64_t first_offset = node.value().get_first_offset();
+    const uint64_t first_va_section = node.value().get_first_va_section();
+    if (unique_gadgets.find(node.value()) == unique_gadgets.end()) {
       continue;
     }
 
@@ -117,7 +116,8 @@ GadgetOrderedSet only_unique_gadgets(GadgetSet &list_gadgets) {
     // & its va section maybe you can ask yourself 'Why do we store its va
     // section ?' and the answer is: because you can find the same gadget in
     // another executable sections!
-    (*g)->add_new_one(first_offset, first_va_section);
+    node.value().add_new_one(first_offset, first_va_section);
+    unique_gadgets.insert(std::move(node.value()));
   }
 
   return unique_gadgets;

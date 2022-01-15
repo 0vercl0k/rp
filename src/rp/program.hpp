@@ -41,7 +41,7 @@ public:
    * Options you want to pass to the disassembly engine
    *
    */
-  GadgetSet find_gadgets(const uint32_t depth,
+  GadgetMultiset find_gadgets(const uint32_t depth,
                          const uint32_t disass_engine_options,
                          const size_t n_max_thread, const uint64_t base);
 

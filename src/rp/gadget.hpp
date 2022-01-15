@@ -38,7 +38,7 @@ public:
     // Otherwise with big binaries you end up with a *lot* of memory being used
     std::string disassembly;
     for (const auto &i : m_instructions) {
-      disassembly += i->get_disassembly() + " ; ";
+      disassembly += i.get_disassembly() + " ; ";
     }
 
     return disassembly;
@@ -46,7 +46,7 @@ public:
 
   void display_disassembly() const {
     for (const auto &i : m_instructions) {
-      fmt::print("{} ; ", i->get_disassembly());
+      fmt::print("{} ; ", i.get_disassembly());
     }
   }
 
@@ -74,10 +74,8 @@ public:
         m_info_gadgets.emplace_back(m_start_offset, va_section);
       }
 
-      auto instr_copy = std::make_unique<Instruction>(instr);
-
       // We build our gadget instruction per instruction
-      m_instructions.push_back(std::move(instr_copy));
+      m_instructions.emplace_back(instr);
 
       // Don't forget to increment the size
       m_size += instr.get_size();
@@ -128,15 +126,14 @@ public:
    * \return
    */
   struct Sort {
-    bool operator()(const std::unique_ptr<Gadget> &g,
-                    const std::unique_ptr<Gadget> &d) const {
-      return g->get_disassembly() < d->get_disassembly();
+    bool operator()(const Gadget &g, const Gadget &d) const {
+      return g.get_disassembly() < d.get_disassembly();
     }
   };
 
   void print_bytes() const {
     for (const auto &i : m_instructions) {
-      i->print_bytes();
+      i.print_bytes();
     }
   }
 
@@ -146,7 +143,7 @@ private:
 
   uint32_t m_size; /*!< the size in byte of the gadget*/
 
-  std::vector<std::unique_ptr<Instruction>>
+  std::vector<Instruction>
       m_instructions; /*!< the list of the different instructions composing the
                          gadget*/
 
@@ -155,5 +152,5 @@ private:
                          gadget ; those offsets are relative to m_va_section*/
 };
 
-using GadgetSet = std::multiset<std::unique_ptr<Gadget>>;
-using GadgetOrderedSet = std::set<std::unique_ptr<Gadget>, Gadget::Sort>;
+using GadgetMultiset = std::multiset<Gadget, Gadget::Sort>;
+using GadgetSet = std::set<Gadget, Gadget::Sort>;

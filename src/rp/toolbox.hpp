@@ -76,7 +76,7 @@ bool is_hex_char(const char c);
  * \param unique_gadgets: The list of unique gadgets
  *
  */
-GadgetOrderedSet only_unique_gadgets(GadgetSet &list_gadgets);
+GadgetSet only_unique_gadgets(GadgetMultiset &list_gadgets);
 
 /**
  * \fn bool does_badbytes_filter_apply(const uint64_t va, const

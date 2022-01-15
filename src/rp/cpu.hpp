@@ -38,7 +38,7 @@ public:
    */
   virtual void find_gadget_in_memory(const uint8_t *p_memory,
                                      const uint64_t size, const uint64_t vaddr,
-                                     const uint32_t depth, GadgetSet &gadgets,
+                                     const uint32_t depth, GadgetMultiset &gadgets,
                                      uint32_t disass_engine_options,
                                      std::mutex &m) = 0;
 

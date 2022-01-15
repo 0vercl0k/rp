@@ -5,7 +5,7 @@
 
 void find_all_gadget_from_ret(const uint8_t *data, uint64_t vaddr,
                               const InstructionInformation &ending_instr_disasm,
-                              const uint32_t depth, GadgetSet &gadgets,
+                              const uint32_t depth, GadgetMultiset &gadgets,
                               DisassEngineWrapper &disass_engine) {
   const uint32_t alignement = disass_engine.get_alignement();
   const uint32_t size_biggest_instruction =
@@ -81,10 +81,10 @@ void find_all_gadget_from_ret(const uint8_t *data, uint64_t vaddr,
       list_of_instr.emplace_back(ending_instr_disasm.disassembly,
                                  ending_instr_disasm.bytes);
 
-      auto gadget = std::make_unique<Gadget>(gadget_start_address);
+      Gadget gadget(gadget_start_address);
 
       // Now we populate our gadget with the instructions previously found..
-      gadget->add_instructions(list_of_instr, vaddr);
+      gadget.add_instructions(list_of_instr, vaddr);
       gadgets.insert(std::move(gadget));
     }
 
@@ -96,9 +96,9 @@ void find_all_gadget_from_ret(const uint8_t *data, uint64_t vaddr,
 
 void find_rop_gadgets(const uint8_t *data, const uint64_t size,
                       const uint64_t vaddr, const uint32_t depth,
-                      GadgetSet &merged_gadgets_final,
+                      GadgetMultiset &merged_gadgets_final,
                       DisassEngineWrapper &disass_engine, std::mutex &m) {
-  GadgetSet merged_gadgets;
+  GadgetMultiset merged_gadgets;
   const uint32_t alignement = disass_engine.get_alignement();
   for (uint64_t offset = 0; offset < size; offset += alignement) {
     DisassEngineReturn ret;
@@ -125,10 +125,10 @@ void find_rop_gadgets(const uint8_t *data, const uint64_t size,
 
     only_ending_instr.emplace_back(ret_instr.disassembly, ret_instr.bytes);
 
-    auto gadget_with_one_instr = std::make_unique<Gadget>(offset);
+    Gadget gadget_with_one_instr(offset);
 
     // the gadget will only have 1 ending instruction
-    gadget_with_one_instr->add_instructions(only_ending_instr, vaddr);
+    gadget_with_one_instr.add_instructions(only_ending_instr, vaddr);
     merged_gadgets.insert(std::move(gadget_with_one_instr));
 
     // if we want to see gadget with more instructions
