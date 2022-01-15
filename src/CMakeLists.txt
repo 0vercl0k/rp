@@ -23,13 +23,12 @@ elseif(UNIX)
     else()
         set(RP_PLAT "lin")
     endif()
-    find_package(Threads)
  endif()
 
 if(CMAKE_SIZEOF_VOID_P EQUAL 8)
-    set(RP_PLAT "${RP_PLAT}-x64")
+    set(RP_PLAT "rp-${RP_PLAT}-x64")
 else()
-    set(RP_PLAT "${RP_PLAT}-x86")
+    set(RP_PLAT "rp-${RP_PLAT}-x86")
 endif()
 
 file(
@@ -41,7 +40,12 @@ file(
 )
 
 add_executable(
-    rp-${RP_PLAT}
+    ${RP_PLAT}
     ${rp_files}
     "third_party/beaengine/src/BeaEngine.c"
 )
+
+if(UNIX)
+    find_package(Threads)
+    target_link_libraries(${RP_PLAT} ${CMAKE_THREAD_LIBS_INIT})
+endif()

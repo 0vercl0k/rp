@@ -358,6 +358,7 @@ struct PortableExecutableLayout {
   RP_IMAGE_DOS_HEADER imgDosHeader;
   std::vector<std::unique_ptr<RP_IMAGE_SECTION_HEADER>> imgSectionHeaders;
 
+  virtual ~PortableExecutableLayout() = default;
   virtual void display(VerbosityLevel lvl = VERBOSE_LEVEL_1) const {
     imgDosHeader.display(lvl);
   }
