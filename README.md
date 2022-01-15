@@ -1,4 +1,4 @@
-# rp++
+# rp++: a fast ROP gadget finder for pe/elf/mach-o x86/x64/ARM binaries
 
 ![Builds](https://github.com/0vercl0k/rp/workflows/Builds/badge.svg)
 

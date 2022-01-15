@@ -136,6 +136,10 @@ static std::string type_to_str(const uint32_t p_type) {
     return "RELRO";
   }
 
+  case 0x6474e553: {
+    return "PROPERTY";
+  }
+
   case 0x65041580: {
     return "PAX_FLAGS";
   }
@@ -202,8 +206,6 @@ template <> struct Elf_Phdr<x64Version> {
   uint64_t p_filesz;
   uint64_t p_memsz;
   uint64_t p_align;
-
-  explicit Elf_Phdr() {}
 
   void display(VerbosityLevel lvl = VERBOSE_LEVEL_1) const {
     w_yel_lf("-> Elf_Phdr64:");
