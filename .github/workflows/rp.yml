@@ -117,8 +117,8 @@ jobs:
     - name: Build with clang
       if: matrix.compiler == 'clang'
       env:
-        CC: clang-13
-        CXX: clang++-13
+        CC: clang
+        CXX: clang++
       run: |
         cd src/build
         chmod u+x ./build-release-osx.sh
