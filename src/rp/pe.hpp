@@ -7,7 +7,7 @@
 
 class PE : public ExecutableFormat {
 public:
-  std::unique_ptr<CPU> get_cpu(std::ifstream &file) {
+  std::unique_ptr<CPU> get_cpu(std::ifstream &file) override {
     CPU::E_CPU cpu_type = extract_information_from_binary(file);
     switch (cpu_type) {
     case CPU::CPU_x86: {
@@ -61,7 +61,7 @@ public:
   }
 
 private:
-  uint64_t get_image_base_address() const {
+  uint64_t get_image_base_address() const override {
     return m_pPELayout->get_image_base_address();
   }
 
