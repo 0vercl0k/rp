@@ -65,7 +65,7 @@ static inline void enable_color_(const Colors colo) {
   SetConsoleTextAttribute(hStdOutput, uint16_t(colo));
 #else
   const char *colors[] = {"\x1b[91m", "\x1b[92m", "\x1b[93m", "\x1b[0m"};
-  fmt::print(colors[colo]);
+  fmt::print("{}\n", colors[colo]);
 #endif
 }
 
@@ -97,7 +97,7 @@ static void disable_color_() {
   SetConsoleTextAttribute(hStdOutput, COLO_DEFAULT);
 #else
   const char *colors[]{"\x1b[91m", "\x1b[92m", "\x1b[93m", "\x1b[0m"};
-  fmt::print(colors[COLO_DEFAULT]);
+  fmt::print("{}", colors[COLO_DEFAULT]);
 #endif
 }
 
