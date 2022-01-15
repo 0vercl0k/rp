@@ -10,7 +10,7 @@ include_directories(${CMAKE_CURRENT_LIST_DIR}/third_party/beaengine/include)
 include_directories(${CMAKE_CURRENT_LIST_DIR}/third_party/capstone/include)
 include_directories(${CMAKE_CURRENT_LIST_DIR}/third_party/CLI11)
 
-add_compile_definitions(FMT_HEADER_ONLY BEA_ENGINE_STATIC)
+add_compile_definitions(FMT_HEADER_ONLY BEA_ENGINE_STATIC CAPSTONE_HAS_ARM CAPSTONE_USE_SYS_DYN_MEM)
 
 if(WIN32)
     set(RP_PLAT "win")
@@ -32,10 +32,10 @@ else()
 endif()
 
 file(
-    GLOB_RECURSE
+    GLOB
     rp_files
     rp/*.cpp
-    third_party/capstone/arch/*.c
+    third_party/capstone/arch/ARM/*.c
     third_party/capstone/*.c
 )
 
@@ -43,9 +43,4 @@ add_executable(
     rp-${RP_PLAT}
     ${rp_files}
     "third_party/beaengine/src/BeaEngine.c"
-)
-
-target_link_libraries(
-    rp-${RP_PLAT}
-    ${CMAKE_CURRENT_LIST_DIR}/third_party/capstone/${CMAKE_SHARED_MODULE_PREFIX}capstone${CMAKE_STATIC_LIBRARY_SUFFIX}
 )
