@@ -97,22 +97,12 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        compiler: ['clang', 'gcc']
+        compiler: ['clang']
 
     name: OSX Latest / ${{ matrix.compiler }}
     steps:
     - name: Checkout
       uses: actions/checkout@v2
-
-    - name: Build with gcc
-      if: matrix.compiler == 'gcc'
-      env:
-        CC: gcc-11
-        CXX: g++-11
-      run: |
-        cd src/build
-        chmod u+x ./build-release-osx.sh
-        ./build-release-osx.sh
 
     - name: Build with clang
       if: matrix.compiler == 'clang'
