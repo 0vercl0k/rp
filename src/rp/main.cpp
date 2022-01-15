@@ -8,6 +8,7 @@
 #include <exception>
 #include <fmt/printf.h>
 #include <iostream>
+#include <unordered_map>
 
 #define NUM_V "2.0"
 #ifdef ARCH_X64
