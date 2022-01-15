@@ -41,8 +41,9 @@ public:
   std::string get_class_name() const override { return "Elf"; }
 
   std::vector<std::unique_ptr<Section>>
-  get_executables_section(std::ifstream &file) const override {
-    return m_ELFLayout->get_executable_section(file);
+  get_executables_section(std::ifstream &file,
+                          const uint64_t base) const override {
+    return m_ELFLayout->get_executable_section(file, base);
   }
 
   uint64_t get_image_base_address() const override {

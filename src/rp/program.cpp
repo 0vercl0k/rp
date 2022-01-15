@@ -75,11 +75,12 @@ void Program::display_information(const VerbosityLevel lvl) {
   m_exformat->display_information(lvl);
 }
 
-void Program::find_gadgets(uint32_t depth, GadgetSet &gadgets_found,
-                           uint32_t disass_engine_options,
-                           size_t n_max_thread) {
+GadgetSet Program::find_gadgets(const uint32_t depth,
+                                const uint32_t disass_engine_options,
+                                const size_t n_max_thread,
+                                const uint64_t base) {
   // To do a ROP gadget research, we need to know the executable section
-  auto executable_sections = m_exformat->get_executables_section(m_file);
+  auto executable_sections = m_exformat->get_executables_section(m_file, base);
   if (executable_sections.size() == 0) {
     fmt::print("It seems your binary haven't executable sections.\n");
   }
@@ -89,6 +90,7 @@ void Program::find_gadgets(uint32_t depth, GadgetSet &gadgets_found,
     jobs_queue.push(std::move(executable_section));
   }
 
+  GadgetSet gadgets_found;
   std::vector<std::future<void>> thread_pool;
   std::mutex m;
   while (jobs_queue.size() != 0) {
@@ -122,10 +124,13 @@ void Program::find_gadgets(uint32_t depth, GadgetSet &gadgets_found,
   for (auto &f : thread_pool) {
     f.get();
   }
+
+  return gadgets_found;
 }
 
 void Program::search_and_display(const uint8_t *hex_values, const size_t size) {
-  const auto &executable_sections = m_exformat->get_executables_section(m_file);
+  const auto &executable_sections = m_exformat->get_executables_section(
+      m_file, m_exformat->get_image_base_address());
   if (executable_sections.size() == 0) {
     fmt::print("It seems your binary haven't executable sections.\n");
   }

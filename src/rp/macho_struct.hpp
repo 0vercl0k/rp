@@ -213,7 +213,7 @@ struct MachoLayout {
   virtual uint32_t get_size_mach_header() const = 0;
   virtual void display(const VerbosityLevel lvl = VERBOSE_LEVEL_1) const = 0;
   virtual std::vector<std::unique_ptr<Section>>
-  get_executable_section(std::ifstream &file) const = 0;
+  get_executable_section(std::ifstream &file, const uint64_t base) const = 0;
   virtual uint64_t get_image_base_address() const = 0;
 };
 
@@ -285,22 +285,24 @@ template <class T> struct MachoArchLayout : public MachoLayout {
   }
 
   std::vector<std::unique_ptr<Section>>
-  get_executable_section(std::ifstream &file) const override {
+  get_executable_section(std::ifstream &file,
+                         const uint64_t base) const override {
     std::vector<std::unique_ptr<Section>> exc_sect;
 
     for (const auto &section : sections) {
-      if (section->flags & S_ATTR_PURE_INSTRUCTIONS ||
-          section->flags & S_ATTR_SOME_INSTRUCTIONS) {
-        auto s = std::make_unique<Section>((char *)section->sectname.data(),
-                                           section->offset, section->addr,
-                                           section->size);
-
-        s->dump(file);
-
-        s->set_props(Section::Executable);
-
-        exc_sect.push_back(std::move(s));
+      if (!(section->flags & S_ATTR_PURE_INSTRUCTIONS) &&
+          !(section->flags & S_ATTR_SOME_INSTRUCTIONS)) {
+        continue;
       }
+
+      const auto offset = section->addr - base;
+      auto s = std::make_unique<Section>((char *)section->sectname.data(),
+                                         section->offset, base + offset,
+                                         section->size);
+
+      s->dump(file);
+      s->set_props(Section::Executable);
+      exc_sect.push_back(std::move(s));
     }
     return exc_sect;
   }

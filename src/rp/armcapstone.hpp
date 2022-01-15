@@ -24,7 +24,7 @@ public:
 
   ~ArmCapstone() override { cs_close(&m_handle); }
   InstructionInformation disass(const uint8_t *data, uint64_t len,
-                                uint64_t vaddr,
+                                const uint64_t vaddr,
                                 DisassEngineReturn &ret) override {
     if (len == 0) {
       len = 4;

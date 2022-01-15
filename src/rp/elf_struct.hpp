@@ -278,7 +278,7 @@ struct ExecutableLinkingFormatLayout {
   virtual void display(VerbosityLevel lvl = VERBOSE_LEVEL_1) const = 0;
   virtual uint64_t get_image_base_address(void) const = 0;
   virtual std::vector<std::unique_ptr<Section>>
-  get_executable_section(std::ifstream &file) const = 0;
+  get_executable_section(std::ifstream &file, const uint64_t base) const = 0;
   virtual uint16_t get_cpu(void) const = 0;
 };
 
@@ -360,7 +360,6 @@ template <class T> struct ELFLayout : public ExecutableLinkingFormatLayout {
 
       // XXX: Here we assume that the first LOAD program header encountered will
       // hold the image base address and I guess this assumption is quite wrong
-      // Fuck you ELF.
       // https://stackoverflow.com/questions/18296276/base-address-of-elf
       if (type_to_str(pElfProgramHeader->p_type) == "LOAD" && base == 0) {
         base = pElfProgramHeader->p_vaddr;
@@ -402,25 +401,23 @@ template <class T> struct ELFLayout : public ExecutableLinkingFormatLayout {
   }
 
   std::vector<std::unique_ptr<Section>>
-  get_executable_section(std::ifstream &file) const override {
+  get_executable_section(std::ifstream &file,
+                         const uint64_t base) const override {
     std::vector<std::unique_ptr<Section>> exec_sections;
 
     for (const auto &programheader : elfProgramHeaders) {
-      if (programheader->p_flags & 1) {
-        // XXX: g++ + std::make_shared + packed struct
-        auto sec = std::make_unique<Section>(
-            type_to_str(programheader->p_type).c_str(), programheader->p_offset,
-            programheader->p_vaddr, programheader->p_filesz);
-
-        if (sec == nullptr) {
-          RAISE_EXCEPTION("Cannot alocate a section");
-        }
-
-        sec->dump(file);
-        sec->set_props(Section::Executable);
-
-        exec_sections.push_back(std::move(sec));
+      if (!(programheader->p_flags & 1)) {
+        continue;
       }
+
+      const auto offset = programheader->p_vaddr - base;
+      auto sec = std::make_unique<Section>(
+          type_to_str(programheader->p_type).c_str(), programheader->p_offset,
+          base + offset, programheader->p_filesz);
+
+      sec->dump(file);
+      sec->set_props(Section::Executable);
+      exec_sections.push_back(std::move(sec));
     }
 
     return exec_sections;

@@ -37,7 +37,7 @@ int main(int argc, char *argv[]) {
     std::string sint;
     bool version = false;
     bool thumb = false;
-    uint64_t va = 0;
+    std::string va;
   } opts;
 
   CLI::App rp("rp++: a fast ROP gadget finder for pe/elf/mach-o x86/x64/ARM "
@@ -79,25 +79,20 @@ int main(int argc, char *argv[]) {
       p.display_information(VerbosityLevel(opts.display));
     }
 
+    // Here we set the base being 0 if we want to have absolute virtual
+    // memory address displayed
+    const uint64_t base = opts.va.size() > 0
+                              ? std::strtoull(opts.va.c_str(), nullptr, 0)
+                              : p.get_image_base_address();
+
     if (opts.rop > 0) {
       const uint32_t options = opts.thumb ? 1 : 0;
       fmt::print("\nWait a few seconds, rp++ is looking for gadgets ({} "
                  "threads max)..\n",
                  opts.maxth);
-      GadgetSet all_gadgets;
-      p.find_gadgets(opts.rop, all_gadgets, options, opts.maxth);
 
-      // Here we set the base beeing 0 if we want to have absolute virtual
-      // memory address displayed
-      uint64_t base = 0;
-      uint64_t new_base = 0;
-      if (opts.va > 0) {
-        // If not we will substract the base address to every gadget to keep
-        // only offsets
-        base = p.get_image_base_address();
-        // And we will use your new base address
-        new_base = opts.va;
-      }
+      GadgetSet all_gadgets =
+          p.find_gadgets(opts.rop, options, opts.maxth, base);
 
       fmt::print("A total of {} gadgets found.\n", all_gadgets.size());
       std::vector<uint8_t> badbyte_list;
@@ -126,7 +121,8 @@ int main(int argc, char *argv[]) {
 
       if (opts.badbytes.size() > 0) {
         fmt::print(
-            "\n{} gadgets have been filtered because of your bad-bytes.\n");
+            "\n{} gadgets have been filtered because of your bad-bytes.\n",
+            nb_gadgets_filtered);
       }
     }
 

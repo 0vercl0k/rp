@@ -41,8 +41,9 @@ public:
    * Options you want to pass to the disassembly engine
    *
    */
-  void find_gadgets(uint32_t depth, GadgetSet &gadgets,
-                    uint32_t disass_engine_options, size_t n_max_thread);
+  GadgetSet find_gadgets(const uint32_t depth,
+                         const uint32_t disass_engine_options,
+                         const size_t n_max_thread, const uint64_t base);
 
   /*!
    *  \brief Find hex values in the section of the program

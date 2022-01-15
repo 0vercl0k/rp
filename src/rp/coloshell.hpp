@@ -65,7 +65,7 @@ static inline void enable_color_(const Colors colo) {
 
   SetConsoleTextAttribute(hStdOutput, uint16_t(colo));
 #else
-  const char *colors[]{"\x1b[91m", "\x1b[92m", "\x1b[93m", "\x1b[0m"};
+  const char *colors[] = {"\x1b[91m", "\x1b[92m", "\x1b[93m", "\x1b[0m"};
   std::cout << colors[colo];
 #endif
 }
@@ -321,21 +321,19 @@ template <class T> static void coloshell(const T t, const Colors colo) {
  */
 #define display_gadget_lf(va, gadget)                                          \
   {                                                                            \
-    if (does_badbytes_filter_apply(va, badbyte_list) == false) {               \
+    if (!does_badbytes_filter_apply(va, badbyte_list)) {                       \
       enable_color(COLO_RED);                                                  \
-      std::cout << "0x" << std::setw(sizeof(va)) << std::right                 \
-                << std::setfill('0');                                          \
-      std::cout << std::hex << ((va - base) + new_base);                       \
+      fmt::print("0x{:x}", va);                                                \
       disable_color();                                                         \
       fmt::print(": ");                                                        \
       enable_color(COLO_GREEN);                                                \
       (gadget)->display_disassembly();                                         \
-      fmt::print(" ");                                                         \
       (gadget)->print_bytes();                                                 \
       fmt::print(" ({} found)\n", (gadget)->get_nb());                         \
       disable_color();                                                         \
-    } else                                                                     \
+    } else {                                                                   \
       nb_gadgets_filtered++;                                                   \
+    }                                                                          \
   }
 
 /**
@@ -349,19 +347,15 @@ template <class T> static void coloshell(const T t, const Colors colo) {
 #define display_offset_lf(va, hex_val, size)                                   \
   {                                                                            \
     enable_color(COLO_RED);                                                    \
-    std::cout << "0x" << std::setw(sizeof(va)) << std::right                   \
-              << std::setfill('0');                                            \
-    std::cout << std::hex << va;                                               \
+    fmt::print("0x{:x}", va);                                                  \
     disable_color();                                                           \
     fmt::print(": ");                                                          \
     enable_color(COLO_GREEN);                                                  \
     for (uint32_t i = 0; i < size; ++i) {                                      \
-      if (isprint(hex_val[i]))                                                 \
-        std::cout << hex_val[i];                                               \
-      else {                                                                   \
-        uint32_t b = hex_val[i];                                               \
-        std::cout << "\\x" << std::setw(2) << std::right << std::setfill('0')  \
-                  << std::hex << b;                                            \
+      if (isprint(hex_val[i])) {                                               \
+        fmt::print("{}", hex_val[i]);                                          \
+      } else {                                                                 \
+        fmt::print("\\x{:02x}", hex_val[i]);                                   \
       }                                                                        \
     }                                                                          \
     fmt::print("\n");                                                          \

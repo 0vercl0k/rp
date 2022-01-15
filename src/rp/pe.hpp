@@ -37,20 +37,18 @@ public:
   std::string get_class_name() const override { return "PE"; }
 
   std::vector<std::unique_ptr<Section>>
-  get_executables_section(std::ifstream &file) const override {
+  get_executables_section(std::ifstream &file,
+                          const uint64_t base) const override {
     std::vector<std::unique_ptr<Section>> exec_sections;
 
     for (const auto &sectionheader : m_pPELayout->imgSectionHeaders) {
-      if ((sectionheader->Characteristics & RP_IMAGE_SCN_MEM_EXECUTE) != 0) {
+      if (!(sectionheader->Characteristics & RP_IMAGE_SCN_MEM_EXECUTE)) {
         continue;
       }
 
       auto sec = std::make_unique<Section>(
           sectionheader->get_name().c_str(), sectionheader->PointerToRawData,
-          // in the PE, this field is a RVA, so we need to add it the image
-          // base to have a VA
-          m_pPELayout->get_image_base_address() + sectionheader->VirtualAddress,
-          sectionheader->SizeOfRawData);
+          base + sectionheader->VirtualAddress, sectionheader->SizeOfRawData);
 
       sec->dump(file);
       sec->set_props(Section::Executable);

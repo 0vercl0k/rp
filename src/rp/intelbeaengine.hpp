@@ -18,7 +18,7 @@ public:
   }
 
   InstructionInformation disass(const uint8_t *data, uint64_t len,
-                                uint64_t vaddr,
+                                const uint64_t vaddr,
                                 DisassEngineReturn &ret) override {
     InstructionInformation instr;
     m_disasm.EIP = UIntPtr(data);
@@ -52,14 +52,6 @@ public:
 
   bool is_valid_ending_instruction(
       const InstructionInformation &instr) const override {
-    // Work Around, BeaEngine in x64 mode disassemble "\xDE\xDB" as an
-    // instruction without disassembly Btw, this is not the only case!
-    // XXX: BeaEngine has received a lot of recent commits recently, let's
-    // remove the branch to see if it's gone
-    if (!instr.disassembly.size()) {
-      RAISE_EXCEPTION("BeaEngine bug coming back?");
-    }
-
     const uint32_t branch_type = instr.bea_branch_type;
     const uint64_t addr_value = instr.bea_addr_value;
     const char *mnemonic_s = instr.mnemonic.c_str();
@@ -92,13 +84,6 @@ public:
   is_valid_instruction(const InstructionInformation &instr) const override {
     const Int32 branch_type = instr.bea_branch_type;
     const uint64_t addr_value = instr.bea_addr_value;
-    // Work Around, BeaEngine in x64 mode disassemble "\xDE\xDB" as an
-    // instruction without disassembly Btw, this is not the only case!
-    // XXX: Something tells me it's not here anymore
-    if (!instr.disassembly.size()) {
-      RAISE_EXCEPTION("BeaEngine bug coming back?");
-    }
-
     return branch_type != RetType && branch_type != JmpType &&
            ((branch_type == CallType && addr_value == 0) ||
             branch_type != CallType) &&

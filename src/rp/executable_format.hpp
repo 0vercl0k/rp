@@ -52,11 +52,12 @@ public:
    * look for gadgets
    *
    *  \param file: it is a file handle on your binary file
+   *  \param base: it is the base address to use
    *
    *  \return A vector of Section instances
    */
   virtual std::vector<std::unique_ptr<Section>>
-  get_executables_section(std::ifstream &file) const = 0;
+  get_executables_section(std::ifstream &file, const uint64_t base) const = 0;
 
   /*!
    *  \brief Give you the base address of the executable

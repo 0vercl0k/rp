@@ -55,8 +55,8 @@ public:
   std::string get_class_name() const override { return "Mach-o"; }
 
   std::vector<std::unique_ptr<Section>>
-  get_executables_section(std::ifstream &file) const override {
-    return m_MachoLayout->get_executable_section(file);
+  get_executables_section(std::ifstream &file, const uint64_t base) const override {
+    return m_MachoLayout->get_executable_section(file, base);
   }
 
   void display_information(const VerbosityLevel lvl) const override {

@@ -45,10 +45,7 @@ void find_all_gadget_from_ret(const uint8_t *data, uint64_t vaddr,
     for (uint32_t nb_ins = 0; nb_ins < depth; nb_ins++) {
       DisassEngineReturn ret;
       InstructionInformation instr =
-          disass_engine.disass((const uint8_t *)EIP,
-                               0, // XXX: Sometimes BeaEngine will return
-                                  // OutOfBlock with a SecurityBlock=0
-                               VirtualAddr, ret);
+          disass_engine.disass((const uint8_t *)EIP, 0, VirtualAddr, ret);
 
       // if the instruction isn't valid, ends this function
       if (ret == UnknownInstruction || ret == OutOfBlock ||
@@ -59,7 +56,7 @@ void find_all_gadget_from_ret(const uint8_t *data, uint64_t vaddr,
       // Sets the begining address of the gadget as soon as we find the first
       // one
       if (list_of_instr.size() == 0) {
-        gadget_start_address = EIP - (uintptr_t)data;
+        gadget_start_address = EIP - uintptr_t(data);
       }
 
       list_of_instr.emplace_back(instr.disassembly, instr.bytes);

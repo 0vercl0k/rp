@@ -38,7 +38,7 @@ public:
   DisassEngineWrapper &operator=(DisassEngineWrapper &&) = delete;
 
   virtual InstructionInformation disass(const uint8_t *data, uint64_t len,
-                                        uint64_t vaddr,
+                                        const uint64_t vaddr,
                                         DisassEngineReturn &ret) = 0;
   virtual bool
   is_valid_ending_instruction(const InstructionInformation &instr) const = 0;
