@@ -295,7 +295,7 @@ template <class T> struct ELFLayout : public ExecutableLinkingFormatLayout {
   std::vector<std::unique_ptr<Elf_Phdr<T>>> elfProgramHeaders;
   std::vector<std::unique_ptr<Elf_Shdr_Abstraction<T>>> elfSectionHeaders;
   T offset_string_table, size_string_table;
-  uint64_t base = 0;
+  uint64_t image_base = 0;
 
   void display(VerbosityLevel lvl = VERBOSE_LEVEL_1) const override {
     uint32_t i = 0;
@@ -362,8 +362,8 @@ template <class T> struct ELFLayout : public ExecutableLinkingFormatLayout {
       // XXX: Here we assume that the first LOAD program header encountered will
       // hold the image base address and I guess this assumption is quite wrong
       // https://stackoverflow.com/questions/18296276/base-address-of-elf
-      if (type_to_str(pElfProgramHeader->p_type) == "LOAD" && base == 0) {
-        base = pElfProgramHeader->p_vaddr;
+      if (type_to_str(pElfProgramHeader->p_type) == "LOAD" && image_base == 0) {
+        image_base = pElfProgramHeader->p_vaddr;
       }
     }
 
@@ -390,8 +390,8 @@ template <class T> struct ELFLayout : public ExecutableLinkingFormatLayout {
         // Yeah we know where is the string
         char *name_section =
             string_table_section.data() + pElfSectionHeader->header.sh_name;
-        std::string s{name_section, std::strlen(name_section)};
-        pElfSectionHeader->name = (s == "") ? "unknown section" : s;
+        pElfSectionHeader->name =
+            (std::strlen(name_section) == 0) ? "unknown section" : name_section;
       }
 
       elfSectionHeaders.push_back(std::move(pElfSectionHeader));
@@ -411,10 +411,12 @@ template <class T> struct ELFLayout : public ExecutableLinkingFormatLayout {
         continue;
       }
 
-      const auto offset = programheader->p_vaddr - base;
-      auto sec = std::make_unique<Section>(
-          type_to_str(programheader->p_type).c_str(), programheader->p_offset,
-          base + offset, programheader->p_filesz);
+      const auto vaddr = programheader->p_vaddr - image_base;
+      const auto p_offset = programheader->p_offset;
+      const auto p_filesz = programheader->p_filesz;
+      auto sec =
+          std::make_unique<Section>(type_to_str(programheader->p_type).c_str(),
+                                    p_offset, base + vaddr, p_filesz);
 
       sec->dump(file);
       sec->set_props(Section::Executable);
@@ -424,7 +426,7 @@ template <class T> struct ELFLayout : public ExecutableLinkingFormatLayout {
     return exec_sections;
   }
 
-  uint64_t get_image_base_address(void) const override { return base; }
+  uint64_t get_image_base_address() const override { return image_base; }
 
-  uint16_t get_cpu(void) const override { return elfHeader.e_machine; }
+  uint16_t get_cpu() const override { return elfHeader.e_machine; }
 };

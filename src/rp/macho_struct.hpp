@@ -296,10 +296,11 @@ template <class T> struct MachoArchLayout : public MachoLayout {
         continue;
       }
 
-      const auto offset = section->addr - base;
+      const auto vaddr = section->addr - base;
+      const auto offset = section->offset;
+      const auto size = section->size;
       auto s = std::make_unique<Section>((char *)section->sectname.data(),
-                                         section->offset, base + offset,
-                                         section->size);
+                                         offset, base + vaddr, size);
 
       s->dump(file);
       s->set_props(Section::Executable);

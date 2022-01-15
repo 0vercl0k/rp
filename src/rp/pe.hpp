@@ -46,9 +46,12 @@ public:
         continue;
       }
 
+      const auto pointertorawdata = sectionheader->PointerToRawData;
+      const auto virtualaddress = sectionheader->VirtualAddress;
+      const auto sizeofrawdata = sectionheader->SizeOfRawData;
       auto sec = std::make_unique<Section>(
-          sectionheader->get_name().c_str(), sectionheader->PointerToRawData,
-          base + sectionheader->VirtualAddress, sectionheader->SizeOfRawData);
+          sectionheader->get_name().c_str(), pointertorawdata,
+          base + virtualaddress, sizeofrawdata);
 
       sec->dump(file);
       sec->set_props(Section::Executable);
