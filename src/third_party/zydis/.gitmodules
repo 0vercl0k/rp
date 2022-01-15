@@ -1,3 +1,0 @@
-[submodule "dependencies/zycore"]
-	path = dependencies/zycore
-	url = https://github.com/zyantific/zycore-c
