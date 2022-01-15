@@ -259,15 +259,8 @@ template <class T> struct Elf_Shdr_Abstraction {
   std::string name;
 
   void display(VerbosityLevel lvl = VERBOSE_LEVEL_1) const {
-    // XXX: remove the warning C4100 with /W4
-    lvl = VERBOSE_LEVEL_1;
-
-    std::cout << "0x" << std::setw(15) << std::setfill(' ') << std::left
-              << header.sh_addr;
-    std::cout << "0x" << std::setw(15) << std::setfill(' ') << std::left
-              << header.sh_size;
-    std::cout << std::setw(30) << std::setfill(' ') << std::left << name
-              << std::endl;
+    fmt::print("0x{:<15x}0x{:<15x}{:32}\n", header.sh_addr, header.sh_size,
+               name);
   }
 };
 

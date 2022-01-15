@@ -6,7 +6,6 @@
 #include "section.hpp"
 #include <fmt/printf.h>
 #include <fstream>
-#include <iostream>
 #include <memory>
 #include <string>
 #include <vector>

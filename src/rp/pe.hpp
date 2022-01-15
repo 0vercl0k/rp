@@ -30,7 +30,7 @@ public:
 
   void display_information(const VerbosityLevel lvl) const override {
     ExecutableFormat::display_information(lvl);
-    std::cout << "PE Information:" << std::endl;
+    fmt::print("PE Information:\n");
     m_pPELayout->display(lvl);
   }
 
@@ -70,7 +70,7 @@ private:
     RP_IMAGE_NT_HEADERS32 imgNtHeaders32;
     CPU::E_CPU cpu = CPU::CPU_UNKNOWN;
 
-    std::cout << "Loading PE information.." << std::endl;
+    fmt::print("Loading PE information..\n");
 
     // Remember where the caller was in the file
     std::streampos off = file.tellg();

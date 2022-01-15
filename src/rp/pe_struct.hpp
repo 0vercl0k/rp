@@ -10,7 +10,6 @@
 #include <cstring>
 #include <fstream>
 #include <iomanip>
-#include <iostream>
 #include <vector>
 
 // Calculate the byte offset of a field in a structure of type |type|.
@@ -168,12 +167,12 @@ template <> struct RP_IMAGE_OPTIONAL_HEADER<x86Version> {
   void display(VerbosityLevel lvl = VERBOSE_LEVEL_1) const {
     w_yel_lf("-> IMAGE_OPTIONAL_HEADER32:");
 
-    std::cout << " ASLR: ";
+    fmt::print(" ASLR: ");
     w_red_lf((DllCharacteristics & RP_IMAGE_DLL_CHARACTERISTICS_DYNAMIC_BASE)
                  ? "Yes"
                  : "No");
 
-    std::cout << " NX: ";
+    fmt::print(" NX: ");
     w_red_lf((DllCharacteristics & RP_IMAGE_DLL_CHARACTERISTICS_NX_COMPAT)
                  ? "Yes"
                  : "No");
@@ -233,12 +232,12 @@ template <> struct RP_IMAGE_OPTIONAL_HEADER<x64Version> {
   void display(VerbosityLevel lvl = VERBOSE_LEVEL_1) const {
     w_yel_lf("-> IMAGE_OPTIONAL_HEADERS64:");
 
-    std::cout << " ASLR: ";
+    fmt::print(" ASLR: ");
     w_red_lf((DllCharacteristics & RP_IMAGE_DLL_CHARACTERISTICS_DYNAMIC_BASE)
                  ? "Yes"
                  : "No");
 
-    std::cout << " NX: ";
+    fmt::print(" NX: ");
     w_red_lf((DllCharacteristics & RP_IMAGE_DLL_CHARACTERISTICS_NX_COMPAT)
                  ? "Yes"
                  : "No");
@@ -299,7 +298,7 @@ struct RP_IMAGE_SECTION_HEADER {
   void display(VerbosityLevel lvl = VERBOSE_LEVEL_1) const {
     w_yel_lf("-> IMAGE_SECTION_HEADER");
 
-    std::cout << "    " << get_name() << std::endl;
+    fmt::print("     {}\n", get_name());
 
     if (lvl > VERBOSE_LEVEL_1) {
       display_hex_field_lf(Characteristics);
