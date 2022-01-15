@@ -98,7 +98,7 @@ jobs:
           src/build/rp-lin-x64
 
   OSX:
-    runs-on: osx-latest
+    runs-on: macos-latest
     strategy:
       fail-fast: false
       matrix:
