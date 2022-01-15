@@ -209,6 +209,7 @@ __attribute__((packed))
 #endif
 
 struct MachoLayout {
+  virtual ~MachoLayout() = 0;
   virtual void fill_structures(std::ifstream &file) = 0;
   virtual uint32_t get_size_mach_header() const = 0;
   virtual void display(const VerbosityLevel lvl = VERBOSE_LEVEL_1) const = 0;

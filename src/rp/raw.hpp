@@ -27,11 +27,11 @@ public:
     return executable_sections;
   }
 
+  uint64_t get_image_base_address() const override { return 0; }
+
 private:
   uint64_t raw_offset_to_va(const uint64_t absolute_raw_offset,
                             const uint64_t absolute_raw_offset_section) const {
     return absolute_raw_offset;
   }
-
-  uint64_t get_image_base_address() const { return 0; }
 };

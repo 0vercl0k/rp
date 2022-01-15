@@ -22,6 +22,8 @@ public:
   /* The format RP++ handles */
   enum E_ExecutableFormat { FORMAT_PE, FORMAT_ELF, FORMAT_UNKNOWN };
 
+  virtual ~ExecutableFormat() = default;
+
   /*!
    *  \brief Obtain the CPU ; for that it parses the executable format of your
    * binary

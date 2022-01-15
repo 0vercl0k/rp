@@ -23,6 +23,7 @@ elseif(UNIX)
     else()
         set(RP_PLAT "lin")
     endif()
+    find_package(Threads)
  endif()
 
 if(CMAKE_SIZEOF_VOID_P EQUAL 8)

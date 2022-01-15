@@ -12,6 +12,8 @@
  */
 class CPU {
 public:
+  virtual ~CPU() = default;
+
   /*!
    *  \brief Obtain the name of the class (useful when you use the polymorphism)
    *

@@ -274,6 +274,7 @@ using Elf_Shdr32_Abstraction = Elf_Shdr_Abstraction<x86Version>;
 using Elf_Shdr64_Abstraction = Elf_Shdr_Abstraction<x64Version>;
 
 struct ExecutableLinkingFormatLayout {
+  virtual ~ExecutableLinkingFormatLayout() = default;
   virtual void fill_structures(std::ifstream &file) = 0;
   virtual void display(VerbosityLevel lvl = VERBOSE_LEVEL_1) const = 0;
   virtual uint64_t get_image_base_address(void) const = 0;
