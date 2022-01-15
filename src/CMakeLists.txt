@@ -35,6 +35,8 @@ file(
     GLOB_RECURSE
     rp_files
     rp/*.cpp
+    third_party/capstone/arch/*.c
+    third_party/capstone/*.c
 )
 
 add_executable(
