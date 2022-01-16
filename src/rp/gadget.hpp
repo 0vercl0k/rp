@@ -174,65 +174,6 @@ public:
     }
   };
 
-
-  struct Hash {
-    size_t operator()(const Gadget &a) const {
-      size_t h = 0;
-      for (const auto &i : a.m_instructions) {
-        h += std::hash<std::string>()(i.get_disassembly());
-      }
-      return h;
-    }
-  };
-
-  struct KeyEqual {
-    size_t operator()(const Gadget &a, const Gadget &b) const {
-      const size_t a_size = a.m_instructions.size();
-      const size_t b_size = b.m_instructions.size();
-      if (a_size != b_size) {
-        return false;
-      }
-
-      size_t current_a_idx = 0;
-      size_t current_b_idx = 0;
-      while (1) {
-        if (current_a_idx >= a_size) {
-          return false;
-        }
-        if (current_b_idx >= b_size) {
-          return false;
-        }
-
-        const Instruction &current_a = a.m_instructions[current_a_idx];
-        const Instruction &current_b = b.m_instructions[current_b_idx];
-        const auto &current_a_bytes = current_a.bytes();
-        const size_t current_a_bytes_size = current_a_bytes.size();
-        const auto &current_b_bytes = current_b.bytes();
-        const size_t current_b_bytes_size = current_b_bytes.size();
-        size_t current_a_bytes_idx = 0;
-        size_t current_b_bytes_idx = 0;
-        while (1) {
-          if (current_a_bytes[current_a_bytes_idx] !=
-              current_b_bytes[current_b_bytes_idx]) {
-            return false;
-          }
-
-          current_a_bytes_idx++;
-          current_b_bytes_idx++;
-          if (current_a_bytes_idx >= current_a_bytes_size) {
-            current_a_idx++;
-            break;
-          }
-          if (current_b_bytes_idx >= current_b_bytes_size) {
-            current_b_idx++;
-            break;
-          }
-        }
-      }
-      return true;
-    }
-  };
-
   void print_bytes() const {
     for (const auto &i : m_instructions) {
       i.print_bytes();

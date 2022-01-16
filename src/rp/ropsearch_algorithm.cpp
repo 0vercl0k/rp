@@ -21,7 +21,7 @@ void find_all_gadget_from_ret(const uint8_t *data, uint64_t vaddr,
   // going back yeah, but not too much :))
   if (EIP < uintptr_t(data)) {
     EIP = uintptr_t(data);
-    VirtualAddr = (uintptr_t)vaddr;
+    VirtualAddr = uintptr_t(vaddr);
   }
 
   while (EIP < ending_instr_disasm.address) {
