@@ -108,7 +108,8 @@ GadgetSet only_unique_gadgets(GadgetMultiset &list_gadgets) {
     auto node = list_gadgets.extract(list_gadgets.begin());
     const uint64_t first_offset = node.value().get_first_offset();
     const uint64_t first_va_section = node.value().get_first_va_section();
-    if (unique_gadgets.find(node.value()) == unique_gadgets.end()) {
+    auto [g, inserted] = unique_gadgets.insert(std::move(node.value()));
+    if (inserted) {
       continue;
     }
 
@@ -116,8 +117,7 @@ GadgetSet only_unique_gadgets(GadgetMultiset &list_gadgets) {
     // & its va section maybe you can ask yourself 'Why do we store its va
     // section ?' and the answer is: because you can find the same gadget in
     // another executable sections!
-    node.value().add_new_one(first_offset, first_va_section);
-    unique_gadgets.insert(std::move(node.value()));
+    g->add_new_one(first_offset, first_va_section);
   }
 
   return unique_gadgets;

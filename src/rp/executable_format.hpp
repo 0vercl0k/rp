@@ -57,7 +57,7 @@ public:
    *
    *  \return A vector of Section instances
    */
-  virtual std::vector<std::unique_ptr<Section>>
+  virtual std::vector<Section>
   get_executables_section(std::ifstream &file, const uint64_t base) const = 0;
 
   /*!

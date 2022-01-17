@@ -103,7 +103,7 @@ int main(int argc, char *argv[]) {
       if (opts.unique) {
         auto unique_gadgets = only_unique_gadgets(all_gadgets);
 
-        fmt::print("You decided to keep only the unique ones, {}  unique "
+        fmt::print("You decided to keep only the unique ones, {} unique "
                    "gadgets found.\n",
                    unique_gadgets.size());
 

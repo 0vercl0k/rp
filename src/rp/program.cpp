@@ -75,18 +75,18 @@ void Program::display_information(const VerbosityLevel lvl) {
 }
 
 GadgetMultiset Program::find_gadgets(const uint32_t depth,
-                                const uint32_t disass_engine_options,
-                                const size_t n_max_thread,
-                                const uint64_t base) {
+                                     const uint32_t disass_engine_options,
+                                     const size_t n_max_thread,
+                                     const uint64_t base) {
   // To do a ROP gadget research, we need to know the executable section
   auto executable_sections = m_exformat->get_executables_section(m_file, base);
   if (executable_sections.size() == 0) {
     fmt::print("It seems your binary haven't executable sections.\n");
   }
 
-  std::queue<std::unique_ptr<Section>> jobs_queue;
+  std::queue<Section> jobs_queue;
   for (auto &executable_section : executable_sections) {
-    jobs_queue.push(std::move(executable_section));
+    jobs_queue.push(executable_section);
   }
 
   GadgetMultiset gadgets_found;
@@ -96,15 +96,15 @@ GadgetMultiset Program::find_gadgets(const uint32_t depth,
     if (thread_pool.size() < n_max_thread) {
       auto section = std::move(jobs_queue.front());
       jobs_queue.pop();
-      const uint64_t va_section = section->get_vaddr();
-      thread_pool.emplace_back(std::async(
-          std::launch::async,
-          [&, this](std::unique_ptr<Section> section) {
-            m_cpu->find_gadget_in_memory(
-                section->get_section_buffer(), section->get_size(), va_section,
-                depth, gadgets_found, disass_engine_options, m);
-          },
-          std::move(section)));
+      auto Lambda = [&](Section section) {
+        const auto section_buffer = section.get_section_buffer();
+        const auto size = section.get_size();
+        const auto vaddr = section.get_vaddr();
+        m_cpu->find_gadget_in_memory(section_buffer, size, vaddr, depth,
+                                     gadgets_found, disass_engine_options, m);
+      };
+      thread_pool.emplace_back(
+          std::async(std::launch::async, Lambda, std::move(section)));
     } else {
       // Wait for a thread to finish
       for (auto it = thread_pool.begin(); it != thread_pool.end();) {
@@ -136,10 +136,9 @@ void Program::search_and_display(const uint8_t *hex_values, const size_t size,
   }
 
   for (const auto &executable_section : executable_sections) {
-    const auto &offsets =
-        executable_section->search_in_memory(hex_values, size);
+    const auto &offsets = executable_section.search_in_memory(hex_values, size);
     for (const auto &offset : offsets) {
-      const uint64_t va_section = executable_section->get_vaddr();
+      const uint64_t va_section = executable_section.get_vaddr();
       const uint64_t va = va_section + offset;
       display_offset_lf(va, hex_values, size);
     }

@@ -117,7 +117,7 @@ public:
    *
    *  \param offset: the offset where you can find the same gadget
    */
-  void add_new_one(const uint64_t offset, const uint64_t va_section) {
+  void add_new_one(const uint64_t offset, const uint64_t va_section) const {
     m_info_gadgets.emplace_back(offset, va_section);
   }
 
@@ -125,33 +125,37 @@ public:
    * \brief This structure can be used for sorting Gadgets instance
    * \return
    */
-  struct Sort {
+  struct Comparator {
     bool operator()(const Gadget &a, const Gadget &b) const {
       const size_t a_size = a.m_instructions.size();
       const size_t b_size = b.m_instructions.size();
-      if (a_size != b_size) {
-        return a_size < b_size;
-      }
-
-      size_t current_a_idx = 0;
-      size_t current_b_idx = 0;
+      size_t current_a_idx = 0, current_b_idx = 0;
+      size_t current_a_bytes_idx = 0, current_b_bytes_idx = 0;
       while (1) {
         if (current_a_idx >= a_size) {
-          return true;
-        }
-        if (current_b_idx >= b_size) {
           return false;
         }
+        if (current_b_idx >= b_size) {
+          return true;
+        }
 
-        const Instruction &current_a = a.m_instructions[current_a_idx];
-        const Instruction &current_b = b.m_instructions[current_b_idx];
-        const auto &current_a_bytes = current_a.bytes();
+        const auto &current_a_bytes = a.m_instructions[current_a_idx].bytes();
         const size_t current_a_bytes_size = current_a_bytes.size();
-        const auto &current_b_bytes = current_b.bytes();
+        const auto &current_b_bytes = b.m_instructions[current_b_idx].bytes();
         const size_t current_b_bytes_size = current_b_bytes.size();
-        size_t current_a_bytes_idx = 0;
-        size_t current_b_bytes_idx = 0;
         while (1) {
+          if (current_a_bytes_idx >= current_a_bytes_size) {
+            current_a_idx++;
+            current_a_bytes_idx = 0;
+            break;
+          }
+
+          if (current_b_bytes_idx >= current_b_bytes_size) {
+            current_b_idx++;
+            current_b_bytes_idx = 0;
+            break;
+          }
+
           if (current_a_bytes[current_a_bytes_idx] !=
               current_b_bytes[current_b_bytes_idx]) {
             return current_a_bytes[current_a_bytes_idx] <
@@ -160,14 +164,6 @@ public:
 
           current_a_bytes_idx++;
           current_b_bytes_idx++;
-          if (current_a_bytes_idx >= current_a_bytes_size) {
-            current_a_idx++;
-            break;
-          }
-          if (current_b_bytes_idx >= current_b_bytes_size) {
-            current_b_idx++;
-            break;
-          }
         }
       }
       return false;
@@ -190,10 +186,10 @@ private:
       m_instructions; /*!< the list of the different instructions composing the
                          gadget*/
 
-  std::vector<Info>
+  mutable std::vector<Info>
       m_info_gadgets; /*!< the vector which stores where you can find the same
                          gadget ; those offsets are relative to m_va_section*/
 };
 
-using GadgetMultiset = std::multiset<Gadget, Gadget::Sort>;
-using GadgetSet = std::set<Gadget, Gadget::Sort>;
+using GadgetMultiset = std::multiset<Gadget, Gadget::Comparator>;
+using GadgetSet = std::set<Gadget, Gadget::Comparator>;

@@ -288,11 +288,8 @@ struct RP_IMAGE_SECTION_HEADER {
 
   std::string get_name() const {
     uint8_t name_null_terminated[RP_IMAGE_SIZEOF_SHORT_NAME + 1] = {};
-    // Yeah sometimes you don't have null byte after the name -- I try to be
-    // clean
     memcpy(name_null_terminated, Name.data(), Name.size());
-
-    return std::string((char *)name_null_terminated);
+    return (char *)name_null_terminated;
   }
 
   void display(VerbosityLevel lvl = VERBOSE_LEVEL_1) const {
@@ -355,7 +352,7 @@ using RP_IMAGE_NT_HEADERS64 = RP_IMAGE_NT_HEADERS<x64Version>;
 
 struct PortableExecutableLayout {
   RP_IMAGE_DOS_HEADER imgDosHeader;
-  std::vector<std::unique_ptr<RP_IMAGE_SECTION_HEADER>> imgSectionHeaders;
+  std::vector<RP_IMAGE_SECTION_HEADER> imgSectionHeaders;
 
   virtual ~PortableExecutableLayout() = default;
   virtual void display(VerbosityLevel lvl = VERBOSE_LEVEL_1) const {
@@ -388,7 +385,7 @@ template <class T> struct PELayout : public PortableExecutableLayout {
     imgNtHeaders.display(lvl);
     if (lvl > VERBOSE_LEVEL_1) {
       for (const auto &sectionheader : imgSectionHeaders)
-        sectionheader->display();
+        sectionheader.display();
     }
   }
 
@@ -405,11 +402,9 @@ template <class T> struct PELayout : public PortableExecutableLayout {
     file.seekg(imgNtHeaders.get_offset_first_section(), std::ios::cur);
 
     for (uint32_t i = 0; i < imgNtHeaders.FileHeader.NumberOfSections; ++i) {
-      auto pImgSectionHeader = std::make_unique<RP_IMAGE_SECTION_HEADER>();
-
-      file.read((char *)pImgSectionHeader.get(),
-                get_image_section_header_size());
-      imgSectionHeaders.push_back(std::move(pImgSectionHeader));
+      RP_IMAGE_SECTION_HEADER imgSectionHeader;
+      file.read((char *)&imgSectionHeader, get_image_section_header_size());
+      imgSectionHeaders.push_back(std::move(imgSectionHeader));
     }
 
     file.seekg(off);

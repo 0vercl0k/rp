@@ -12,17 +12,17 @@ public:
 
   std::string get_class_name() const override { return "raw"; }
 
-  std::vector<std::unique_ptr<Section>>
+  std::vector<Section>
   get_executables_section(std::ifstream &file,
                           const uint64_t base) const override {
-    std::vector<std::unique_ptr<Section>> executable_sections;
+    std::vector<Section> executable_sections;
 
     uint64_t raw_file_size = get_file_size(file);
 
     // It is a raw file -> we have only one "virtual" section
-    auto sect = std::make_unique<Section>(".raw", 0, base, raw_file_size);
-    sect->dump(file);
-    sect->set_props(Section::Executable);
+    Section sect(".raw", 0, base, raw_file_size);
+    sect.dump(file);
+    sect.set_props(Section::Executable);
     executable_sections.push_back(std::move(sect));
     return executable_sections;
   }

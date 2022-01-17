@@ -272,7 +272,7 @@ struct ExecutableLinkingFormatLayout {
   virtual void fill_structures(std::ifstream &file) = 0;
   virtual void display(VerbosityLevel lvl = VERBOSE_LEVEL_1) const = 0;
   virtual uint64_t get_image_base_address(void) const = 0;
-  virtual std::vector<std::unique_ptr<Section>>
+  virtual std::vector<Section>
   get_executable_section(std::ifstream &file, const uint64_t base) const = 0;
   virtual uint16_t get_cpu(void) const = 0;
 };
@@ -393,10 +393,10 @@ template <class T> struct ELFLayout : public ExecutableLinkingFormatLayout {
     file.seekg(off);
   }
 
-  std::vector<std::unique_ptr<Section>>
+  std::vector<Section>
   get_executable_section(std::ifstream &file,
                          const uint64_t base) const override {
-    std::vector<std::unique_ptr<Section>> exec_sections;
+    std::vector<Section> exec_sections;
 
     for (const auto &programheader : elfProgramHeaders) {
       if (!(programheader->p_flags & 1)) {
@@ -406,12 +406,11 @@ template <class T> struct ELFLayout : public ExecutableLinkingFormatLayout {
       const auto vaddr = programheader->p_vaddr - image_base;
       const auto p_offset = programheader->p_offset;
       const auto p_filesz = programheader->p_filesz;
-      auto sec =
-          std::make_unique<Section>(type_to_str(programheader->p_type).c_str(),
-                                    p_offset, base + vaddr, p_filesz);
+      Section sec(type_to_str(programheader->p_type).c_str(), p_offset,
+                  base + vaddr, p_filesz);
 
-      sec->dump(file);
-      sec->set_props(Section::Executable);
+      sec.dump(file);
+      sec.set_props(Section::Executable);
       exec_sections.push_back(std::move(sec));
     }
 
