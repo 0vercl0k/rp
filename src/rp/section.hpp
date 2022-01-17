@@ -53,7 +53,7 @@ public:
    *
    *  \return a pointer on the buffer
    */
-  const uint8_t *get_section_buffer() const { return m_section.data(); }
+  const std::vector<uint8_t> &get_section_buffer() const { return m_section; }
 
   /*!
    *  \brief Get the (raw) offset of the section ; in other word, where it was

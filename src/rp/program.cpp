@@ -98,9 +98,8 @@ GadgetMultiset Program::find_gadgets(const uint32_t depth,
       jobs_queue.pop();
       auto Lambda = [&](Section section) {
         const auto section_buffer = section.get_section_buffer();
-        const auto size = section.get_size();
         const auto vaddr = section.get_vaddr();
-        m_cpu->find_gadget_in_memory(section_buffer, size, vaddr, depth,
+        m_cpu->find_gadget_in_memory(section_buffer, vaddr, depth,
                                      gadgets_found, disass_engine_options, m);
       };
       thread_pool.emplace_back(

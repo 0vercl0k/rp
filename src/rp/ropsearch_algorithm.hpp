@@ -7,7 +7,6 @@
 #include <mutex>
 #include <set>
 
-void find_rop_gadgets(const uint8_t *data, const uint64_t size,
-                      const uint64_t vaddr, const uint32_t depth,
-                      GadgetMultiset &merged_gadgets,
+void find_rop_gadgets(const std::vector<uint8_t> &section, const uint64_t vaddr,
+                      const uint32_t depth, GadgetMultiset &merged_gadgets,
                       DisassEngineWrapper &disass_engine, std::mutex &m);

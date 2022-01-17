@@ -3,10 +3,13 @@
 #include "safeint.hpp"
 #include <cstring>
 
-void find_all_gadget_from_ret(const uint8_t *data, uint64_t vaddr,
+void find_all_gadget_from_ret(const std::vector<uint8_t> &memory,
+                              uint64_t vaddr,
                               const InstructionInformation &ending_instr_disasm,
                               const uint32_t depth, GadgetMultiset &gadgets,
                               DisassEngineWrapper &disass_engine) {
+  const uint8_t *data = memory.data();
+  const uint8_t *end_data = memory.data() + memory.size();
   const uint32_t alignement = disass_engine.get_alignement();
   const uint32_t size_biggest_instruction =
       disass_engine.get_size_biggest_instruction();
@@ -38,8 +41,9 @@ void find_all_gadget_from_ret(const uint8_t *data, uint64_t vaddr,
     // now we'll try to find suitable sequence
     for (uint32_t nb_ins = 0; nb_ins < depth; nb_ins++) {
       DisassEngineReturn ret;
+      const uint8_t *EIP_ = (uint8_t *)EIP;
       InstructionInformation instr =
-          disass_engine.disass((const uint8_t *)EIP, 0, VirtualAddr, ret);
+          disass_engine.disass(EIP_, end_data - EIP_, VirtualAddr, ret);
 
       // if the instruction isn't valid, ends this function
       if (ret == UnknownInstruction || ret == OutOfBlock ||
@@ -94,11 +98,13 @@ void find_all_gadget_from_ret(const uint8_t *data, uint64_t vaddr,
   }
 }
 
-void find_rop_gadgets(const uint8_t *data, const uint64_t size,
-                      const uint64_t vaddr, const uint32_t depth,
+void find_rop_gadgets(const std::vector<uint8_t> &section, const uint64_t vaddr,
+                      const uint32_t depth,
                       GadgetMultiset &merged_gadgets_final,
                       DisassEngineWrapper &disass_engine, std::mutex &m) {
   GadgetMultiset merged_gadgets;
+  const uint8_t *data = section.data();
+  const uint64_t size = section.size();
   const uint32_t alignement = disass_engine.get_alignement();
   for (uint64_t offset = 0; offset < size; offset += alignement) {
     DisassEngineReturn ret;
@@ -133,7 +139,7 @@ void find_rop_gadgets(const uint8_t *data, const uint64_t size,
 
     // if we want to see gadget with more instructions
     if (depth > 0) {
-      find_all_gadget_from_ret(data, vaddr, ret_instr, depth, merged_gadgets,
+      find_all_gadget_from_ret(section, vaddr, ret_instr, depth, merged_gadgets,
                                disass_engine);
     }
   }

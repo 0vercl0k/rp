@@ -36,9 +36,9 @@ public:
    * disass_engine_options: Options you want to pass to the disassembly engine
    *
    */
-  virtual void find_gadget_in_memory(const uint8_t *p_memory,
-                                     const uint64_t size, const uint64_t vaddr,
-                                     const uint32_t depth, GadgetMultiset &gadgets,
+  virtual void find_gadget_in_memory(const std::vector<uint8_t> &p_memory,
+                                     const uint64_t vaddr, const uint32_t depth,
+                                     GadgetMultiset &gadgets,
                                      uint32_t disass_engine_options,
                                      std::mutex &m) = 0;
 
