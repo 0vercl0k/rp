@@ -1,8 +1,0 @@
-TODO:
-
-* Improve global design:
-	* Normalize fill_structures in ExecutableFormat
-
-* PE+ELF testing & crashing test
-
-* pe: check the sizeof optional header before trying to read its content

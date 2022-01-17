@@ -1,0 +1,122 @@
+name: Builds
+
+on: [push, pull_request]
+
+permissions:
+  actions: read
+  contents: read
+  security-events: write
+
+jobs:
+  Windows:
+    runs-on: windows-latest 
+    strategy:
+      fail-fast: false
+      matrix:
+        generator: ['ninja', 'msvc']
+
+    name: Windows latest / ${{ matrix.generator }}
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v2
+
+    - name: Add msbuild to PATH
+      uses: microsoft/setup-msbuild@v1
+
+    - name: Setup vs prompt
+      uses: ilammy/msvc-dev-cmd@v1
+
+    - name: Build with Ninja/cl
+      if: matrix.generator == 'ninja'
+      run: |
+        cd src\build
+        .\build-release.bat
+
+    - name: Build with msvc
+      if: matrix.generator == 'msvc'
+      run: |
+        cd src\build
+        .\build-release-msvc.bat
+
+    - name: Upload artifacts
+      if: matrix.generator == 'ninja'
+      uses: actions/upload-artifact@v2
+      with:
+        name: rp-win-x64.RelWithDebInfo
+        path: |
+          src/build/rp-win-x64.exe
+          src/build/rp-win-x64.pdb
+
+  Linux:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        compiler: ['clang', 'gcc']
+
+    name: Ubuntu Latest / ${{ matrix.compiler }}
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v2
+
+    - name: Installing dependencies
+      run: |
+        sudo apt-get -y update
+        sudo apt install -y g++-10 ninja-build
+        sudo bash -c "$(wget -O - https://apt.llvm.org/llvm.sh)"
+
+    - name: Build with gcc
+      if: matrix.compiler == 'gcc'
+      env:
+        CC: gcc-10
+        CXX: g++-10
+      run: |
+        cd src/build
+        chmod u+x ./build-release.sh
+        ./build-release.sh
+
+    - name: Build with clang
+      if: matrix.compiler == 'clang'
+      env:
+        CC: clang-13
+        CXX: clang++-13
+      run: |
+        cd src/build
+        chmod u+x ./build-release.sh
+        ./build-release.sh
+
+    - name: Upload artifacts
+      uses: actions/upload-artifact@v2
+      with:
+        name: rp-lin-x64-${{ matrix.compiler }}.Release
+        path: |
+          src/build/rp-lin-x64
+
+  OSX:
+    runs-on: macos-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        compiler: ['clang']
+
+    name: OSX Latest / ${{ matrix.compiler }}
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v2
+
+    - name: Build with clang
+      if: matrix.compiler == 'clang'
+      env:
+        CC: clang
+        CXX: clang++
+      run: |
+        cd src/build
+        chmod u+x ./build-release-osx.sh
+        ./build-release-osx.sh
+
+    - name: Upload artifacts
+      uses: actions/upload-artifact@v2
+      with:
+        name: rp-osx-x64-${{ matrix.compiler }}.Release
+        path: |
+          src/build/rp-osx-x64
