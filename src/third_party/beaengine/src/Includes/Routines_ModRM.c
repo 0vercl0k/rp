@@ -186,9 +186,13 @@ void __bea_callspec__ fillRegister(int index, OPTYPE* pMyOperand, PDISASM pMyDis
             pMyOperand->OpSize = 16;
             break;
           case 32:
+            if (index >= 0 && index < 16) {
             #ifndef BEA_LIGHT_DISASSEMBLY
                (void) strcpy ((char*) pMyOperand->OpMnemonic+i, Registers32Bits[index]);
             #endif
+            } else {
+              pMyOperand->OpMnemonic[i] = 0;
+            }
             pMyOperand->OpType = REGISTER_TYPE;
             pMyOperand->Registers.type = GENERAL_REG;
             pMyOperand->Registers.gpr = REGS[index];
