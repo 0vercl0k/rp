@@ -99,9 +99,13 @@ void __bea_callspec__ fillRegister(int index, OPTYPE* pMyOperand, PDISASM pMyDis
         pMyOperand->OpSize = 512;
         break;
       case MMX_REG:
+        if (index >= 0 && index < 8) {
         #ifndef BEA_LIGHT_DISASSEMBLY
            (void) strcpy ((char*) pMyOperand->OpMnemonic+i, RegistersMMX[index]);
         #endif
+        } else {
+          pMyOperand->OpMnemonic[i] = 0;
+        }
         pMyOperand->OpType = REGISTER_TYPE;
         pMyOperand->Registers.type = MMX_REG;
         pMyOperand->Registers.mmx = REGS[index];
@@ -1432,9 +1436,13 @@ void __bea_callspec__ fillModrm3Register(OPTYPE* pMyOperand, PDISASM pMyDisasm, 
       switch (GV.OperandSize) {
         case 64:
           index_final = (GV.REX.B_ == 1) ? index + 8 : index + 0;
+          if (index >= 0 && index < 16) {
           #ifndef BEA_LIGHT_DISASSEMBLY
              (void) strcpy ((char*) pMyOperand->OpMnemonic+i, Registers64Bits[index_final]);
           #endif
+          } else {
+            pMyOperand->OpMnemonic[i] = 0;
+          }
           pMyOperand->OpType = REGISTER_TYPE;
           pMyOperand->Registers.type = GENERAL_REG;
           pMyOperand->Registers.gpr = REGS[index_final];
@@ -1453,9 +1461,13 @@ void __bea_callspec__ fillModrm3Register(OPTYPE* pMyOperand, PDISASM pMyDisasm, 
 
         case 16:
           index_final = (GV.REX.B_ == 1) ? index + 8 : index + 0;
+          if (index >= 0 && index < 16) {
           #ifndef BEA_LIGHT_DISASSEMBLY
              (void) strcpy ((char*) pMyOperand->OpMnemonic+i, Registers16Bits[index_final]);
           #endif
+          } else {
+            pMyOperand->OpMnemonic[i] = 0;
+          }
           pMyOperand->OpType = REGISTER_TYPE;
           pMyOperand->Registers.type = GENERAL_REG;
           pMyOperand->Registers.gpr = REGS[index_final];
