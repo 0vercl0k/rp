@@ -4,7 +4,6 @@
 #include "safeint.hpp"
 #include "toolbox.hpp"
 #include <fstream>
-#include <list>
 #include <string>
 #include <vector>
 
@@ -73,10 +72,10 @@ public:
    *  \return a list of offset (relative to the section) where it found the
    * sequence of bytes
    */
-  std::list<uint64_t> search_in_memory(const uint8_t *val,
-                                       const size_t size) const {
-    std::list<uint64_t> val_found;
-    for (uint64_t offset = 0; offset < m_size; ++offset) {
+  std::vector<uint64_t> search_in_memory(const uint8_t *val,
+                                         const size_t size) const {
+    std::vector<uint64_t> val_found;
+    for (uint64_t offset = 0; (offset + size) < m_size; ++offset) {
       if (std::memcmp(m_section.data() + offset, val, size) == 0) {
         val_found.push_back(offset);
       }

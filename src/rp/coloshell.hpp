@@ -8,10 +8,6 @@
 
 #ifdef WINDOWS
 #include <windows.h>
-
-#include <fileapi.h>
-#else
-#include <unistd.h>
 #endif
 
 static bool g_colors_desired = false;
@@ -32,22 +28,7 @@ enum Colors { COLO_RED = 0, COLO_GREEN = 1, COLO_YELLOW = 2, COLO_DEFAULT = 3 };
 
 #endif
 
-/**
- * \def should_emit_color(void)
- * Return whether or not the caller should enable colorized output. For
- * example, if stdout is redirected to a file then the output won't be colored.
- */
-#ifdef WINDOWS
-inline bool should_emit_color() {
-  return GetFileType(GetStdHandle(STD_OUTPUT_HANDLE)) == FILE_TYPE_CHAR;
-}
-#else
-inline bool should_emit_color() { return isatty(STDOUT_FILENO); }
-#endif
-
-inline bool g_are_colors_enabled() {
-  return g_colors_desired && should_emit_color();
-}
+inline bool g_are_colors_enabled() { return g_colors_desired; }
 
 /**
  * \fn static void enable_color_(const Colors colo)
