@@ -287,7 +287,7 @@ template <class T> static void coloshell(const T t, const Colors colo) {
     enable_color(COLO_GREEN);                                                  \
     for (uint32_t i = 0; i < size; ++i) {                                      \
       if (isprint(hex_val[i])) {                                               \
-        fmt::print("{}", hex_val[i]);                                          \
+        fmt::print("{:c}", hex_val[i]);                                        \
       } else {                                                                 \
         fmt::print("\\x{:02x}", hex_val[i]);                                   \
       }                                                                        \
