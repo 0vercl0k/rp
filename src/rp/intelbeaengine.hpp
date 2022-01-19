@@ -7,7 +7,7 @@
 class IntelBeaEngine : public DisassEngineWrapper {
 public:
   /*! The different architectures BeaRopGadgetFinder handles */
-  enum E_Arch { x86 = 0, x64 = 64 };
+  enum E_Arch { x86 = 32, x64 = 64 };
 
   explicit IntelBeaEngine(const E_Arch arch) : m_arch(uint32_t(arch)) {
     // those options are mostly display option for the disassembler engine
