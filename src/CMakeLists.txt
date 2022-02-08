@@ -35,7 +35,7 @@ file(
     GLOB
     rp_files
     rp/*.cpp
-    third_party/capstone/arch/Aarch64/*.c
+    third_party/capstone/arch/AArch64/*.c
     third_party/capstone/arch/ARM/*.c
     third_party/capstone/*.c
 )
