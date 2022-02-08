@@ -10,7 +10,7 @@ include_directories(${CMAKE_CURRENT_LIST_DIR}/third_party/beaengine/include)
 include_directories(${CMAKE_CURRENT_LIST_DIR}/third_party/capstone/include)
 include_directories(${CMAKE_CURRENT_LIST_DIR}/third_party/CLI11)
 
-add_compile_definitions(FMT_HEADER_ONLY BEA_ENGINE_STATIC CAPSTONE_HAS_ARM CAPSTONE_USE_SYS_DYN_MEM)
+add_compile_definitions(FMT_HEADER_ONLY BEA_ENGINE_STATIC CAPSTONE_HAS_ARM CAPSTONE_HAS_ARM64 CAPSTONE_USE_SYS_DYN_MEM)
 
 if(WIN32)
     set(RP_PLAT "win")
@@ -35,6 +35,7 @@ file(
     GLOB
     rp_files
     rp/*.cpp
+    third_party/capstone/arch/Aarch64/*.c
     third_party/capstone/arch/ARM/*.c
     third_party/capstone/*.c
 )

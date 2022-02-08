@@ -4,6 +4,7 @@
 #include "executable_format.hpp"
 
 #include "arm.hpp"
+#include "arm64.hpp"
 #include "elf_struct.hpp"
 #include "rpexception.hpp"
 #include "x64.hpp"
@@ -24,6 +25,10 @@ public:
 
     case CPU::CPU_ARM: {
       return std::make_unique<ARM>();
+    }
+
+    case CPU::CPU_ARM64: {
+      return std::make_unique<ARM64>();
     }
 
     default: {
@@ -102,6 +107,11 @@ private:
 
     case RP_ELFEM_ARM: {
       cpu = CPU::CPU_ARM;
+      break;
+    }
+
+    case RP_ELFEM_ARM64: {
+      cpu = CPU::CPU_ARM64;
       break;
     }
 

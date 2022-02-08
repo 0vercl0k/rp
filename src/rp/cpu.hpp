@@ -47,6 +47,7 @@ public:
     CPU_x86,    /*!< x86 */
     CPU_x64,    /*!< x64 */
     CPU_ARM,    /*!< ARM */
+    CPU_ARM64,  /*!< ARM64 */
     CPU_UNKNOWN /*!< unknown cpu */
   };
 };

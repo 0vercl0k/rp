@@ -4,6 +4,7 @@
 #include "executable_format.hpp"
 
 #include "arm.hpp"
+#include "arm64.hpp"
 #include "macho_struct.hpp"
 #include "x64.hpp"
 #include "x86.hpp"
@@ -32,6 +33,18 @@ public:
     case CPU_TYPE_I386: {
       cpu = std::make_unique<x86>();
       init_properly_macho_layout<x86Version>();
+      break;
+    }
+
+    case CPU_TYPE_ARM: {
+      cpu = std::make_unique<ARM>();
+      init_properly_macho_layout<x86Version>();
+      break;
+    }
+
+    case CPU_TYPE_ARM64: {
+      cpu = std::make_unique<ARM64>();
+      init_properly_macho_layout<x64Version>();
       break;
     }
 

@@ -1,4 +1,4 @@
-// Axel '0vercl0k' Souchet - January 12 2022
+// Axel '0vercl0k' Souchet - February 7 2022
 #pragma once
 
 #include "cpu.hpp"
@@ -9,23 +9,17 @@
 #include <capstone/capstone.h>
 #include <vector>
 
-class ArmCapstone : public DisassEngineWrapper {
+class Arm64Capstone : public DisassEngineWrapper {
 public:
-  explicit ArmCapstone(const uint32_t thumb_mode) : is_thumb(true) {
-    cs_mode mode = CS_MODE_THUMB;
-    if (thumb_mode == 0) {
-      mode = CS_MODE_ARM;
-      is_thumb = false;
-    }
-
-    if (cs_open(CS_ARCH_ARM, mode, &m_handle) != CS_ERR_OK) {
-      RAISE_EXCEPTION("Apparently no support for ARM in capstone.lib");
+  Arm64Capstone() {
+    if (cs_open(CS_ARCH_ARM64, CS_MODE_LITTLE_ENDIAN, &m_handle) != CS_ERR_OK) {
+      RAISE_EXCEPTION("Apparently no support for ARM64 in capstone.lib");
     }
 
     cs_option(m_handle, CS_OPT_DETAIL, CS_OPT_ON);
   }
 
-  ~ArmCapstone() override { cs_close(&m_handle); }
+  ~Arm64Capstone() override { cs_close(&m_handle); }
   InstructionInformation disass(const uint8_t *data, uint64_t len,
                                 const uint64_t vaddr,
                                 DisassEngineReturn &ret) override {
@@ -59,39 +53,20 @@ public:
       instr.u.capstone.is_valid_ending_instr =
           insn[0].detail->arm.op_count == 1 &&
           insn[0].detail->arm.operands[0].type != ARM_OP_IMM;
+    } else if (instr.mnemonic == "ret") {
+      instr.u.capstone.is_branch = true;
+      instr.u.capstone.is_valid_ending_instr = true;
     } else if (instr.mnemonic == "b" || instr.mnemonic == "bl" ||
-               instr.mnemonic == "blx" || instr.mnemonic == "cb" ||
-               instr.mnemonic == "cbz") {
+               instr.mnemonic == "cbz" || instr.mnemonic == "cbnz" ||
+               instr.mnemonic == "tbnz" || instr.mnemonic == "tbz") {
       instr.u.capstone.is_branch = true;
-    } else if (instr.mnemonic == "swi" || instr.mnemonic == "svc") {
-      instr.u.capstone.is_branch = true;
-      instr.u.capstone.is_valid_ending_instr = true;
-    } else if (instr.mnemonic == "mov" && insn[0].detail->arm.op_count >= 1 &&
-               insn[0].detail->arm.operands[0].type == ARM_OP_REG &&
-               insn[0].detail->arm.operands[0].reg == ARM_REG_PC) {
+    } else if (instr.mnemonic == "svc" || instr.mnemonic == "smc" ||
+               instr.mnemonic == "hvc") {
       instr.u.capstone.is_branch = true;
       instr.u.capstone.is_valid_ending_instr = true;
-    } else if (instr.mnemonic == "bx") {
-      instr.u.capstone.is_branch = true;
-      instr.u.capstone.is_valid_ending_instr =
-          insn[0].detail->arm.operands[0].type == ARM_OP_REG;
-    } else if (instr.mnemonic == "blx") {
+    } else if (instr.mnemonic == "br" || instr.mnemonic == "blr") {
       instr.u.capstone.is_branch = true;
       instr.u.capstone.is_valid_ending_instr = true;
-    } else if (instr.mnemonic == "pop") {
-      bool has_pc = false;
-      for (size_t i = 0; i < insn[0].detail->arm.op_count; ++i) {
-        if (insn[0].detail->arm.operands[i].type == ARM_OP_REG &&
-            insn[0].detail->arm.operands[i].reg == ARM_REG_PC) {
-          has_pc = true;
-          break;
-        }
-      }
-
-      if (has_pc) {
-        instr.u.capstone.is_branch = true;
-        instr.u.capstone.is_valid_ending_instr = true;
-      }
     }
 
     cs_free(insn, count);
@@ -110,29 +85,22 @@ public:
 
   uint32_t get_size_biggest_instruction() const override { return 4; }
 
-  uint32_t get_alignement() const override {
-    if (is_thumb) {
-      return 2;
-    }
-
-    return 4;
-  }
+  uint32_t get_alignement() const override { return 4; }
 
 private:
   csh m_handle = {};
-  bool is_thumb = false;
 };
 
-class ARM : public CPU {
+class ARM64 : public CPU {
 public:
-  std::string get_class_name() const override { return "ARM"; }
+  std::string get_class_name() const override { return "ARM64"; }
 
   void find_gadget_in_memory(const std::vector<uint8_t> &p_memory,
                              const uint64_t vaddr, const uint32_t depth,
                              GadgetMultiset &gadgets,
                              uint32_t disass_engine_options,
                              std::mutex &m) override {
-    ArmCapstone capstone_engine(disass_engine_options);
+    Arm64Capstone capstone_engine;
     find_rop_gadgets(p_memory, vaddr, depth, gadgets, capstone_engine, m);
   }
 };

@@ -49,7 +49,10 @@ int main(int argc, char *argv[]) {
                 "find useful gadget for your future exploits, arg is the "
                 "gadget maximum size in instructions");
   const std::unordered_map<std::string, CPU::E_CPU> raw_archi_map = {
-      {"x86", CPU::CPU_x86}, {"x64", CPU::CPU_x64}, {"arm", CPU::CPU_ARM}};
+      {"x86", CPU::CPU_x86},
+      {"x64", CPU::CPU_x64},
+      {"arm", CPU::CPU_ARM},
+      {"arm64", CPU::CPU_ARM64}};
   rp.add_option("--raw", opts.raw, "find gadgets in a raw file")
       ->transform(CLI::CheckedTransformer(raw_archi_map, CLI::ignore_case));
   rp.add_flag("--unique", opts.unique, "display only unique gadget");
