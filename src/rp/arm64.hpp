@@ -31,11 +31,11 @@ public:
       return {};
     }
 
+    std::string mnemonic(insn[0].mnemonic);
     InstructionInformation instr;
     instr.address = uintptr_t(data);
     instr.virtual_address_in_memory = uintptr_t(vaddr);
-    instr.mnemonic = insn[0].mnemonic;
-    instr.disassembly = instr.mnemonic + ' ' + std::string(insn[0].op_str);
+    instr.disassembly = mnemonic + ' ' + std::string(insn[0].op_str);
     instr.size = insn[0].size;
     instr.bytes.insert(instr.bytes.begin(), data, data + instr.size);
 
@@ -48,23 +48,15 @@ public:
       return instr;
     }
 
-    if (cs_insn_group(m_handle, insn, ARM_GRP_JUMP)) {
+    const bool Jump = cs_insn_group(m_handle, insn, ARM64_GRP_JUMP);
+    const bool Call = cs_insn_group(m_handle, insn, ARM64_GRP_CALL);
+    const bool Ret = cs_insn_group(m_handle, insn, ARM64_GRP_RET);
+    if (Jump || Call || Ret) {
       instr.u.capstone.is_branch = true;
       instr.u.capstone.is_valid_ending_instr =
-          insn[0].detail->arm.op_count == 1 &&
-          insn[0].detail->arm.operands[0].type != ARM_OP_IMM;
-    } else if (instr.mnemonic == "ret") {
-      instr.u.capstone.is_branch = true;
-      instr.u.capstone.is_valid_ending_instr = true;
-    } else if (instr.mnemonic == "b" || instr.mnemonic == "bl" ||
-               instr.mnemonic == "cbz" || instr.mnemonic == "cbnz" ||
-               instr.mnemonic == "tbnz" || instr.mnemonic == "tbz") {
-      instr.u.capstone.is_branch = true;
-    } else if (instr.mnemonic == "svc" || instr.mnemonic == "smc" ||
-               instr.mnemonic == "hvc") {
-      instr.u.capstone.is_branch = true;
-      instr.u.capstone.is_valid_ending_instr = true;
-    } else if (instr.mnemonic == "br" || instr.mnemonic == "blr") {
+          Ret || (insn[0].detail->arm64.op_count == 1 &&
+                  insn[0].detail->arm64.operands[0].type != ARM64_OP_IMM);
+    } else if (mnemonic == "svc" || mnemonic == "smc" || mnemonic == "hvc") {
       instr.u.capstone.is_branch = true;
       instr.u.capstone.is_valid_ending_instr = true;
     }

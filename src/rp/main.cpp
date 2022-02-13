@@ -38,6 +38,7 @@ int main(int argc, char *argv[]) {
     bool version = false;
     bool thumb = false;
     std::string va;
+    bool instr_only = false;
   } opts;
 
   CLI::App rp("rp++: a fast ROP gadget finder for pe/elf/mach-o x86/x64/ARM "
@@ -69,6 +70,8 @@ int main(int argc, char *argv[]) {
               "enable thumb mode when looking for ARM gadgets");
   rp.add_flag("--va", opts.va,
               "don't use the image base of the binary, but yours instead");
+  rp.add_flag("--instr-only", opts.instr_only,
+              "don't print the assembly; only the disassembly");
 
   CLI11_PARSE(rp, argc, argv);
 

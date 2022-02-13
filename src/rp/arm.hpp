@@ -37,11 +37,11 @@ public:
       return {};
     }
 
+    std::string mnemonic(insn[0].mnemonic);
     InstructionInformation instr;
     instr.address = uintptr_t(data);
     instr.virtual_address_in_memory = uintptr_t(vaddr);
-    instr.mnemonic = insn[0].mnemonic;
-    instr.disassembly = instr.mnemonic + ' ' + std::string(insn[0].op_str);
+    instr.disassembly = mnemonic + ' ' + std::string(insn[0].op_str);
     instr.size = insn[0].size;
     instr.bytes.insert(instr.bytes.begin(), data, data + instr.size);
 
@@ -59,26 +59,25 @@ public:
       instr.u.capstone.is_valid_ending_instr =
           insn[0].detail->arm.op_count == 1 &&
           insn[0].detail->arm.operands[0].type != ARM_OP_IMM;
-    } else if (instr.mnemonic == "b" || instr.mnemonic == "bl" ||
-               instr.mnemonic == "blx" || instr.mnemonic == "cb" ||
-               instr.mnemonic == "cbz") {
+    } else if (mnemonic == "b" || mnemonic == "bl" || mnemonic == "blx" ||
+               mnemonic == "cb" || mnemonic == "cbz") {
       instr.u.capstone.is_branch = true;
-    } else if (instr.mnemonic == "swi" || instr.mnemonic == "svc") {
+    } else if (mnemonic == "swi" || mnemonic == "svc") {
       instr.u.capstone.is_branch = true;
       instr.u.capstone.is_valid_ending_instr = true;
-    } else if (instr.mnemonic == "mov" && insn[0].detail->arm.op_count >= 1 &&
+    } else if (mnemonic == "mov" && insn[0].detail->arm.op_count >= 1 &&
                insn[0].detail->arm.operands[0].type == ARM_OP_REG &&
                insn[0].detail->arm.operands[0].reg == ARM_REG_PC) {
       instr.u.capstone.is_branch = true;
       instr.u.capstone.is_valid_ending_instr = true;
-    } else if (instr.mnemonic == "bx") {
+    } else if (mnemonic == "bx") {
       instr.u.capstone.is_branch = true;
       instr.u.capstone.is_valid_ending_instr =
           insn[0].detail->arm.operands[0].type == ARM_OP_REG;
-    } else if (instr.mnemonic == "blx") {
+    } else if (mnemonic == "blx") {
       instr.u.capstone.is_branch = true;
       instr.u.capstone.is_valid_ending_instr = true;
-    } else if (instr.mnemonic == "pop") {
+    } else if (mnemonic == "pop") {
       bool has_pc = false;
       for (size_t i = 0; i < insn[0].detail->arm.op_count; ++i) {
         if (insn[0].detail->arm.operands[i].type == ARM_OP_REG &&
