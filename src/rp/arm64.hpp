@@ -51,15 +51,12 @@ public:
     const bool Jump = cs_insn_group(m_handle, insn, ARM64_GRP_JUMP);
     const bool Call = cs_insn_group(m_handle, insn, ARM64_GRP_CALL);
     const bool Ret = cs_insn_group(m_handle, insn, ARM64_GRP_RET);
-    if (Jump || Call || Ret) {
-      instr.u.capstone.is_branch = true;
-      instr.u.capstone.is_valid_ending_instr =
-          Ret || (insn[0].detail->arm64.op_count == 1 &&
-                  insn[0].detail->arm64.operands[0].type != ARM64_OP_IMM);
-    } else if (mnemonic == "svc" || mnemonic == "smc" || mnemonic == "hvc") {
-      instr.u.capstone.is_branch = true;
-      instr.u.capstone.is_valid_ending_instr = true;
-    }
+    const bool Int = cs_insn_group(m_handle, insn, ARM64_GRP_INT);
+    instr.is_branch = Jump || Call || Ret || Int;
+    instr.is_valid_ending_instr =
+        Ret || Int ||
+        ((Jump || Call) && insn[0].detail->arm64.op_count == 1 &&
+         insn[0].detail->arm64.operands[0].type != ARM64_OP_IMM);
 
     cs_free(insn, count);
     return instr;
