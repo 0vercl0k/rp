@@ -46,6 +46,11 @@ Program::Program(const std::string &program_path, const CPU::E_CPU arch) {
       break;
     }
 
+    case CPU::CPU_ARM64: {
+      m_cpu = std::make_unique<ARM64>();
+      break;
+    }
+
     default: {
       RAISE_EXCEPTION("Don't know your architecture");
     }
