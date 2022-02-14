@@ -52,8 +52,8 @@ public:
     const bool Call = cs_insn_group(m_handle, insn, ARM64_GRP_CALL);
     const bool Ret = cs_insn_group(m_handle, insn, ARM64_GRP_RET);
     const bool Int = cs_insn_group(m_handle, insn, ARM64_GRP_INT);
-    instr.is_branch = Jump || Call || Ret || Int;
-    instr.is_valid_ending_instr =
+    instr.u.capstone.is_branch = Jump || Call || Ret || Int;
+    instr.u.capstone.is_valid_ending_instr =
         Ret || Int ||
         ((Jump || Call) && insn[0].detail->arm64.op_count == 1 &&
          insn[0].detail->arm64.operands[0].type != ARM64_OP_IMM);
