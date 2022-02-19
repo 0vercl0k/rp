@@ -283,6 +283,7 @@ const uint32_t SHT_STRTAB = 3;
 const uint32_t RP_ELFEM_386 = 0x03;
 const uint32_t RP_ELFEM_X86_64 = 0x3e;
 const uint32_t RP_ELFEM_ARM = 0x28;
+const uint32_t RP_ELFEM_ARM64 = 0xb7;
 
 template <class T> struct ELFLayout : public ExecutableLinkingFormatLayout {
   Elf_Ehdr<T> elfHeader;

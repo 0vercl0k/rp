@@ -12,7 +12,6 @@ struct InstructionInformation {
   uint32_t size = 0;
   uintptr_t address = 0;
   uintptr_t virtual_address_in_memory = 0;
-
   std::vector<uint8_t> bytes;
 
   // Capstone field

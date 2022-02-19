@@ -73,7 +73,9 @@ __attribute__((packed))
 const uint16_t RP_IMAGE_NT_OPTIONAL_HDR32_MAGIC = 0x10b;
 const uint16_t RP_IMAGE_NT_OPTIONAL_HDR64_MAGIC = 0x20b;
 const uint16_t RP_IMAGE_FILE_MACHINE_I386 = 0x14c;
+const uint16_t RP_IMAGE_FILE_MACHINE_AMD64 = 0x8664;
 const uint16_t RP_IMAGE_FILE_MACHINE_ARMTHUMB2LE = 0x1c4;
+const uint16_t RP_IMAGE_FILE_MACHINE_ARM64 = 0xaa64;
 
 struct RP_IMAGE_FILE_HEADER {
   uint16_t Machine;

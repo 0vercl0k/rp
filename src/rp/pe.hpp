@@ -22,6 +22,10 @@ public:
       return std::make_unique<ARM>();
     }
 
+    case CPU::CPU_ARM64: {
+      return std::make_unique<ARM64>();
+    }
+
     default: {
       RAISE_EXCEPTION("Cannot determine the CPU type");
     }
@@ -88,28 +92,24 @@ private:
           "This file doesn't seem to be a correct PE (bad IMAGE_NT_SIGNATURE)");
     }
 
-    switch (imgNtHeaders32.OptionalHeader.Magic) {
-    case RP_IMAGE_NT_OPTIONAL_HDR32_MAGIC: {
-      switch (imgNtHeaders32.FileHeader.Machine) {
-      case RP_IMAGE_FILE_MACHINE_I386: {
-        cpu = CPU::CPU_x86;
-        break;
-      }
-
-      case RP_IMAGE_FILE_MACHINE_ARMTHUMB2LE: {
-        cpu = CPU::CPU_ARM;
-        break;
-      }
-
-      default: {
-        RAISE_EXCEPTION("Cannot determine the CPU type");
-      }
-      }
+    switch (imgNtHeaders32.FileHeader.Machine) {
+    case RP_IMAGE_FILE_MACHINE_I386: {
+      cpu = CPU::CPU_x86;
       break;
     }
 
-    case RP_IMAGE_NT_OPTIONAL_HDR64_MAGIC: {
+    case RP_IMAGE_FILE_MACHINE_AMD64: {
       cpu = CPU::CPU_x64;
+      break;
+    }
+
+    case RP_IMAGE_FILE_MACHINE_ARMTHUMB2LE: {
+      cpu = CPU::CPU_ARM;
+      break;
+    }
+
+    case RP_IMAGE_FILE_MACHINE_ARM64: {
+      cpu = CPU::CPU_ARM64;
       break;
     }
 
@@ -120,7 +120,8 @@ private:
 
     // Ok, now we can allocate the good version of the PE Layout the 32bits
     // version there!
-    if (cpu == CPU::CPU_x64) {
+    if (imgNtHeaders32.OptionalHeader.Magic ==
+        RP_IMAGE_NT_OPTIONAL_HDR64_MAGIC) {
       init_properly_PELayout<x64Version>();
     } else {
       init_properly_PELayout<x86Version>();

@@ -15,8 +15,11 @@
 #pragma pack(1)
 #endif
 
-const uint32_t CPU_TYPE_x86_64 = 0x1000007;
+const uint32_t CPU_ARCH_ABI64 = 0x1000000;
 const uint32_t CPU_TYPE_I386 = 7;
+const uint32_t CPU_TYPE_x86_64 = CPU_ARCH_ABI64 | CPU_TYPE_I386;
+const uint32_t CPU_TYPE_ARM = 12;
+const uint32_t CPU_TYPE_ARM64 = CPU_TYPE_ARM | CPU_ARCH_ABI64;
 
 template <class T> struct RP_MACH_HEADER {};
 
