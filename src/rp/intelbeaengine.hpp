@@ -45,15 +45,15 @@ public:
     instr.mnemonic = m_disasm.Instruction.Mnemonic;
     instr.size = len_instr;
     instr.bytes.insert(instr.bytes.begin(), data, data + instr.size);
-    instr.u.beaengine.branch_type = m_disasm.Instruction.BranchType;
-    instr.u.beaengine.addr_value = m_disasm.Instruction.AddrValue;
+    instr.branch_type = m_disasm.Instruction.BranchType;
+    instr.addr_value = m_disasm.Instruction.AddrValue;
     return instr;
   }
 
   bool is_valid_ending_instruction(
       const InstructionInformation &instr) const override {
-    const uint32_t branch_type = instr.u.beaengine.branch_type;
-    const uint64_t addr_value = instr.u.beaengine.addr_value;
+    const uint32_t branch_type = instr.branch_type;
+    const uint64_t addr_value = instr.addr_value;
     const char *mnemonic_s = instr.mnemonic.c_str();
 
     const std::string &disass = instr.disassembly;
@@ -82,8 +82,8 @@ public:
 
   bool
   is_valid_instruction(const InstructionInformation &instr) const override {
-    const Int32 branch_type = instr.u.beaengine.branch_type;
-    const uint64_t addr_value = instr.u.beaengine.addr_value;
+    const Int32 branch_type = instr.branch_type;
+    const uint64_t addr_value = instr.addr_value;
     return branch_type != RetType && branch_type != JmpType &&
            ((branch_type == CallType && addr_value == 0) ||
             branch_type != CallType) &&

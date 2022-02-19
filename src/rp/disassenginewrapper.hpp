@@ -14,19 +14,14 @@ struct InstructionInformation {
   uintptr_t virtual_address_in_memory = 0;
   std::vector<uint8_t> bytes;
 
-  union {
-    struct {
-      // Capstone field
-      bool is_branch = false;
-      bool is_valid_ending_instr = false;
-    } capstone;
-    struct {
-      // BeaEngine fields
-      uint32_t branch_type = 0; // This is used by BeaEngine ; and this will
-                                // hold DISASM.Instruction.BranchType
-      uint64_t addr_value = 0;  // This is used by BeaEngine, DISASM.Instruction
-    } beaengine;
-  } u = {};
+  // Capstone field
+  bool is_branch = false;
+  bool is_valid_ending_instr = false;
+
+  // BeaEngine fields
+  uint32_t branch_type = 0; // This is used by BeaEngine ; and this will
+                            // hold DISASM.Instruction.BranchType
+  uint64_t addr_value = 0;  // This is used by BeaEngine, DISASM.Instruction
 };
 
 enum DisassEngineReturn { UnknownInstruction, OutOfBlock, AllRight };
