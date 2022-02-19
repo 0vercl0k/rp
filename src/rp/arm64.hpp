@@ -45,7 +45,7 @@ public:
 
     if (insn[0].detail == nullptr) {
       cs_free(insn, count);
-      return instr;
+      std::abort();
     }
 
     const bool Jump = cs_insn_group(m_handle, insn, ARM64_GRP_JUMP);
