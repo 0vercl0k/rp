@@ -25,6 +25,8 @@
 #define VERSION VERSION_TM " (Release)"
 #endif
 
+Options_t g_opts;
+
 int main(int argc, char *argv[]) {
   CLI::App rp("rp++: a fast ROP gadget finder for pe/elf/mach-o x86/x64/ARM "
               "binaries\nby Axel '0vercl0k' Souchet.\n");

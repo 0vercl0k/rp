@@ -20,4 +20,4 @@ struct Options_t {
   bool thumb = false;
 };
 
-static Options_t g_opts;
+extern Options_t g_opts;
