@@ -262,9 +262,7 @@ template <class T> static void coloshell(const T t, const Colors colo) {
       fmt::print(": ");                                                        \
       enable_color(COLO_GREEN);                                                \
       (gadget).display_disassembly();                                          \
-      if (!opts.instr_only) {                                                  \
-        (gadget).print_bytes();                                                \
-      }                                                                        \
+      (gadget).print_bytes();                                                  \
       fmt::print(" ({} found)\n", (gadget).get_nb());                          \
       disable_color();                                                         \
     } else {                                                                   \
