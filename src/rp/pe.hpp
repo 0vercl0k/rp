@@ -44,10 +44,9 @@ public:
   get_executables_section(std::ifstream &file,
                           const uint64_t base) const override {
     std::vector<Section> exec_sections;
-    const uint32_t Executable =
-        RP_IMAGE_SCN_MEM_EXECUTE | RP_IMAGE_SCN_CNT_CODE;
+
     for (const auto &sectionheader : m_pPELayout->imgSectionHeaders) {
-      if (!(sectionheader.Characteristics & Executable)) {
+      if (!(sectionheader.Characteristics & RP_IMAGE_SCN_MEM_EXECUTE)) {
         continue;
       }
 
