@@ -1,5 +1,6 @@
 // Axel '0vercl0k' Souchet - January 12 2022
 #include "coloshell.hpp"
+#include "options.hpp"
 #include "platform.h"
 #include "program.hpp"
 #include <CLI11.hpp>
@@ -25,27 +26,12 @@
 #endif
 
 int main(int argc, char *argv[]) {
-  struct {
-    std::string file;
-    uint8_t display = 0;
-    uint32_t rop = 0;
-    CPU::E_CPU raw = CPU::E_CPU::CPU_UNKNOWN;
-    bool unique = false;
-    std::string shexa;
-    uint32_t maxth = 2;
-    std::string badbytes;
-    std::string sint;
-    bool version = false;
-    bool thumb = false;
-    std::string va;
-  } opts;
-
   CLI::App rp("rp++: a fast ROP gadget finder for pe/elf/mach-o x86/x64/ARM "
               "binaries\nby Axel '0vercl0k' Souchet.\n");
-  rp.add_option("-f,--file", opts.file, "Binary path")->required();
-  rp.add_option("-i,--info", opts.display,
+  rp.add_option("-f,--file", g_opts.file, "Binary path")->required();
+  rp.add_option("-i,--info", g_opts.display,
                 "display information about the binary header");
-  rp.add_option("-r,--rop", opts.rop,
+  rp.add_option("-r,--rop", g_opts.rop,
                 "find useful gadget for your future exploits, arg is the "
                 "gadget maximum size in instructions");
   const std::unordered_map<std::string, CPU::E_CPU> raw_archi_map = {
@@ -53,57 +39,60 @@ int main(int argc, char *argv[]) {
       {"x64", CPU::CPU_x64},
       {"arm", CPU::CPU_ARM},
       {"arm64", CPU::CPU_ARM64}};
-  rp.add_option("--raw", opts.raw, "find gadgets in a raw file")
+  rp.add_option("--raw", g_opts.raw, "find gadgets in a raw file")
       ->transform(CLI::CheckedTransformer(raw_archi_map, CLI::ignore_case));
-  rp.add_flag("--unique", opts.unique, "display only unique gadget");
-  rp.add_option("--search-hexa", opts.shexa, "try to find hex values");
-  rp.add_option("--max-thread", opts.maxth,
+  rp.add_flag("--unique", g_opts.unique, "display only unique gadget");
+  rp.add_option("--search-hexa", g_opts.shexa, "try to find hex values");
+  rp.add_option("--max-thread", g_opts.maxth,
                 "set the maximum number of threads that can be used");
-  rp.add_option("--bad-bytes", opts.badbytes,
+  rp.add_option("--bad-bytes", g_opts.badbytes,
                 "the bytes you don't want to see in the gadgets' addresses");
-  rp.add_option("--search-int", opts.sint,
+  rp.add_option("--search-int", g_opts.sint,
                 "try to find a pointer on a specific integer value");
-  rp.add_flag("-v,--version", opts.version, "print version information");
+  rp.add_flag("-v,--version", g_opts.version, "print version information");
   rp.add_flag("--colors", g_colors_desired, "enable colors");
-  rp.add_flag("--thumb", opts.thumb,
+  rp.add_flag("--thumb", g_opts.thumb,
               "enable thumb mode when looking for ARM gadgets");
-  rp.add_flag("--va", opts.va,
+  rp.add_flag("--va", g_opts.va,
               "don't use the image base of the binary, but yours instead");
+  rp.add_flag("--allow-branches", g_opts.allow_branches,
+              "allow branches in a gadget");
 
   CLI11_PARSE(rp, argc, argv);
 
   try {
-    if (opts.version) {
+    if (g_opts.version) {
       fmt::print("You are currently using the version {} of rp++.\n", VERSION);
     }
 
-    Program p(opts.file, opts.raw);
-    if (opts.display >= VERBOSE_LEVEL_1 && opts.display <= VERBOSE_LEVEL_3) {
-      p.display_information(VerbosityLevel(opts.display));
+    Program p(g_opts.file, g_opts.raw);
+    if (g_opts.display >= VERBOSE_LEVEL_1 &&
+        g_opts.display <= VERBOSE_LEVEL_3) {
+      p.display_information(VerbosityLevel(g_opts.display));
     }
 
     // Here we set the base being 0 if we want to have absolute virtual
     // memory address displayed
-    const uint64_t base = opts.va.size() > 0
-                              ? std::strtoull(opts.va.c_str(), nullptr, 0)
+    const uint64_t base = g_opts.va.size() > 0
+                              ? std::strtoull(g_opts.va.c_str(), nullptr, 0)
                               : p.get_image_base_address();
-    if (opts.rop > 0) {
-      const uint32_t options = opts.thumb ? 1 : 0;
+    if (g_opts.rop > 0) {
+      const uint32_t options = g_opts.thumb ? 1 : 0;
       fmt::print("\nWait a few seconds, rp++ is looking for gadgets ({} "
                  "threads max)..\n",
-                 opts.maxth);
+                 g_opts.maxth);
 
       GadgetMultiset all_gadgets =
-          p.find_gadgets(opts.rop, options, opts.maxth, base);
+          p.find_gadgets(g_opts.rop, options, g_opts.maxth, base);
 
       fmt::print("A total of {} gadgets found.\n", all_gadgets.size());
       std::vector<uint8_t> badbyte_list;
-      if (opts.badbytes.size() > 0) {
-        badbyte_list = string_to_hex(opts.badbytes);
+      if (g_opts.badbytes.size() > 0) {
+        badbyte_list = string_to_hex(g_opts.badbytes);
       }
 
       uint64_t nb_gadgets_filtered = 0;
-      if (opts.unique) {
+      if (g_opts.unique) {
         auto unique_gadgets = only_unique_gadgets(all_gadgets);
 
         fmt::print("You decided to keep only the unique ones, {} unique "
@@ -121,20 +110,20 @@ int main(int argc, char *argv[]) {
         }
       }
 
-      if (opts.badbytes.size() > 0) {
+      if (g_opts.badbytes.size() > 0) {
         fmt::print(
             "\n{} gadgets have been filtered because of your bad-bytes.\n",
             nb_gadgets_filtered);
       }
     }
 
-    if (opts.shexa.size() > 0) {
-      const std::vector<uint8_t> &hex_values = string_to_hex(opts.shexa);
+    if (g_opts.shexa.size() > 0) {
+      const std::vector<uint8_t> &hex_values = string_to_hex(g_opts.shexa);
       p.search_and_display(hex_values.data(), hex_values.size(), base);
     }
 
-    if (opts.sint.size() > 0) {
-      const uint32_t val = std::strtoul(opts.sint.c_str(), nullptr, 16);
+    if (g_opts.sint.size() > 0) {
+      const uint32_t val = std::strtoul(g_opts.sint.c_str(), nullptr, 16);
       p.search_and_display((const uint8_t *)&val, sizeof(val), base);
     }
   } catch (const std::exception &e) {
