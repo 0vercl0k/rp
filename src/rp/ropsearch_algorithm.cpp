@@ -116,7 +116,7 @@ void find_rop_gadgets(const std::vector<uint8_t> &section, const uint64_t vaddr,
   const uint32_t alignement = disass_engine.get_alignement();
   for (uint64_t offset = 0; offset < size; offset += alignement) {
     DisassEngineReturn ret;
-    InstructionInformation instr = disass_engine.disass(
+    InstructionInformation ret_instr = disass_engine.disass(
         data + offset, size - offset, SafeIntAdd(vaddr, offset), ret);
 
     // OK either this is an unknow opcode & we goto the next one Or the
@@ -126,12 +126,14 @@ void find_rop_gadgets(const std::vector<uint8_t> &section, const uint64_t vaddr,
       continue;
     }
 
-    if (!disass_engine.is_valid_ending_instruction(instr)) {
+    if (!disass_engine.is_valid_ending_instruction(ret_instr)) {
       continue;
     }
 
-    // Okay I found a RET ; now I can build the gadget
-    InstructionInformation ret_instr(instr);
+    // Grab the bytes if we'll need to print them later
+    if (g_opts.print_bytes) {
+      ret_instr.bytes.assign(data, data + ret_instr.size);
+    }
 
     // Do not forget to add the ending instruction only -- we give to the user
     // all gadget with < depth instruction
