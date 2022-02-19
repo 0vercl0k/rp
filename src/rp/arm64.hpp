@@ -39,8 +39,8 @@ public:
     instr.size = insn[0].size;
     instr.bytes.insert(instr.bytes.begin(), data, data + instr.size);
 
-    instr.is_branch = false;
-    instr.is_valid_ending_instr = false;
+    instr.cap_is_branch = false;
+    instr.cap_is_valid_ending_instr = false;
     ret = AllRight;
 
     if (insn[0].detail == nullptr) {
@@ -52,8 +52,8 @@ public:
     const bool Call = cs_insn_group(m_handle, insn, ARM64_GRP_CALL);
     const bool Ret = cs_insn_group(m_handle, insn, ARM64_GRP_RET);
     const bool Int = cs_insn_group(m_handle, insn, ARM64_GRP_INT);
-    instr.is_branch = Jump || Call || Ret || Int;
-    instr.is_valid_ending_instr =
+    instr.cap_is_branch = Jump || Call || Ret || Int;
+    instr.cap_is_valid_ending_instr =
         Ret || Int ||
         ((Jump || Call) && insn[0].detail->arm64.op_count == 1 &&
          insn[0].detail->arm64.operands[0].type != ARM64_OP_IMM);
@@ -64,12 +64,12 @@ public:
 
   bool is_valid_ending_instruction(
       const InstructionInformation &instr) const override {
-    return instr.is_valid_ending_instr;
+    return instr.cap_is_valid_ending_instr;
   }
 
   bool
   is_valid_instruction(const InstructionInformation &instr) const override {
-    return instr.is_branch == false;
+    return instr.cap_is_branch == false;
   }
 
   uint32_t get_size_biggest_instruction() const override { return 4; }

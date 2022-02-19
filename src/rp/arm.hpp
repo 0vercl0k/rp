@@ -45,8 +45,8 @@ public:
     instr.size = insn[0].size;
     instr.bytes.insert(instr.bytes.begin(), data, data + instr.size);
 
-    instr.is_branch = false;
-    instr.is_valid_ending_instr = false;
+    instr.cap_is_branch = false;
+    instr.cap_is_valid_ending_instr = false;
     ret = AllRight;
 
     if (insn[0].detail == nullptr) {
@@ -55,28 +55,28 @@ public:
     }
 
     if (cs_insn_group(m_handle, insn, ARM_GRP_JUMP)) {
-      instr.is_branch = true;
-      instr.is_valid_ending_instr =
+      instr.cap_is_branch = true;
+      instr.cap_is_valid_ending_instr =
           insn[0].detail->arm.op_count == 1 &&
           insn[0].detail->arm.operands[0].type != ARM_OP_IMM;
     } else if (mnemonic == "b" || mnemonic == "bl" || mnemonic == "blx" ||
                mnemonic == "cb" || mnemonic == "cbz") {
-      instr.is_branch = true;
+      instr.cap_is_branch = true;
     } else if (mnemonic == "swi" || mnemonic == "svc") {
-      instr.is_branch = true;
-      instr.is_valid_ending_instr = true;
+      instr.cap_is_branch = true;
+      instr.cap_is_valid_ending_instr = true;
     } else if (mnemonic == "mov" && insn[0].detail->arm.op_count >= 1 &&
                insn[0].detail->arm.operands[0].type == ARM_OP_REG &&
                insn[0].detail->arm.operands[0].reg == ARM_REG_PC) {
-      instr.is_branch = true;
-      instr.is_valid_ending_instr = true;
+      instr.cap_is_branch = true;
+      instr.cap_is_valid_ending_instr = true;
     } else if (mnemonic == "bx") {
-      instr.is_branch = true;
-      instr.is_valid_ending_instr =
+      instr.cap_is_branch = true;
+      instr.cap_is_valid_ending_instr =
           insn[0].detail->arm.operands[0].type == ARM_OP_REG;
     } else if (mnemonic == "blx") {
-      instr.is_branch = true;
-      instr.is_valid_ending_instr = true;
+      instr.cap_is_branch = true;
+      instr.cap_is_valid_ending_instr = true;
     } else if (mnemonic == "pop") {
       bool has_pc = false;
       for (size_t i = 0; i < insn[0].detail->arm.op_count; ++i) {
@@ -88,8 +88,8 @@ public:
       }
 
       if (has_pc) {
-        instr.is_branch = true;
-        instr.is_valid_ending_instr = true;
+        instr.cap_is_branch = true;
+        instr.cap_is_valid_ending_instr = true;
       }
     }
 
@@ -99,12 +99,12 @@ public:
 
   bool is_valid_ending_instruction(
       const InstructionInformation &instr) const override {
-    return instr.is_valid_ending_instr;
+    return instr.cap_is_valid_ending_instr;
   }
 
   bool
   is_valid_instruction(const InstructionInformation &instr) const override {
-    return instr.is_branch == false;
+    return instr.cap_is_branch == false;
   }
 
   uint32_t get_size_biggest_instruction() const override { return 4; }
