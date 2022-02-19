@@ -1,5 +1,6 @@
 // Axel '0vercl0k' Souchet - January 12 2022
 #include "ropsearch_algorithm.hpp"
+#include "options.hpp"
 #include "safeint.hpp"
 #include <cstring>
 
@@ -45,9 +46,11 @@ void find_all_gadget_from_ret(const std::vector<uint8_t> &memory,
       InstructionInformation instr =
           disass_engine.disass(EIP_, end_data - EIP_, VirtualAddr, ret);
 
+      const bool is_valid = g_opts.allow_branches
+                                ? true
+                                : disass_engine.is_valid_instruction(instr);
       // if the instruction isn't valid, ends this function
-      if (ret == UnknownInstruction || ret == OutOfBlock ||
-          !disass_engine.is_valid_instruction(instr)) {
+      if (ret == UnknownInstruction || ret == OutOfBlock || !is_valid) {
         break;
       }
 
