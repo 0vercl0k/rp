@@ -54,6 +54,11 @@ void find_all_gadget_from_ret(const std::vector<uint8_t> &memory,
         break;
       }
 
+      // Grab the bytes if we'll need to print them later
+      if (g_opts.print_bytes) {
+        instr.bytes.assign(data, data + instr.size);
+      }
+
       // Sets the begining address of the gadget as soon as we find the first
       // one
       if (list_of_instr.size() == 0) {

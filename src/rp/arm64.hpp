@@ -37,7 +37,6 @@ public:
     instr.virtual_address_in_memory = uintptr_t(vaddr);
     instr.disassembly = mnemonic + ' ' + std::string(insn[0].op_str);
     instr.size = insn[0].size;
-    instr.bytes.insert(instr.bytes.begin(), data, data + instr.size);
 
     instr.cap_is_branch = false;
     instr.cap_is_valid_ending_instr = false;
