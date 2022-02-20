@@ -132,7 +132,7 @@ void find_rop_gadgets(const std::vector<uint8_t> &section, const uint64_t vaddr,
 
     // Grab the bytes if we'll need to print them later
     if (g_opts.print_bytes) {
-      ret_instr.bytes.assign(data, data + ret_instr.size);
+      ret_instr.bytes.assign(data + offset, data + offset + ret_instr.size);
     }
 
     // Do not forget to add the ending instruction only -- we give to the user
