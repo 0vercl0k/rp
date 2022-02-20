@@ -44,49 +44,35 @@ public:
     instr.disassembly = m_disasm.CompleteInstr;
     instr.mnemonic = m_disasm.Instruction.Mnemonic;
     instr.size = len_instr;
-    instr.bea_branch_type = m_disasm.Instruction.BranchType;
-    instr.bea_addr_value = m_disasm.Instruction.AddrValue;
-    return instr;
-  }
 
-  bool is_valid_ending_instruction(
-      const InstructionInformation &instr) const override {
-    const uint32_t branch_type = instr.bea_branch_type;
-    const uint64_t addr_value = instr.bea_addr_value;
-    const char *mnemonic_s = instr.mnemonic.c_str();
-
-    const std::string &disass = instr.disassembly;
-    const char *disass_s = disass.c_str();
-
+    const auto branch_type = m_disasm.Instruction.BranchType;
+    const auto addr_value = m_disasm.Instruction.AddrValue;
+    const char *mnemonic_s = m_disasm.Instruction.Mnemonic;
+    const char *disass_s = m_disasm.CompleteInstr;
     const bool is_good_branch_type =
         // We accept all the ret type instructions (except retf/iret)
         (branch_type == RetType && (strncmp(mnemonic_s, "retf", 4) != 0) &&
          (strncmp(mnemonic_s, "iretd", 5) != 0)) ||
-
         // call reg32 / call [reg32]
         (branch_type == CallType && addr_value == 0) ||
-
         // jmp reg32 / jmp [reg32]
         (branch_type == JmpType && addr_value == 0) ||
-
         // int 0x80 & int 0x2e
         ((strncmp(disass_s, "int 0x80", 8) == 0) ||
          (strncmp(disass_s, "int 0x2e", 8) == 0) ||
          (strncmp(disass_s, "syscall", 7) == 0));
 
-    return is_good_branch_type &&
-           // Yeah, we don't accept jmp far/call far
-           disass.find("far") == std::string::npos;
-  }
+    instr.is_valid_ending_instr =
+        !(is_good_branch_type &&
+          // Yeah, we don't accept jmp far/call far
+          instr.disassembly.find("far") == std::string::npos);
 
-  bool
-  is_valid_instruction(const InstructionInformation &instr) const override {
-    const Int32 branch_type = instr.bea_branch_type;
-    const uint64_t addr_value = instr.bea_addr_value;
-    return branch_type != RetType && branch_type != JmpType &&
-           ((branch_type == CallType && addr_value == 0) ||
-            branch_type != CallType) &&
-           instr.disassembly.find("far") == std::string::npos;
+    instr.is_branch = !(branch_type != RetType && branch_type != JmpType &&
+                        ((branch_type == CallType && addr_value == 0) ||
+                         branch_type != CallType) &&
+                        instr.disassembly.find("far") == std::string::npos);
+
+    return instr;
   }
 
   uint32_t get_size_biggest_instruction() const override { return 15; }
