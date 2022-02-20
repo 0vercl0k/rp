@@ -6,7 +6,6 @@
 #include <vector>
 
 struct InstructionInformation {
-  // Generic fields
   std::string disassembly;
   std::string mnemonic;
   uint32_t size = 0;
