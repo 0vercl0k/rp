@@ -52,10 +52,8 @@ void find_all_gadget_from_ret(const std::vector<uint8_t> &memory,
         break;
       }
 
-      // Grab the bytes if we'll need to print them later
-      if (g_opts.print_bytes) {
-        instr.bytes.assign(EIP_, EIP_ + instr.size);
-      }
+      // Grab the bytes
+      instr.bytes.assign(EIP_, EIP_ + instr.size);
 
       // Sets the begining address of the gadget as soon as we find the first
       // one
@@ -128,10 +126,8 @@ void find_rop_gadgets(const std::vector<uint8_t> &section, const uint64_t vaddr,
       continue;
     }
 
-    // Grab the bytes if we'll need to print them later
-    if (g_opts.print_bytes) {
-      ret_instr.bytes.assign(data + offset, data + offset + ret_instr.size);
-    }
+    // Grab the bytes
+    ret_instr.bytes.assign(data + offset, data + offset + ret_instr.size);
 
     // Do not forget to add the ending instruction only -- we give to the user
     // all gadget with < depth instruction

@@ -48,7 +48,10 @@ public:
     const auto branch_type = m_disasm.Instruction.BranchType;
     const auto addr_value = m_disasm.Instruction.AddrValue;
     const char *mnemonic_s = m_disasm.Instruction.Mnemonic;
-    const char *disass_s = m_disasm.CompleteInstr;
+    const char *disass_s = instr.disassembly.c_str();
+
+    instr.is_branch = branch_type != 0;
+
     const bool is_good_branch_type =
         // We accept all the ret type instructions (except retf/iret)
         (branch_type == RetType && (strncmp(mnemonic_s, "retf", 4) != 0) &&
@@ -63,14 +66,9 @@ public:
          (strncmp(disass_s, "syscall", 7) == 0));
 
     instr.is_valid_ending_instr =
-        !(is_good_branch_type &&
-          // Yeah, we don't accept jmp far/call far
-          instr.disassembly.find("far") == std::string::npos);
-
-    instr.is_branch = !(branch_type != RetType && branch_type != JmpType &&
-                        ((branch_type == CallType && addr_value == 0) ||
-                         branch_type != CallType) &&
-                        instr.disassembly.find("far") == std::string::npos);
+        is_good_branch_type &&
+        // Yeah, we don't accept jmp far/call far
+        instr.disassembly.find("far") == std::string::npos;
 
     return instr;
   }
