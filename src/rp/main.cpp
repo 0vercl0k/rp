@@ -59,6 +59,7 @@ int main(int argc, char *argv[]) {
               "don't use the image base of the binary, but yours instead");
   rp.add_flag("--allow-branches", g_opts.allow_branches,
               "allow branches in a gadget");
+  rp.add_flag("--print-bytes", g_opts.print_bytes, "print the gadget bytes");
 
   CLI11_PARSE(rp, argc, argv);
 

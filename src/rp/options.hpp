@@ -18,6 +18,7 @@ struct Options_t {
   bool unique = false;
   bool version = false;
   bool thumb = false;
+  bool print_bytes = false;
 };
 
 extern Options_t g_opts;

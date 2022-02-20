@@ -44,7 +44,6 @@ public:
     instr.disassembly = m_disasm.CompleteInstr;
     instr.mnemonic = m_disasm.Instruction.Mnemonic;
     instr.size = len_instr;
-    instr.bytes.insert(instr.bytes.begin(), data, data + instr.size);
     instr.bea_branch_type = m_disasm.Instruction.BranchType;
     instr.bea_addr_value = m_disasm.Instruction.AddrValue;
     return instr;
