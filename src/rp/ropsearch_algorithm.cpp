@@ -46,14 +46,16 @@ void find_all_gadget_from_ret(const std::vector<uint8_t> &memory,
       InstructionInformation instr =
           disass_engine.disass(EIP_, end_data - EIP_, VirtualAddr, ret);
 
-      const bool is_valid = g_opts.allow_branches ? true : !instr.is_branch;
+      const bool is_valid = g_opts.allow_branches || (!instr.is_branch);
       // if the instruction isn't valid, ends this function
       if (ret == UnknownInstruction || ret == OutOfBlock || !is_valid) {
         break;
       }
 
-      // Grab the bytes
-      instr.bytes.assign(EIP_, EIP_ + instr.size);
+      // Grab the bytes if we'll need to print them later
+      if (g_opts.print_bytes) {
+        instr.bytes.assign(EIP_, EIP_ + instr.size);
+      }
 
       // Sets the begining address of the gadget as soon as we find the first
       // one
@@ -126,8 +128,10 @@ void find_rop_gadgets(const std::vector<uint8_t> &section, const uint64_t vaddr,
       continue;
     }
 
-    // Grab the bytes
-    ret_instr.bytes.assign(data + offset, data + offset + ret_instr.size);
+    // Grab the bytes if we'll need to print them later
+    if (g_opts.print_bytes) {
+      ret_instr.bytes.assign(data + offset, data + offset + ret_instr.size);
+    }
 
     // Do not forget to add the ending instruction only -- we give to the user
     // all gadget with < depth instruction
