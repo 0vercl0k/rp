@@ -142,34 +142,18 @@ public:
           return true;
         }
 
-        const auto &current_a_bytes = a.m_instructions[current_a_idx].bytes();
-        const size_t current_a_bytes_size = current_a_bytes.size();
-        const auto &current_b_bytes = b.m_instructions[current_b_idx].bytes();
-        const size_t current_b_bytes_size = current_b_bytes.size();
-        while (1) {
-          if (current_a_bytes_idx >= current_a_bytes_size) {
-            current_a_idx++;
-            current_a_bytes_idx = 0;
-            break;
-          }
-
-          if (current_b_bytes_idx >= current_b_bytes_size) {
-            current_b_idx++;
-            current_b_bytes_idx = 0;
-            break;
-          }
-
-          if (current_a_bytes[current_a_bytes_idx] !=
-              current_b_bytes[current_b_bytes_idx]) {
-            return current_a_bytes[current_a_bytes_idx] <
-                   current_b_bytes[current_b_bytes_idx];
-          }
-
-          current_a_bytes_idx++;
-          current_b_bytes_idx++;
+        const auto &current_a_disass =
+            a.m_instructions[current_a_idx].get_disassembly();
+        const auto &current_b_disass =
+            b.m_instructions[current_b_idx].get_disassembly();
+        const int compare = current_a_disass.compare(current_b_disass);
+        if (compare != 0) {
+          return (compare < 0) ? true : false;
         }
+
+        current_a_idx++;
+        current_b_idx++;
       }
-      return false;
     }
   };
 
@@ -186,8 +170,8 @@ private:
   uint32_t m_size; /*!< the size in byte of the gadget*/
 
   std::vector<Instruction>
-      m_instructions; /*!< the list of the different instructions composing the
-                         gadget*/
+      m_instructions; /*!< the list of the different instructions composing
+                         the gadget*/
 
   mutable std::vector<Info>
       m_info_gadgets; /*!< the vector which stores where you can find the same

@@ -46,9 +46,7 @@ void find_all_gadget_from_ret(const std::vector<uint8_t> &memory,
       InstructionInformation instr =
           disass_engine.disass(EIP_, end_data - EIP_, VirtualAddr, ret);
 
-      const bool is_valid = g_opts.allow_branches
-                                ? true
-                                : disass_engine.is_valid_instruction(instr);
+      const bool is_valid = g_opts.allow_branches || (!instr.is_branch);
       // if the instruction isn't valid, ends this function
       if (ret == UnknownInstruction || ret == OutOfBlock || !is_valid) {
         break;
@@ -126,7 +124,7 @@ void find_rop_gadgets(const std::vector<uint8_t> &section, const uint64_t vaddr,
       continue;
     }
 
-    if (!disass_engine.is_valid_ending_instruction(ret_instr)) {
+    if (!ret_instr.is_valid_ending_instr) {
       continue;
     }
 
