@@ -44,9 +44,12 @@ public:
     return disassembly;
   }
 
-  void display_disassembly() const {
-    for (const auto &i : m_instructions) {
-      fmt::print("{} ; ", i.get_disassembly());
+  void print_disassembly() const {
+    for (size_t idx = 0; idx < m_instructions.size(); idx++) {
+      fmt::print("{} ;", m_instructions[idx].get_disassembly());
+      if ((idx + 1) < m_instructions.size()) {
+        fmt::print(" ");
+      }
     }
   }
 
