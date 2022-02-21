@@ -120,6 +120,10 @@ static std::string type_to_str(const uint32_t p_type) {
     return "LOPROC";
   }
 
+  case 0x70000001: {
+    return "EXIDX";
+  }
+
   case 0x7fffffff: {
     return "HIPROC";
   }

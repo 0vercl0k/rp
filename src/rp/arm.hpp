@@ -47,7 +47,7 @@ public:
 
     if (insn[0].detail == nullptr) {
       cs_free(insn, count);
-      return instr;
+      std::abort();
     }
 
     if (cs_insn_group(m_handle, insn, ARM_GRP_JUMP)) {
