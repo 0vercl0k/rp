@@ -50,44 +50,44 @@ public:
       std::abort();
     }
 
-    if (cs_insn_group(m_handle, insn, ARM_GRP_JUMP)) {
-      instr.is_branch = true;
-      instr.is_valid_ending_instr =
-          insn[0].detail->arm.op_count == 1 &&
-          insn[0].detail->arm.operands[0].type != ARM_OP_IMM;
-    } else if (mnemonic == "b" || mnemonic == "bl" || mnemonic == "blx" ||
-               mnemonic == "cb" || mnemonic == "cbz") {
-      instr.is_branch = true;
-    } else if (mnemonic == "swi" || mnemonic == "svc") {
-      instr.is_branch = true;
-      instr.is_valid_ending_instr = true;
-    } else if (mnemonic == "mov" && insn[0].detail->arm.op_count >= 1 &&
-               insn[0].detail->arm.operands[0].type == ARM_OP_REG &&
-               insn[0].detail->arm.operands[0].reg == ARM_REG_PC) {
-      instr.is_branch = true;
-      instr.is_valid_ending_instr = true;
-    } else if (mnemonic == "bx") {
-      instr.is_branch = true;
-      instr.is_valid_ending_instr =
-          insn[0].detail->arm.operands[0].type == ARM_OP_REG;
-    } else if (mnemonic == "blx") {
-      instr.is_branch = true;
-      instr.is_valid_ending_instr = true;
-    } else if (mnemonic == "pop") {
-      bool has_pc = false;
-      for (size_t i = 0; i < insn[0].detail->arm.op_count; ++i) {
-        if (insn[0].detail->arm.operands[i].type == ARM_OP_REG &&
-            insn[0].detail->arm.operands[i].reg == ARM_REG_PC) {
-          has_pc = true;
-          break;
-        }
+    bool has_pc_operand_after_first = false;
+    bool has_pc_operand_first = false;
+    for (size_t i = 0; i < insn[0].detail->arm.op_count; i++) {
+      const bool pc_operand =
+          insn[0].detail->arm.operands[i].type == ARM_OP_REG &&
+          insn[0].detail->arm.operands[i].reg == ARM_REG_PC;
+      if (!has_pc_operand_first) {
+        has_pc_operand_first = pc_operand && i == 0;
+      }
+      if (!has_pc_operand_after_first) {
+        has_pc_operand_after_first = pc_operand && i > 0;
       }
 
-      if (has_pc) {
-        instr.is_branch = true;
-        instr.is_valid_ending_instr = true;
+      if (has_pc_operand_after_first) {
+        break;
       }
     }
+
+    const bool has_pc_operand =
+        has_pc_operand_after_first || has_pc_operand_first;
+
+    const bool Jump = cs_insn_group(m_handle, insn, ARM_GRP_JUMP);
+    const bool Call = cs_insn_group(m_handle, insn, ARM_GRP_CALL);
+    const bool indirect_jmp_call =
+        (Jump || Call) && insn[0].detail->arm.op_count == 1 &&
+        insn[0].detail->arm.operands[0].type != ARM_OP_IMM;
+    const bool pop_pc = insn[0].id == ARM_INS_POP && has_pc_operand;
+    const bool ldm_pc =
+        (insn[0].id == ARM_INS_LDM || insn[0].id == ARM_INS_LDMDA ||
+         insn[0].id == ARM_INS_LDMDB || insn[0].id == ARM_INS_LDMIB) &&
+        has_pc_operand_after_first;
+    const bool mov_pc = insn[0].id == ARM_INS_MOV && has_pc_operand;
+    const bool swi_svc = insn[0].id == ARM_INS_SVC;
+    instr.is_valid_ending_instr =
+        indirect_jmp_call || pop_pc || ldm_pc || mov_pc;
+
+    const bool Int = cs_insn_group(m_handle, insn, ARM_GRP_INT);
+    instr.is_branch = instr.is_valid_ending_instr || Jump || Call || Int;
 
     cs_free(insn, count);
     return instr;
