@@ -5,6 +5,8 @@
 #define ARCH_X86
 #elif defined(__amd64__) || defined(_M_X64)
 #define ARCH_X64
+#elif defined(__arm64__)
+#define ARCH_ARM64
 #else
 #error Platform not supported.
 #endif
@@ -37,6 +39,8 @@
 #define LINUX_X86
 #elif defined ARCH_X64
 #define LINUX_X64
+#elif defined ARCH_ARM64
+#define LINUX_ARM64
 #endif
 
 #else

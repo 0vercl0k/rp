@@ -25,11 +25,7 @@ elseif(UNIX)
     endif()
  endif()
 
-if(CMAKE_SIZEOF_VOID_P EQUAL 8)
-    set(RP_PLAT "rp-${RP_PLAT}-x64")
-else()
-    set(RP_PLAT "rp-${RP_PLAT}-x86")
-endif()
+set(RP_PLAT "rp-${RP_PLAT}-${CMAKE_HOST_SYSTEM_PROCESSOR}")
 
 file(
     GLOB
