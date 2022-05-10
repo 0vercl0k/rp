@@ -13,8 +13,10 @@
 #define NUM_V "2.0"
 #ifdef ARCH_X64
 #define VERSION_TMP NUM_V " x64 built the " __DATE__ " " __TIME__
-#else
+#elif defined ARCH_X86
 #define VERSION_TMP NUM_V " x86 built the " __DATE__ " " __TIME__
+#else
+#define VERSION_TMP NUM_V " arm64 built the " __DATE__ " " __TIME__
 #endif
 
 #define VERSION_TM VERSION_TMP " for " SYSTEM_PLATFORM
