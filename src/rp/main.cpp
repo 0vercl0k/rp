@@ -57,7 +57,7 @@ int main(int argc, char *argv[]) {
   rp.add_flag("--colors", g_colors_desired, "enable colors");
   rp.add_flag("--thumb", g_opts.thumb,
               "enable thumb mode when looking for ARM gadgets");
-  rp.add_flag("--va", g_opts.va,
+  rp.add_option("--va", g_opts.va,
               "don't use the image base of the binary, but yours instead");
   rp.add_flag("--allow-branches", g_opts.allow_branches,
               "allow branches in a gadget");
