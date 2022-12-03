@@ -143,6 +143,10 @@ static std::string type_to_str(const uint32_t p_type) {
   case 0x65041580: {
     return "PAX_FLAGS";
   }
+
+  case 0x70000001: {
+    return "SHT_AMD64_UNWIND";
+  }
   }
 
   std::abort();
