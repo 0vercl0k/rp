@@ -25,7 +25,7 @@ elseif(UNIX)
     endif()
  endif()
 
-set(RP_PLAT "rp-${RP_PLAT}-${CMAKE_HOST_SYSTEM_PROCESSOR}")
+set(RP_PLAT "rp-${RP_PLAT}")
 
 file(
     GLOB
