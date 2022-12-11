@@ -42,10 +42,10 @@ jobs:
       if: matrix.generator == 'ninja'
       uses: actions/upload-artifact@v2
       with:
-        name: rp-win-x64.RelWithDebInfo
+        name: rp-win
         path: |
-          src/build/rp-win-x64.exe
-          src/build/rp-win-x64.pdb
+          src/build/rp-win.exe
+          src/build/rp-win.pdb
 
   Linux:
     runs-on: ubuntu-latest
@@ -62,14 +62,14 @@ jobs:
     - name: Installing dependencies
       run: |
         sudo apt-get -y update
-        sudo apt install -y g++-10 ninja-build
+        sudo apt install -y g++-12 ninja-build
         sudo bash -c "$(wget -O - https://apt.llvm.org/llvm.sh)"
 
     - name: Build with gcc
       if: matrix.compiler == 'gcc'
       env:
-        CC: gcc-10
-        CXX: g++-10
+        CC: gcc-12
+        CXX: g++-12
       run: |
         cd src/build
         chmod u+x ./build-release.sh
@@ -88,24 +88,18 @@ jobs:
     - name: Upload artifacts
       uses: actions/upload-artifact@v2
       with:
-        name: rp-lin-x64-${{ matrix.compiler }}.Release
+        name: rp-lin-${{ matrix.compiler }}
         path: |
-          src/build/rp-lin-x64
+          src/build/rp-lin
 
   OSX:
     runs-on: macos-latest
-    strategy:
-      fail-fast: false
-      matrix:
-        compiler: ['clang']
-
-    name: OSX Latest / ${{ matrix.compiler }}
+    name: OSX Latest
     steps:
     - name: Checkout
       uses: actions/checkout@v2
 
     - name: Build with clang
-      if: matrix.compiler == 'clang'
       env:
         CC: clang
         CXX: clang++
@@ -117,6 +111,6 @@ jobs:
     - name: Upload artifacts
       uses: actions/upload-artifact@v2
       with:
-        name: rp-osx-x64-${{ matrix.compiler }}.Release
+        name: rp-osx
         path: |
-          src/build/rp-osx-x64
+          src/build/rp-osx
