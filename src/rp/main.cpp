@@ -10,7 +10,7 @@
 #include <fmt/printf.h>
 #include <unordered_map>
 
-#define NUM_V "2.0"
+#define NUM_V "2.1"
 #ifdef ARCH_X64
 #define VERSION_TMP NUM_V " x64 built the " __DATE__ " " __TIME__
 #elif defined ARCH_X86
@@ -30,7 +30,7 @@
 Options_t g_opts;
 
 int main(int argc, char *argv[]) {
-  CLI::App rp("rp++: a fast ROP gadget finder for pe/elf/mach-o x86/x64/ARM "
+  CLI::App rp("rp++: a fast ROP gadget finder for pe/elf/mach-o x86/x64/ARM/ARM64 "
               "binaries\nby Axel '0vercl0k' Souchet.\n");
   rp.add_option("-f,--file", g_opts.file, "Binary path")->required();
   rp.add_option("-i,--info", g_opts.display,
