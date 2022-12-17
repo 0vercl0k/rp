@@ -93,7 +93,7 @@ jobs:
           src/build/rp-lin
 
   OSX:
-    runs-on: macos-latest
+    runs-on: macos-12
     name: OSX Latest
     steps:
     - name: Checkout
