@@ -104,7 +104,7 @@ std::vector<uint8_t> string_to_hex(const std::string &hex) {
 GadgetSet only_unique_gadgets(GadgetMultiset &list_gadgets) {
   GadgetSet unique_gadgets;
   // Now we have a list of gadget, cool, but we want to keep only the unique!
-  for (size_t i = 0; i < list_gadgets.size(); i++) {
+  while (!list_gadgets.empty()) {
     auto node = list_gadgets.extract(list_gadgets.begin());
     const uint64_t first_offset = node.value().get_first_offset();
     const uint64_t first_va_section = node.value().get_first_va_section();
