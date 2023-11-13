@@ -149,7 +149,7 @@ static std::string type_to_str(const uint32_t p_type) {
   }
   }
 
-  std::abort();
+  fmt::print("Unknown ELF type 0x{:x}\n", p_type);
   return "unknown type";
 }
 
