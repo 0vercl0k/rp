@@ -144,6 +144,26 @@ static std::string type_to_str(const uint32_t p_type) {
     return "PAX_FLAGS";
   }
 
+  case 0x65a3dbe5: {
+    return "OPENBSD_MUTABLE";
+  }
+
+  case 0x65a3dbe6: {
+    return "OPENBSD_RANDOMIZE";
+  }
+
+  case 0x65a3dbe7: {
+    return "OPENBSD_WXNEEDED";
+  }
+
+  case 0x65a3dbe8: {
+    return "OPENBSD_NOBTCFI";
+  }
+
+  case 0x65a41be6: {
+    return "OPENBSD_BOOTDATA";
+  }
+
   case 0x70000001: {
     return "SHT_AMD64_UNWIND";
   }
