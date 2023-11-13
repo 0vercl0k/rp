@@ -22,7 +22,7 @@
 #define WINDOWS_X64
 #endif
 #elif defined(linux) || defined(__linux) || defined(__FreeBSD__) ||            \
-    defined(__FreeBSD_kernel__) || defined(__MACH__)
+    defined(__FreeBSD_kernel__) || defined(__MACH__) || defined(__OpenBSD__)
 #define LINUX
 
 #if defined(linux) || defined(__linux)
@@ -31,6 +31,8 @@
 #define SYSTEM_PLATFORM "FreeBSD"
 #elif defined(__MACH__)
 #define SYSTEM_PLATFORM "Mac OSX"
+#elif defined(__OpenBSD__)
+#define SYSTEM_PLATFORM "OpenBSD"
 #else
 #error An error occured
 #endif
