@@ -13,7 +13,7 @@ jobs:
     name: Windows latest / ${{ matrix.generator }}
     steps:
     - name: Checkout
-      uses: actions/checkout@v3
+      uses: actions/checkout@v4
 
     - name: Add msbuild to PATH
       uses: microsoft/setup-msbuild@v1
@@ -35,7 +35,7 @@ jobs:
 
     - name: Upload artifacts
       if: matrix.generator == 'ninja'
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: rp-win
         path: |
@@ -52,7 +52,7 @@ jobs:
     name: Ubuntu Latest / ${{ matrix.compiler }}
     steps:
     - name: Checkout
-      uses: actions/checkout@v3
+      uses: actions/checkout@v4
 
     - name: Installing dependencies
       run: |
@@ -81,7 +81,7 @@ jobs:
         ./build-release.sh
 
     - name: Upload artifacts
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: rp-lin-${{ matrix.compiler }}
         path: |
@@ -92,7 +92,7 @@ jobs:
     name: OSX Latest
     steps:
     - name: Checkout
-      uses: actions/checkout@v3
+      uses: actions/checkout@v4
 
     - name: Build with clang
       env:
@@ -104,7 +104,7 @@ jobs:
         ./build-release-osx.sh
 
     - name: Upload artifacts
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: rp-osx
         path: |
