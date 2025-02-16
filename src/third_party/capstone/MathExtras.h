@@ -17,10 +17,19 @@
 #ifndef CS_LLVM_SUPPORT_MATHEXTRAS_H
 #define CS_LLVM_SUPPORT_MATHEXTRAS_H
 
+// XXX: On Windows MSVC 19.43.34808 I get those and I don't know how to fix that (other than disabling the below macros):
+// ```
+// 2>AArch64InstPrinter.obj : warning LNK4006: _get_vlen already defined in AArch64Disassembler.obj; second definition ignored
+// 2>AArch64InstPrinter.obj : warning LNK4006: __check_arch_support already defined in AArch64Disassembler.obj; second definition ignored
+// 2>AArch64InstPrinter.obj : warning LNK4006: __check_isa_avx10_512 already defined in AArch64Disassembler.obj; second definition ignored
+// 2>AArch64InstPrinter.obj : warning LNK4006: __check_isa_support already defined in AArch64Disassembler.obj; second definition ignored
+// ```
+#if 0
 #if defined(_WIN32_WCE) && (_WIN32_WCE < 0x800)
 #include "windowsce/intrin.h"
 #elif defined(_MSC_VER)
 #include <intrin.h>
+#endif
 #endif
 
 #ifndef __cplusplus

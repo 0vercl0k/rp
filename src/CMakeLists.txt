@@ -45,6 +45,4 @@ add_executable(
 if(UNIX)
     find_package(Threads)
     target_link_libraries(${RP_PLAT} ${CMAKE_THREAD_LIBS_INIT})
-elseif(WIN32)
-    target_link_options(${RP_PLAT} PRIVATE /FORCE:MULTIPLE)
 endif()
