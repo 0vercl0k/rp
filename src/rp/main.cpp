@@ -30,8 +30,9 @@
 Options_t g_opts;
 
 int main(int argc, char *argv[]) {
-  CLI::App rp("rp++: a fast ROP gadget finder for pe/elf/mach-o x86/x64/ARM/ARM64 "
-              "binaries\nby Axel '0vercl0k' Souchet.\n");
+  CLI::App rp(
+      "rp++: a fast ROP gadget finder for pe/elf/mach-o x86/x64/ARM/ARM64 "
+      "binaries\nby Axel '0vercl0k' Souchet.\n");
   rp.add_option("-f,--file", g_opts.file, "Binary path")->required();
   rp.add_option("-i,--info", g_opts.display,
                 "display information about the binary header");
@@ -58,7 +59,7 @@ int main(int argc, char *argv[]) {
   rp.add_flag("--thumb", g_opts.thumb,
               "enable thumb mode when looking for ARM gadgets");
   rp.add_option("--va", g_opts.va,
-              "don't use the image base of the binary, but yours instead");
+                "don't use the image base of the binary, but yours instead");
   rp.add_flag("--allow-branches", g_opts.allow_branches,
               "allow branches in a gadget");
   rp.add_flag("--print-bytes", g_opts.print_bytes, "print the gadget bytes");
@@ -98,7 +99,8 @@ int main(int argc, char *argv[]) {
 
       uint64_t nb_gadgets_filtered = 0;
       if (g_opts.unique) {
-        auto unique_gadgets = only_unique_gadgets(all_gadgets);
+        auto unique_gadgets =
+            only_unique_gadgets(all_gadgets, badbyte_list, nb_gadgets_filtered);
 
         fmt::print("You decided to keep only the unique ones, {} unique "
                    "gadgets found.\n",
@@ -111,14 +113,14 @@ int main(int argc, char *argv[]) {
         }
       } else {
         for (const auto &gadget : all_gadgets) {
-          display_gadget_lf(gadget.get_first_absolute_address(), gadget);
+          display_gadget_lf_badbytes(gadget.get_first_absolute_address(),
+                                     gadget);
         }
       }
 
       if (g_opts.badbytes.size() > 0) {
-        fmt::print(
-            "\n{} gadgets have been filtered because of your bad-bytes.\n",
-            nb_gadgets_filtered);
+        fmt::print("\n{} gadgets have been filtered because of bad-bytes.\n",
+                   nb_gadgets_filtered);
       }
     }
 

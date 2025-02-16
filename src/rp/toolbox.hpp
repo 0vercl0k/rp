@@ -73,10 +73,15 @@ bool is_hex_char(const char c);
  * \brief It keeps only the unique gadgets
  *
  * \param list_gadgets: It is the gadget list with duplicates
- * \param unique_gadgets: The list of unique gadgets
+ * \param badbytes: The list of bytes you don't want in VAs
+ * \param nb_gadgets_filtered: The number of gadgets that were filtered because of the
+ * badbytes.
  *
+ * \return A set of unique gadgets that don't have any badbytes
  */
-GadgetSet only_unique_gadgets(GadgetMultiset &list_gadgets);
+GadgetSet only_unique_gadgets(GadgetMultiset &list_gadgets,
+                              const std::vector<uint8_t> &badbytes,
+                              uint64_t &nb_gadgets_filtered);
 
 /**
  * \fn bool does_badbytes_filter_apply(const uint64_t va, const
@@ -85,7 +90,7 @@ GadgetSet only_unique_gadgets(GadgetMultiset &list_gadgets);
  * \brief Return true if va has a bad byte (taken from badbytes)
  *
  * \param va: It is the VA to check
- * \param badbytes: The list of bytes you don't want in va
+ * \param badbytes: The list of bytes you don't want in VAs
  *
  * \return true if va has at least one bad byte, else false
  */
