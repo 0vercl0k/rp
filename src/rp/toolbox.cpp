@@ -108,24 +108,21 @@ GadgetSet only_unique_gadgets(GadgetMultiset &list_gadgets,
   // Now we have a list of gadget, cool, but we want to keep only the unique!
   while (!list_gadgets.empty()) {
     auto node = list_gadgets.extract(list_gadgets.begin());
-    // Now iterate through every instances of where this gadget has been found
-    // in memory, we need to see if there is one that doesn't have badbytes.
-    for (const auto &info : node.value().get_gadgets_info()) {
-      const auto offset = info.m_offset;
-      const auto va_section = info.m_va_section;
-      const auto va = offset + va_section;
-      if (does_badbytes_filter_apply(va, badbytes)) {
-        nb_gadgets_filtered++;
-        continue;
-      }
+    // Let's see if the VA has badbytes..
+    const auto offset = node.value().get_first_offset();
+    const auto va_section = node.value().get_first_va_section();
+    const auto va = offset + va_section;
+    if (does_badbytes_filter_apply(va, badbytes)) {
+      nb_gadgets_filtered++;
+      continue;
+    }
 
-      // This one doesn't have badbytes, let's try to insert it..
-      auto [g, inserted] = unique_gadgets.insert(std::move(node.value()));
-      if (!inserted) {
-        // .. if we couldn't insert it, it means we already inserted that gadget
-        // before, so let's just add another instance of this one.
-        g->add_new_one(offset, va_section);
-      }
+    // If not, let's try to insert it..
+    auto [iterator, inserted] = unique_gadgets.insert(std::move(node.value()));
+    if (!inserted) {
+      // ..seems like this gadget was already in the set, let's just add another
+      // instance to the existing one.
+      iterator->add_new_one(offset, va_section);
     }
   }
 

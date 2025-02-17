@@ -124,8 +124,6 @@ public:
     m_info_gadgets.emplace_back(offset, va_section);
   }
 
-  const std::vector<Info> &get_gadgets_info() const { return m_info_gadgets; }
-
   /*!
    * \brief This structure can be used for sorting Gadgets instance
    * \return
