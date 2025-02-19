@@ -26,6 +26,24 @@ enum VerbosityLevel {
 std::string verbosity_to_string(const VerbosityLevel lvl);
 
 /**
+ * @brief Checks if the given virtual address has a "0x" or "0X" prefix.
+ *
+ * @param va The virtual address string.
+ * @return true if the address has a "0x"/"0X" prefix, false otherwise.
+ */
+bool has_prefix(const std::string &va);
+
+/**
+ * @brief Sanitizes a virtual address copied from WinDbg.
+ *
+ * Removes backticks from the address and ensures it has a "0x" prefix if missing.
+ *
+ * @param va The virtual address string.
+ * @return A sanitized virtual address with proper formatting.
+ */
+std::string sanitize_va(std::string va);
+
+/**
  * \fn std::streampos get_file_size(std::ifstream &file)
  * \brief Get the size in byte of your file
  *
@@ -33,6 +51,7 @@ std::string verbosity_to_string(const VerbosityLevel lvl);
  *
  * \return the size in byte of the file
  */
+
 std::streampos get_file_size(std::ifstream &file);
 
 /**

@@ -78,9 +78,9 @@ int main(int argc, char *argv[]) {
 
     // Here we set the base being 0 if we want to have absolute virtual
     // memory address displayed
-    const uint64_t base = g_opts.va.size() > 0
-                              ? std::strtoull(g_opts.va.c_str(), nullptr, 0)
-                              : p.get_image_base_address();
+      const uint64_t base = g_opts.va.size() > 0
+                                ? std::strtoull((sanitize_va(g_opts.va)).c_str(), nullptr, 0)
+                                : p.get_image_base_address();
     if (g_opts.rop > 0) {
       const uint32_t options = g_opts.thumb ? 1 : 0;
       fmt::print("\nWait a few seconds, rp++ is looking for gadgets ({} "

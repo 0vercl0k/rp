@@ -28,17 +28,42 @@ std::string verbosity_to_string(const VerbosityLevel lvl) {
   return "Unknwon";
 }
 
+// Get the size of an open file without changing its position
 std::streampos get_file_size(std::ifstream &file) {
+
+  // Save the current file ptr position
   std::streampos backup = file.tellg();
 
-  file.seekg(0, std::ios::beg);
+  // Move the ptr to the end
+  file.seekg(0, std::ios::end);
+
+  // Get the current file ptr position ( start = 0 + EOF )
   std::streampos fsize = file.tellg();
 
-  file.seekg(0, std::ios::end);
-  fsize = file.tellg() - fsize;
-
+  // Restore the previous ptr position
   file.seekg(backup);
+
   return fsize;
+}
+
+// Helper function to check if va has prefix (0x) or not
+bool has_prefix(const std::string &va) {
+  return va.size() > 2 && va[0] == '0' && (va[1] == 'x' || va[1] == 'X');
+}
+
+/* 
+* Sanitize VA copied from WinDbg (removes backticks)
+* Ensures "0x" prefix exists when needed
+*/
+std::string sanitize_va(std::string va) {
+
+  bool needs_prefix = !has_prefix(va);
+
+  // Remove backticks if present
+  va.erase(std::remove(va.begin(), va.end(), '`'), va.end());
+
+  return needs_prefix ? "0x" + va : va;
+
 }
 
 // this function is completely inspirated from the previous work of jonathan
@@ -49,10 +74,10 @@ bool is_matching(const std::string &str, const std::string &pattern) {
     return false;
   }
 
-  size_t i = 0, max = std::min(str.length(), pattern.length());
+  size_t i = 0, maxLen = (std::min)(str.length(), pattern.length());
   bool it_matches = true;
 
-  while (i < max) {
+  while (i < maxLen) {
     if (pattern.at(i) != '?' && pattern.at(i) != str.at(i)) {
       it_matches = false;
       break;
