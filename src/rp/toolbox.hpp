@@ -41,7 +41,6 @@ uint64_t va_to_integer(std::string va);
  *
  * \return the size in byte of the file
  */
-
 std::streampos get_file_size(std::ifstream &file);
 
 /**
