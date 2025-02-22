@@ -41,13 +41,7 @@ std::streampos get_file_size(std::ifstream &file) {
   return fsize;
 }
 
-// Helper function to check if va has prefix (0x) or not
-bool has_prefix(const std::string &va) {
-  return va.size() > 2 && va[0] == '0' && (va[1] == 'x' || va[1] == 'X');
-}
-
 uint64_t va_to_integer(std::string va) {
-  __debugbreak();
   // Look for backticks; WinDbg splits a QWORD in two with one. We'll get rid of
   // it if we find one as this makes it easier to copy the address directly off
   // the debugger. It also means that if we find one, we'll assume the address
@@ -72,10 +66,10 @@ bool is_matching(const std::string &str, const std::string &pattern) {
     return false;
   }
 
-  size_t i = 0, maxLen = (std::min)(str.length(), pattern.length());
+  size_t i = 0, max = std::min(str.length(), pattern.length());
   bool it_matches = true;
 
-  while (i < maxLen) {
+  while (i < max) {
     if (pattern.at(i) != '?' && pattern.at(i) != str.at(i)) {
       it_matches = false;
       break;
