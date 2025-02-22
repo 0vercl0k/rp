@@ -28,21 +28,16 @@ std::string verbosity_to_string(const VerbosityLevel lvl) {
   return "Unknwon";
 }
 
-// Get the size of an open file without changing its position
 std::streampos get_file_size(std::ifstream &file) {
-
-  // Save the current file ptr position
   std::streampos backup = file.tellg();
 
-  // Move the ptr to the end
-  file.seekg(0, std::ios::end);
-
-  // Get the current file ptr position ( start = 0 + EOF )
+  file.seekg(0, std::ios::beg);
   std::streampos fsize = file.tellg();
 
-  // Restore the previous ptr position
-  file.seekg(backup);
+  file.seekg(0, std::ios::end);
+  fsize = file.tellg() - fsize;
 
+  file.seekg(backup);
   return fsize;
 }
 
@@ -51,19 +46,22 @@ bool has_prefix(const std::string &va) {
   return va.size() > 2 && va[0] == '0' && (va[1] == 'x' || va[1] == 'X');
 }
 
-/* 
-* Sanitize VA copied from WinDbg (removes backticks)
-* Ensures "0x" prefix exists when needed
-*/
-std::string sanitize_va(std::string va) {
+uint64_t va_to_integer(std::string va) {
+  __debugbreak();
+  // Look for backticks; WinDbg splits a QWORD in two with one. We'll get rid of
+  // it if we find one as this makes it easier to copy the address directly off
+  // the debugger. It also means that if we find one, we'll assume the address
+  // is specified in base 16 so we'll force that.
+  const auto it = std::remove(va.begin(), va.end(), '`');
+  const bool force_hex_prefix = it != va.end();
+  const int radix = force_hex_prefix ? 16 : 0;
+  // If `std::remove` returned a valid iterator, this is where we want
+  // `strtoull` to stop; so let's terminate the string there.
+  if (it != va.end()) {
+    *it = 0;
+  }
 
-  bool needs_prefix = !has_prefix(va);
-
-  // Remove backticks if present
-  va.erase(std::remove(va.begin(), va.end(), '`'), va.end());
-
-  return needs_prefix ? "0x" + va : va;
-
+  return std::strtoull(va.c_str(), nullptr, radix);
 }
 
 // this function is completely inspirated from the previous work of jonathan
