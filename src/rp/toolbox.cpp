@@ -117,23 +117,29 @@ std::vector<uint8_t> string_to_hex(const std::string &hex) {
   return bytes;
 }
 
-GadgetSet only_unique_gadgets(GadgetMultiset &list_gadgets) {
+GadgetSet only_unique_gadgets(GadgetMultiset &list_gadgets,
+                              const std::vector<uint8_t> &badbytes,
+                              uint64_t &nb_gadgets_filtered) {
   GadgetSet unique_gadgets;
   // Now we have a list of gadget, cool, but we want to keep only the unique!
   while (!list_gadgets.empty()) {
     auto node = list_gadgets.extract(list_gadgets.begin());
-    const uint64_t first_offset = node.value().get_first_offset();
-    const uint64_t first_va_section = node.value().get_first_va_section();
-    auto [g, inserted] = unique_gadgets.insert(std::move(node.value()));
-    if (inserted) {
+    // Let's see if the VA has badbytes..
+    const auto offset = node.value().get_first_offset();
+    const auto va_section = node.value().get_first_va_section();
+    const auto va = offset + va_section;
+    if (does_badbytes_filter_apply(va, badbytes)) {
+      nb_gadgets_filtered++;
       continue;
     }
 
-    // we have found the same gadget in memory, so we just store its offset
-    // & its va section maybe you can ask yourself 'Why do we store its va
-    // section ?' and the answer is: because you can find the same gadget in
-    // another executable sections!
-    g->add_new_one(first_offset, first_va_section);
+    // If not, let's try to insert it..
+    auto [iterator, inserted] = unique_gadgets.insert(std::move(node.value()));
+    if (!inserted) {
+      // ..seems like this gadget was already in the set, let's just add another
+      // instance to the existing one.
+      iterator->add_new_one(offset, va_section);
+    }
   }
 
   return unique_gadgets;

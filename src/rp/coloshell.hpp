@@ -114,7 +114,9 @@ template <class T> static void coloshell(const T t, const Colors colo) {
  * \param text: the text you want to display
  */
 #define w_red(text)                                                            \
-  { coloshell(text, COLO_RED); }
+  {                                                                            \
+    coloshell(text, COLO_RED);                                                 \
+  }
 
 /**
  * \def w_yel(text)
@@ -123,7 +125,9 @@ template <class T> static void coloshell(const T t, const Colors colo) {
  * \param text: the text you want to display
  */
 #define w_yel(text)                                                            \
-  { coloshell(text, COLO_YELLOW); }
+  {                                                                            \
+    coloshell(text, COLO_YELLOW);                                              \
+  }
 
 /**
  * \def w_gre(text)
@@ -132,7 +136,9 @@ template <class T> static void coloshell(const T t, const Colors colo) {
  * \param text: the text you want to display
  */
 #define w_gre(text)                                                            \
-  { coloshell(text, COLO_GREEN); }
+  {                                                                            \
+    coloshell(text, COLO_GREEN);                                               \
+  }
 
 /**
  * \def w_red_lf(text)
@@ -218,7 +224,9 @@ template <class T> static void coloshell(const T t, const Colors colo) {
  * \param field: It is the short hex value you want to output
  */
 #define display_short_hex_field(field)                                         \
-  { display_hex_field(field, 14); }
+  {                                                                            \
+    display_hex_field(field, 14);                                              \
+  }
 
 /**
  * \def display_short_hex_field_lf(field)
@@ -255,19 +263,31 @@ template <class T> static void coloshell(const T t, const Colors colo) {
  */
 #define display_gadget_lf(va, gadget)                                          \
   {                                                                            \
+    enable_color(COLO_RED);                                                    \
+    fmt::print("0x{:x}", va);                                                  \
+    disable_color();                                                           \
+    fmt::print(": ");                                                          \
+    enable_color(COLO_GREEN);                                                  \
+    (gadget).print_disassembly();                                              \
+    if (g_opts.print_bytes) {                                                  \
+      fmt::print(" ");                                                         \
+      (gadget).print_bytes();                                                  \
+    }                                                                          \
+    fmt::print(" ({} found)\n", (gadget).get_nb());                            \
+    disable_color();                                                           \
+  }
+
+/**
+ * \def display_gadget_lf_badbytes(va, gadget)
+ *  Display a gadget with a line feed and its VA.
+ *
+ * \param va: It is the gadget VA
+ * \param gadget: It is the gadget you want to output
+ */
+#define display_gadget_lf_badbytes(va, gadget)                                 \
+  {                                                                            \
     if (!does_badbytes_filter_apply(va, badbyte_list)) {                       \
-      enable_color(COLO_RED);                                                  \
-      fmt::print("0x{:x}", va);                                                \
-      disable_color();                                                         \
-      fmt::print(": ");                                                        \
-      enable_color(COLO_GREEN);                                                \
-      (gadget).print_disassembly();                                            \
-      if (g_opts.print_bytes) {                                                \
-        fmt::print(" ");                                                       \
-        (gadget).print_bytes();                                                \
-      }                                                                        \
-      fmt::print(" ({} found)\n", (gadget).get_nb());                          \
-      disable_color();                                                         \
+      display_gadget_lf(va, gadget);                                           \
     } else {                                                                   \
       nb_gadgets_filtered++;                                                   \
     }                                                                          \

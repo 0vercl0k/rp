@@ -10,7 +10,7 @@
 #include <fmt/printf.h>
 #include <unordered_map>
 
-#define NUM_V "2.1"
+#define NUM_V "2.1.3"
 #ifdef ARCH_X64
 #define VERSION_TMP NUM_V " x64 built the " __DATE__ " " __TIME__
 #elif defined ARCH_X86
@@ -98,7 +98,8 @@ int main(int argc, char *argv[]) {
 
       uint64_t nb_gadgets_filtered = 0;
       if (g_opts.unique) {
-        auto unique_gadgets = only_unique_gadgets(all_gadgets);
+        auto unique_gadgets =
+            only_unique_gadgets(all_gadgets, badbyte_list, nb_gadgets_filtered);
 
         fmt::print("You decided to keep only the unique ones, {} unique "
                    "gadgets found.\n",
@@ -111,14 +112,14 @@ int main(int argc, char *argv[]) {
         }
       } else {
         for (const auto &gadget : all_gadgets) {
-          display_gadget_lf(gadget.get_first_absolute_address(), gadget);
+          display_gadget_lf_badbytes(gadget.get_first_absolute_address(),
+                                     gadget);
         }
       }
 
       if (g_opts.badbytes.size() > 0) {
-        fmt::print(
-            "\n{} gadgets have been filtered because of your bad-bytes.\n",
-            nb_gadgets_filtered);
+        fmt::print("\n{} gadgets have been filtered because of bad-bytes.\n",
+                   nb_gadgets_filtered);
       }
     }
 
