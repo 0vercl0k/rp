@@ -15,6 +15,7 @@ add_compile_definitions(FMT_HEADER_ONLY FMT_UNICODE=0 BEA_ENGINE_STATIC CAPSTONE
 if(WIN32)
     set(RP_PLAT "win")
     add_compile_definitions(NOMINMAX)
+    set(CMAKE_MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Debug>:Debug>")
 elseif(UNIX)
     if(${CMAKE_SYSTEM_NAME} STREQUAL FreeBSD)
         set(RP_PLAT "fbsd")
