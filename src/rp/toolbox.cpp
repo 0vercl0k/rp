@@ -47,8 +47,7 @@ uint64_t va_to_integer(std::string va) {
   // the debugger. It also means that if we find one, we'll assume the address
   // is specified in base 16 so we'll force that.
   const auto it = std::remove(va.begin(), va.end(), '`');
-  const bool force_hex_prefix = it != va.end();
-  const int radix = force_hex_prefix ? 16 : 0;
+  const int radix = it != va.end() ? 16 : 0;
   // If `std::remove` returned a valid iterator, this is where we want
   // `strtoull` to stop; so let's terminate the string there.
   if (it != va.end()) {
