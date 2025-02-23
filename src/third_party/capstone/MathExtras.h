@@ -17,10 +17,12 @@
 #ifndef CS_LLVM_SUPPORT_MATHEXTRAS_H
 #define CS_LLVM_SUPPORT_MATHEXTRAS_H
 
+#if 0
 #if defined(_WIN32_WCE) && (_WIN32_WCE < 0x800)
 #include "windowsce/intrin.h"
 #elif defined(_MSC_VER)
 #include <intrin.h>
+#endif
 #endif
 
 #ifndef __cplusplus
