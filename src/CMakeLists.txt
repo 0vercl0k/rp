@@ -46,7 +46,7 @@ add_executable(
 if(UNIX)
     find_package(Threads)
     target_link_libraries(${RP_PLAT} ${CMAKE_THREAD_LIBS_INIT})
-    if(${RP_PLAT} STREQUAL "osx")
+    if(${RP_PLAT} STREQUAL "rp-osx")
     else()
         target_link_libraries(${RP_PLAT} -static)
     endif()
