@@ -10,7 +10,7 @@
 #include <fmt/printf.h>
 #include <unordered_map>
 
-#define NUM_V "2.1.3"
+#define NUM_V "2.1.4"
 #ifdef ARCH_X64
 #define VERSION_TMP NUM_V " x64 built the " __DATE__ " " __TIME__
 #elif defined ARCH_X86
