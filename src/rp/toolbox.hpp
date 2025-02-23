@@ -26,6 +26,14 @@ enum VerbosityLevel {
 std::string verbosity_to_string(const VerbosityLevel lvl);
 
 /**
+ * \fn uint64_t va_to_integer(std::string va)
+ * \brief Convert va to an integer
+ *
+ * \param va The virtual address string
+ */
+uint64_t va_to_integer(std::string va);
+
+/**
  * \fn std::streampos get_file_size(std::ifstream &file)
  * \brief Get the size in byte of your file
  *

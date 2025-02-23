@@ -41,6 +41,22 @@ std::streampos get_file_size(std::ifstream &file) {
   return fsize;
 }
 
+uint64_t va_to_integer(std::string va) {
+  // Look for backticks; WinDbg splits a QWORD in two with one. We'll get rid of
+  // it if we find one as this makes it easier to copy the address directly off
+  // the debugger. It also means that if we find one, we'll assume the address
+  // is specified in base 16 so we'll force that.
+  const auto it = std::remove(va.begin(), va.end(), '`');
+  const int radix = it != va.end() ? 16 : 0;
+  // If `std::remove` returned a valid iterator, this is where we want
+  // `strtoull` to stop; so let's terminate the string there.
+  if (it != va.end()) {
+    *it = 0;
+  }
+
+  return std::strtoull(va.c_str(), nullptr, radix);
+}
+
 // this function is completely inspirated from the previous work of jonathan
 // salwan
 bool is_matching(const std::string &str, const std::string &pattern) {
