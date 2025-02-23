@@ -46,4 +46,5 @@ add_executable(
 if(UNIX)
     find_package(Threads)
     target_link_libraries(${RP_PLAT} ${CMAKE_THREAD_LIBS_INIT})
+    target_link_libraries(${RP_PLAT} ${CMAKE_THREAD_LIBS_INIT} -static)
 endif()
