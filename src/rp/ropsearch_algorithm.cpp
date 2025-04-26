@@ -117,9 +117,8 @@ void find_rop_gadgets(const std::vector<uint8_t> &section, const uint64_t vaddr,
     InstructionInformation ret_instr = disass_engine.disass(
         data + offset, size - offset, SafeIntAdd(vaddr, offset), ret);
 
-    // OK either this is an unknow opcode & we goto the next one Or the
-    // instruction encountered is too long & we also goto the next one in that
-    // case
+    // OK either this is an unknow opcode or the instruction is too long; in
+    // either case we goto the next one.
     if (ret == UnknownInstruction || ret == OutOfBlock) {
       continue;
     }

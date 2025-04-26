@@ -71,6 +71,14 @@ int main(int argc, char *argv[]) {
       fmt::print("You are currently using the version {} of rp++.\n", VERSION);
     }
 
+    // It has been confusing for users to run & see no rop gadget displayed..so
+    // we'll default the gadget length setting for them.
+    if (g_opts.display == 0 && g_opts.rop == 0) {
+      fmt::print("No rop gadget length was specified via --rop, so setting "
+                 "it to 5..\n");
+      g_opts.rop = 5;
+    }
+
     Program p(g_opts.file, g_opts.raw);
     if (g_opts.display >= VERBOSE_LEVEL_1 &&
         g_opts.display <= VERBOSE_LEVEL_3) {
