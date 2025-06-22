@@ -160,6 +160,10 @@ static std::string type_to_str(const uint32_t p_type) {
     return "OPENBSD_NOBTCFI";
   }
 
+  case 0x65a3dbe9: {
+    return "OPENBSD_SYSCALLS";
+  }
+
   case 0x65a41be6: {
     return "OPENBSD_BOOTDATA";
   }
