@@ -29,6 +29,7 @@
 #endif
 #endif
 
+
 // NOTE: The following support functions use the _32/_64 extensions instead of
 // type overloading so that signed and unsigned integers can be used without
 // ambiguity.
