@@ -171,6 +171,10 @@ static std::string type_to_str(const uint32_t p_type) {
   case 0x70000001: {
     return "SHT_AMD64_UNWIND";
   }
+
+  case 0x6474e554: {
+    return "PT_GNU_SFRAME";
+  }
   }
 
   fmt::print("Unknown ELF type 0x{:x}\n", p_type);
