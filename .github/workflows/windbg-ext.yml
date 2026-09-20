@@ -1,0 +1,96 @@
+name: WinDBG Extension
+
+on:
+  push:
+    branches: ['**']
+    tags: ['v*']
+  pull_request:
+
+# Builds rp.dll (the rp++ WinDBG extension) for both debugger architectures
+# and packages them into a single zip. A WinDBG extension must match the
+# bitness of the windbg.exe it is loaded into, hence the x86 / x64 matrix.
+#
+# Layout of the produced rp-windbg-ext.zip:
+#   x64/rp.dll  x64/rp.pdb
+#   x86/rp.dll  x86/rp.pdb
+#
+# On a version tag (v*) the zip is also attached to the GitHub Release.
+jobs:
+  build:
+    runs-on: windows-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - { arch: x64, devcmd: amd64 }
+          - { arch: x86, devcmd: x86 }
+
+    name: rp.dll / ${{ matrix.arch }}
+
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v4
+      with:
+        submodules: recursive
+
+    - name: Setup MSVC dev prompt (${{ matrix.arch }})
+      uses: ilammy/msvc-dev-cmd@v1
+      with:
+        arch: ${{ matrix.devcmd }}
+
+    - name: Configure (RP_WINDBG_EXT=ON)
+      run: cmake -S src -B src/build-ext -G Ninja -DCMAKE_BUILD_TYPE=RelWithDebInfo -DRP_WINDBG_EXT=ON
+
+    - name: Build
+      run: cmake --build src/build-ext
+
+    - name: Stage ${{ matrix.arch }}
+      shell: pwsh
+      run: |
+        New-Item -ItemType Directory -Force -Path stage/${{ matrix.arch }} | Out-Null
+        Copy-Item src/build-ext/rp.dll stage/${{ matrix.arch }}/
+        Copy-Item src/build-ext/rp.pdb stage/${{ matrix.arch }}/
+
+    - name: Upload ${{ matrix.arch }}
+      uses: actions/upload-artifact@v4
+      with:
+        name: rp-${{ matrix.arch }}
+        path: stage/${{ matrix.arch }}
+        if-no-files-found: error
+
+  package:
+    needs: build
+    runs-on: windows-latest
+    name: Package rp.dll (x86 + x64)
+    permissions:
+      contents: write
+
+    steps:
+    - name: Download both architectures
+      uses: actions/download-artifact@v4
+      with:
+        path: dist
+        pattern: rp-*
+
+    - name: Zip
+      shell: pwsh
+      run: |
+        # download-artifact places each artifact in dist/<name>/ ; fold the
+        # "rp-" prefix away so the archive reads x64/ and x86/.
+        Rename-Item -Path dist/rp-x64 -NewName x64
+        Rename-Item -Path dist/rp-x86 -NewName x86
+        Compress-Archive -Path dist/x64, dist/x86 -DestinationPath rp-windbg-ext.zip
+        Get-ChildItem -Recurse dist | Select-Object FullName
+
+    - name: Upload combined zip
+      uses: actions/upload-artifact@v4
+      with:
+        name: rp-windbg-ext
+        path: rp-windbg-ext.zip
+        if-no-files-found: error
+
+    - name: Attach to release
+      if: startsWith(github.ref, 'refs/tags/v')
+      uses: softprops/action-gh-release@v2
+      with:
+        files: rp-windbg-ext.zip

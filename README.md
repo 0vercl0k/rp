@@ -48,6 +48,26 @@ src/build$ chmod u+x ./build-release.sh && ./build-release.sh
 [16/16] Linking CXX executable rp-lin-x64
 ```
 
+## WinDBG extension
+
+rp++ can also be built as a WinDBG extension, so gadgets can be found from inside the debugger against the module currently being debugged. This is an opt-in build flavour selected with the `RP_WINDBG_EXT` CMake option (default `OFF`); the standalone executable is unaffected.
+
+The rp++ core is shared unchanged between the two builds: only the entry point differs (`rp/main.cpp` for the executable, `windbg/rp_windbg.cpp` for the extension), and the extension is a plain consumer of the existing core API.
+
+Build the extension into its own directory:
+
+```
+cmake -S src -B src/build-ext -DRP_WINDBG_EXT=ON
+cmake --build src/build-ext --config RelWithDebInfo
+```
+
+Then load it in WinDBG and invoke `!rp` with the same options as the command line tool (passed as a single string). With no `-f` / `--file`, the current debuggee's main module is analyzed:
+
+```
+0:000> .load rp.dll
+0:000> !rp --rop 5 --unique
+```
+
 ## Authors
 
 * Axel '[0vercl0k](https://twitter.com/0vercl0k)' Souchet
